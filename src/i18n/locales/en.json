@@ -141,6 +141,7 @@
   },
   "savingsTargets": {
     "title": "Savings targets",
+    "addTarget": "Add savings target",
     "empty": "No savings targets yet",
     "savedOfGoal": "{{saved}} saved of {{goal}}",
     "categoryAndDate": "{{category}} · By {{date}}",
@@ -150,6 +151,21 @@
       "medium": "Medium priority",
       "low": "Low priority"
     }
+  },
+  "addSavingsTarget": {
+    "promptTitle": "What are you saving for?",
+    "promptLabel": "Goal",
+    "promptPlaceholder": "e.g. New laptop, Japan trip",
+    "amountLabel": "Approximate amount",
+    "continue": "Continue",
+    "reviewTitle": "Review your target",
+    "verdictLabel": "AI suggestion",
+    "verdictAnnouncement": "Draft ready: {{verdict}}",
+    "nameLabel": "Name",
+    "categoryLabel": "Category",
+    "goalAmountLabel": "Goal amount",
+    "targetDateLabel": "Target date",
+    "priorityLabel": "Priority"
   },
   "settings": {
     "title": "Settings",

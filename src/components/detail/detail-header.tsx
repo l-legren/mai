@@ -40,13 +40,21 @@ function HeaderIconButton({ icon, onPress, accessibilityLabel }: HeaderIconButto
 type DetailHeaderProps = {
   title: string;
   onBack: () => void;
-  /** Only present for the income/costs sources — Detail's own add entry point. */
+  /** Present when this screen has its own add entry point (e.g. Detail's income/costs, Savings targets). */
   onAdd?: () => void;
+  /** Accessibility label for the add button. Required when `onAdd` is set — the action differs per screen. */
+  addLabel?: string;
   /** Defaults to `'push'`. Pass `'modal'` for screens registered with `presentation: 'modal'`. */
   variant?: HeaderVariant;
 };
 
-export function DetailHeader({ title, onBack, onAdd, variant = 'push' }: DetailHeaderProps) {
+export function DetailHeader({
+  title,
+  onBack,
+  onAdd,
+  addLabel,
+  variant = 'push',
+}: DetailHeaderProps) {
   const { t } = useTranslation();
 
   return (
@@ -60,7 +68,11 @@ export function DetailHeader({ title, onBack, onAdd, variant = 'push' }: DetailH
         {title}
       </AppText>
       {onAdd ? (
-        <HeaderIconButton icon="add" onPress={onAdd} accessibilityLabel={t('recurring.addItem')} />
+        <HeaderIconButton
+          icon="add"
+          onPress={onAdd}
+          accessibilityLabel={addLabel ?? t('recurring.addItem')}
+        />
       ) : null}
     </View>
   );
