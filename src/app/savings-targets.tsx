@@ -20,7 +20,12 @@ export default function SavingsTargetsScreen() {
 
   return (
     <Screen edges={['top']}>
-      <DetailHeader title={t('savingsTargets.title')} onBack={() => router.back()} />
+      <DetailHeader
+        title={t('savingsTargets.title')}
+        onBack={() => router.back()}
+        onAdd={() => router.push('/add-savings-target')}
+        addLabel={t('savingsTargets.addTarget')}
+      />
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <WidgetCard>
           {sorted.length === 0 ? (

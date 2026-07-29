@@ -41,6 +41,7 @@ function RootNavigator() {
         <Stack.Screen name="detail" />
         <Stack.Screen name="breakdown" />
         <Stack.Screen name="savings-targets" />
+        <Stack.Screen name="add-savings-target" options={{ presentation: 'modal' }} />
       </Stack.Protected>
       <Stack.Protected guard={!user}>
         <Stack.Screen name="login" />
