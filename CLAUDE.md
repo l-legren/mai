@@ -141,9 +141,39 @@ Run it with `pnpm smoke` (requires `supabase start` running locally) whenever yo
 `src/data/*.ts` or `src/services/*.ts` file that touches Supabase — before considering the change
 done, not just before committing.
 
-# Git commits
+# Branching & commits
 
-Do not add a `Co-Authored-By: Claude` trailer to commit messages in this repo.
+`develop` is the integration branch (GitHub default branch) — everything branches from and merges into `develop` via PR. `main` is production/release-only — updated only by merging a release from `develop`, never targeted directly by feature PRs.
+
+## Branch naming
+
+```
+<type>/<TICKET-ID>-<kebab-case-summary>
+```
+
+- `type`: `feat` | `fix` | `chore` | `refactor` | `docs` | `test` | `ci`
+- `TICKET-ID`: Linear ID, uppercase (e.g. `LEG-60`) — omit only for no-ticket housekeeping
+- No personal-name prefix (author is already visible via git/PR)
+
+Examples: `feat/LEG-60-savings-targets-add-button`, `chore/upgrade-expo-sdk`
+
+Enforced by a pre-commit hook (`scripts/check-branch-name.mjs`) — `main` and `develop` are always allowed.
+
+## Commit messages
+
+[Conventional Commits](https://www.conventionalcommits.org/), enforced by commitlint (`commitlint.config.js`) via a `commit-msg` hook:
+
+```
+<type>(<scope>): <summary>
+```
+
+- `type`: `feat` | `fix` | `chore` | `refactor` | `docs` | `test` | `ci` | `perf` | `style` | `revert`
+- `scope`: required — the layer or feature touched (`app`, `hooks`, `services`, `data`, `db`, or a feature name like `savings-targets`)
+- `summary`: imperative, lowercase, no trailing period
+- Reference the Linear ticket in the body (`Refs LEG-60`), not the summary line
+- Do not add a `Co-Authored-By: Claude` trailer
+
+Examples: `feat(savings-targets): add button + prompt + review/confirm flow`, `fix(data): grant table access missing from RLS-only setup`
 
 # Internationalisation
 
