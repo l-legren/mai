@@ -66,6 +66,8 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc --noEmit",
     "test": "jest",
     "test:watch": "jest --watch",
     "smoke": "node scripts/smoke-test-supabase.mjs",

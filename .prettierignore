@@ -3,3 +3,7 @@ node_modules
 dist
 pnpm-lock.yaml
 Finance App (Standalone).html
+Auth (Standalone).html
+HANDOFF.md
+.claude
+supabase/.temp
