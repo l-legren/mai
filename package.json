@@ -44,6 +44,8 @@
     "react-native-worklets": "0.10.0"
   },
   "devDependencies": {
+    "@commitlint/cli": "^21.2.1",
+    "@commitlint/config-conventional": "^21.2.0",
     "@react-native/jest-preset": "0.86.0",
     "@types/jest": "29.5.14",
     "@types/react": "~19.2.2",
