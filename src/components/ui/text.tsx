@@ -13,7 +13,9 @@ type Props = TextProps & {
 export function AppText({ variant = 'body', color, style, ...rest }: Props) {
   const { palette } = useAppTheme();
   const resolved =
-    color && color in palette ? (palette[color as PaletteColor] as string) : (color ?? palette.text);
+    color && color in palette
+      ? (palette[color as PaletteColor] as string)
+      : (color ?? palette.text);
 
   return <Text style={[Typography[variant], { color: resolved }, style]} {...rest} />;
 }

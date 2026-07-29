@@ -4,7 +4,12 @@ const CURRENCY = '€';
 
 function groupThousands(n: number): string {
   const sign = n < 0 ? '-' : '';
-  return sign + Math.abs(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  return (
+    sign +
+    Math.abs(n)
+      .toString()
+      .replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  );
 }
 
 /** Exact amount with 2 decimals, e.g. `€12.40`. */

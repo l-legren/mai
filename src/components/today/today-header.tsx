@@ -29,7 +29,8 @@ export function TodayHeader() {
         onPress={() => router.push('/settings')}
         accessibilityRole="button"
         accessibilityLabel={t('today.openSettings')}
-        style={[styles.avatar, { backgroundColor: palette.card, borderColor: palette.hairline }]}>
+        style={[styles.avatar, { backgroundColor: palette.card, borderColor: palette.hairline }]}
+      >
         <AppText variant="bodyMedium">{PROFILE.initial}</AppText>
       </Pressable>
 
