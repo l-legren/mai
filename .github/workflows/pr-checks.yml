@@ -39,4 +39,4 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
-      - run: pnpm test -- --ci
+      - run: pnpm exec jest --ci
