@@ -53,16 +53,6 @@
           }
         ]
       }
-    ],
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/topic-drift-check.js\""
-          }
-        ]
-      }
     ]
   }
 }
