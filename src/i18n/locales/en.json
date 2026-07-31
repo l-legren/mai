@@ -173,7 +173,10 @@
     "darkMode": "Dark mode",
     "account": "Account",
     "logOut": "Log out",
-    "deleteAccount": "Delete account"
+    "deleteAccount": "Delete account",
+    "deleteAccountConfirmTitle": "Delete account?",
+    "deleteAccountConfirmMessage": "This permanently deletes your account and all your data. This can't be undone.",
+    "deleteAccountError": "Couldn't delete your account. Please try again."
   },
   "auth": {
     "loginHeadline": "Welcome back",

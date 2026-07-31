@@ -1,6 +1,15 @@
+import { deleteAccount, signOut } from '@/data/auth.data';
 import { supabase } from '@/data/supabase';
 
-import { AuthServiceError, signIn } from './auth.service';
+import { AuthServiceError, deleteAccountAndSignOut, signIn } from './auth.service';
+
+jest.mock('@/data/auth.data', () => {
+  const actual = jest.requireActual('@/data/auth.data');
+  return { ...actual, deleteAccount: jest.fn(), signOut: jest.fn() };
+});
+
+const mockDeleteAccount = deleteAccount as jest.MockedFunction<typeof deleteAccount>;
+const mockSignOut = signOut as jest.MockedFunction<typeof signOut>;
 
 const mockSignInWithPassword = supabase.auth.signInWithPassword as jest.MockedFunction<
   typeof supabase.auth.signInWithPassword
@@ -39,5 +48,28 @@ describe('signIn', () => {
     await expect(signIn('user@example.com', 'wrong')).rejects.toMatchObject({
       code: 'invalidCredentials',
     });
+  });
+});
+
+describe('deleteAccountAndSignOut', () => {
+  afterEach(() => {
+    mockDeleteAccount.mockReset();
+    mockSignOut.mockReset();
+  });
+
+  it('signs out locally after the account is deleted', async () => {
+    mockDeleteAccount.mockResolvedValue(undefined);
+    mockSignOut.mockResolvedValue(undefined);
+
+    await deleteAccountAndSignOut();
+
+    expect(mockSignOut).toHaveBeenCalled();
+  });
+
+  it('does not sign out when account deletion fails', async () => {
+    mockDeleteAccount.mockRejectedValue(new Error('permission denied'));
+
+    await expect(deleteAccountAndSignOut()).rejects.toThrow('permission denied');
+    expect(mockSignOut).not.toHaveBeenCalled();
   });
 });

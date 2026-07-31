@@ -36,3 +36,9 @@ export async function signOut(): Promise<void> {
   const { error } = await supabase.auth.signOut();
   if (error) throw new ApiError(error.message, error);
 }
+
+/** Deletes the signed-in user's `auth.users` row via the `delete_own_account` RPC (LEG-52). */
+export async function deleteAccount(): Promise<void> {
+  const { error } = await supabase.rpc('delete_own_account');
+  if (error) throw new ApiError(error.message, error);
+}

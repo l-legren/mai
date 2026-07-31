@@ -1,12 +1,13 @@
 import { ApiError } from './api-error';
 import { supabase } from './supabase';
-import { getCurrentUserId, signInWithPassword, signOut } from './auth.data';
+import { deleteAccount, getCurrentUserId, signInWithPassword, signOut } from './auth.data';
 
 const mockSignInWithPassword = supabase.auth.signInWithPassword as jest.MockedFunction<
   typeof supabase.auth.signInWithPassword
 >;
 const mockSignOut = supabase.auth.signOut as jest.MockedFunction<typeof supabase.auth.signOut>;
 const mockGetUser = supabase.auth.getUser as jest.MockedFunction<typeof supabase.auth.getUser>;
+const mockRpc = supabase.rpc as jest.MockedFunction<typeof supabase.rpc>;
 
 describe('signInWithPassword', () => {
   it('throws an ApiError instead of returning a null session', async () => {
@@ -48,5 +49,16 @@ describe('getCurrentUserId', () => {
     } as Awaited<ReturnType<typeof supabase.auth.getUser>>);
 
     await expect(getCurrentUserId()).rejects.toBeInstanceOf(ApiError);
+  });
+});
+
+describe('deleteAccount', () => {
+  it('throws an ApiError when the delete_own_account RPC reports an error', async () => {
+    mockRpc.mockResolvedValue({
+      data: null,
+      error: new Error('permission denied'),
+    } as Awaited<ReturnType<typeof supabase.rpc>>);
+
+    await expect(deleteAccount()).rejects.toBeInstanceOf(ApiError);
   });
 });

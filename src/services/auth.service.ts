@@ -4,7 +4,7 @@
 
 import type { Session } from '@supabase/supabase-js';
 
-import { onAuthStateChange, signInWithPassword, signOut } from '@/data/auth.data';
+import { deleteAccount, onAuthStateChange, signInWithPassword, signOut } from '@/data/auth.data';
 
 export type AuthUser = {
   id: string;
@@ -50,5 +50,11 @@ export async function signIn(email: string, password: string): Promise<AuthUser>
 }
 
 export async function signOutUser(): Promise<void> {
+  await signOut();
+}
+
+/** Deletes the account, then signs out locally so the route guard drops the user to `login`. */
+export async function deleteAccountAndSignOut(): Promise<void> {
+  await deleteAccount();
   await signOut();
 }
