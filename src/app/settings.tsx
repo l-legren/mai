@@ -1,25 +1,36 @@
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, StyleSheet, Switch } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Switch } from 'react-native';
 
 import { DetailHeader } from '@/components/detail/detail-header';
 import { ProfileRow } from '@/components/settings/profile-row';
 import { SettingRow } from '@/components/settings/setting-row';
 import { SettingsSection } from '@/components/settings/settings-section';
 import { Button } from '@/components/ui/button';
+import { FormError } from '@/components/ui/form-error';
 import { Screen } from '@/components/ui/screen';
 import { Spacing } from '@/constants/theme';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { useAuth } from '@/hooks/use-auth';
+import { useDeleteAccount } from '@/hooks/use-delete-account';
 
 export default function SettingsScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { isDark, toggle, palette } = useAppTheme();
   const { signOut } = useAuth();
+  const deleteAccount = useDeleteAccount();
 
-  // Account deletion isn't wired to a backend yet — design-only for now.
-  const noop = () => {};
+  const confirmDeleteAccount = () => {
+    Alert.alert(
+      t('settings.deleteAccountConfirmTitle'),
+      t('settings.deleteAccountConfirmMessage'),
+      [
+        { text: t('common.cancel'), style: 'cancel' },
+        { text: t('common.delete'), style: 'destructive', onPress: () => deleteAccount.mutate() },
+      ]
+    );
+  };
 
   return (
     <Screen edges={['top']} background="flat">
@@ -43,7 +54,13 @@ export default function SettingsScreen() {
 
         <SettingsSection label={t('settings.account')}>
           <Button variant="secondary" label={t('settings.logOut')} onPress={signOut} />
-          <Button variant="destructive" label={t('settings.deleteAccount')} onPress={noop} />
+          <Button
+            variant="destructive"
+            label={t('settings.deleteAccount')}
+            onPress={confirmDeleteAccount}
+            disabled={deleteAccount.isPending}
+          />
+          <FormError message={deleteAccount.isError ? t('settings.deleteAccountError') : null} />
         </SettingsSection>
       </ScrollView>
     </Screen>
