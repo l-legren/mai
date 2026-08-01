@@ -1,0 +1,27 @@
+version: 2
+updates:
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'monthly'
+    groups:
+      github-actions:
+        patterns:
+          - '*'
+
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+    open-pull-requests-limit: 10
+    groups:
+      npm-minor-patch:
+        update-types:
+          - 'minor'
+          - 'patch'
+    ignore:
+      # Major bumps are deferred until e2e coverage exists (LEG-77) — unit
+      # tests alone don't catch behavioral/visual breakage from major upgrades.
+      - dependency-name: '*'
+        update-types:
+          - 'version-update:semver-major'
