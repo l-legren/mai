@@ -19,6 +19,8 @@ export const Palettes = {
     card: '#251F24',
     /** Translucent widget-card fill, meant to sit over `bgGradient` with a blur. */
     cardTrans: 'rgba(58,50,56,0.45)',
+    /** Android tab bar surface — `bg`, not `card`, so it reads as a darker recessed layer; slightly translucent to hint at depth (Android's `NativeTabs` has no blur/glass support). */
+    tabBarBg: 'rgba(26,21,24,0.92)',
     text: '#F1EFF0',
     text2: '#ABA6AA',
     // Muted tier — darkened from #7A747A (≈3.85:1) to clear WCAG AA 4.5:1 on `bg`.
@@ -42,6 +44,8 @@ export const Palettes = {
     bg: '#FBF1F4',
     card: '#FFFFFF',
     cardTrans: 'rgba(255,255,255,0.60)',
+    /** Android tab bar surface — see dark variant. */
+    tabBarBg: 'rgba(251,241,244,0.92)',
     text: '#2A2126',
     text2: '#8A7E85',
     // Muted tier — darkened from #B2A4AB (≈2.1:1) to clear WCAG AA 4.5:1 on `bg`.
