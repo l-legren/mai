@@ -5,6 +5,7 @@
 // to revisit this on future SDK bumps.
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import { useTranslation } from 'react-i18next';
+import { Platform } from 'react-native';
 
 import { useAppTheme } from '@/hooks/use-app-theme';
 
@@ -13,7 +14,15 @@ export default function TabsLayout() {
   const { palette } = useAppTheme();
 
   return (
-    <NativeTabs iconColor={{ default: palette.text3, selected: palette.accent }}>
+    <NativeTabs
+      iconColor={{ default: palette.text3, selected: palette.accent }}
+      // backgroundColor is read on both platforms (per expo-router's NativeTabOptions),
+      // so it's gated to Android only — iOS keeps its native Liquid Glass background.
+      backgroundColor={Platform.OS === 'android' ? palette.tabBarBg : undefined}
+      indicatorColor={palette.accentLight}
+      rippleColor={palette.accentLight}
+      labelVisibilityMode="unlabeled"
+    >
       <NativeTabs.Trigger name="index">
         <NativeTabs.Trigger.Icon sf="house" md="home" />
         {/* Icon-only per the redesign; `hidden` keeps the title as the native accessibility label. */}
