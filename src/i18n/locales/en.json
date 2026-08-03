@@ -128,16 +128,16 @@
     "monthlyGoal": "Monthly goal {{amount}}",
     "dailyBudget": "Budget {{amount}} / day",
     "whereItGoes": "Where it goes",
-    "suggestions": "Suggestions",
     "noData": "No spending logged for this period",
     "chartSummary": "{{title}}: {{values}}",
     "barValue": "{{label}} {{amount}}",
-    "tips": {
-      "diningTitle": "Dining out is climbing",
-      "diningBody": "Restaurants are your fastest-growing category. A monthly cap could free up more toward your goal.",
-      "weekendTitle": "Weekends spike",
-      "weekendBody": "You tend to stay under budget on weekdays but run over Fri–Sun. A small weekend buffer would smooth things out."
-    }
+    "aiSummaryEyebrow": "Ask moniq",
+    "aiSummaryButton": "How am I doing?",
+    "aiSummaryButtonA11y": "How am I doing? Get an AI summary of your spending",
+    "aiSummaryResultEyebrow": "AI summary",
+    "aiSummaryLoading": "Generating your recap…",
+    "aiSummaryError": "Couldn't generate your recap. Check your connection and try again.",
+    "aiSummaryRetry": "Ask again"
   },
   "savingsTargets": {
     "title": "Savings targets",

@@ -60,7 +60,9 @@ export const Palettes = {
     bad: '#D94F63',
     neutralSel: 'rgba(60,30,45,0.06)',
     scrim: 'rgba(40,15,30,0.25)',
-    onAccent: '#1A140A',
+    // White, not the dark-theme's near-black — `accent` (#D91E85) only clears WCAG AA 4.5:1
+    // normal-text contrast against white (~4.7:1); black manages just ~3.9:1 here.
+    onAccent: '#FFFFFF',
     backdrop: ['#F3D9E5', '#EBC9DA', '#E3BCD0'],
   },
 } as const;

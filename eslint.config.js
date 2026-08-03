@@ -6,7 +6,9 @@ const globals = require('globals');
 module.exports = defineConfig([
   expoConfig,
   {
-    ignores: ['dist/*', '.expo/*'],
+    // Deno-runtime Edge Functions — outside the app's Node module graph; type-checked by
+    // `deno check` / the Supabase CLI instead (see the `@ts-nocheck` note in that file).
+    ignores: ['dist/*', '.expo/*', 'supabase/functions/**'],
   },
   {
     files: ['jest.setup.js'],

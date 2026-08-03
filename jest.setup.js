@@ -23,6 +23,9 @@ jest.mock('@/data/supabase', () => ({
       signOut: jest.fn(),
     },
     rpc: jest.fn(),
+    functions: {
+      invoke: jest.fn(),
+    },
     from: jest.fn(() => ({
       select: jest.fn(() => ({ data: [], error: null })),
       insert: jest.fn(() => ({ data: null, error: null })),
