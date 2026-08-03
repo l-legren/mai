@@ -4,16 +4,16 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 
 import { CategoryBreakdown } from '@/components/insights/category-breakdown';
 import { InsightsChart } from '@/components/insights/insights-chart';
-import { InsightsTips } from '@/components/insights/insights-tips';
 import { PeriodNavigator } from '@/components/insights/period-navigator';
 import { SavedSummary } from '@/components/insights/saved-summary';
-import { SavingsTargetsCard } from '@/components/insights/savings-targets-card';
+import { SpendingSummaryButton } from '@/components/insights/spending-summary-button';
+import { SpendingSummaryCard } from '@/components/insights/spending-summary-card';
 import { PillToggle } from '@/components/ui/pill-toggle';
 import { Screen } from '@/components/ui/screen';
 import { AppText } from '@/components/ui/text';
 import { Spacing } from '@/constants/theme';
 import { useInsights, type InsightsMode } from '@/hooks/use-insights';
-import { useSavingsTargets } from '@/hooks/use-savings-targets';
+import { useGenerateSpendingSummary } from '@/hooks/use-spending-summary';
 
 const CURRENT_PERIOD_INDEX = 2; // last of the 3 tracked periods
 
@@ -22,11 +22,22 @@ export default function InsightsScreen() {
   const [mode, setMode] = useState<InsightsMode>('monthly');
   const [index, setIndex] = useState(CURRENT_PERIOD_INDEX);
   const view = useInsights(mode, index);
-  const { data: savingsTargets = [] } = useSavingsTargets();
+  const summary = useGenerateSpendingSummary();
 
   const changeMode = (next: InsightsMode) => {
     setMode(next);
     setIndex(CURRENT_PERIOD_INDEX); // reset to the current period when switching scope
+  };
+
+  const requestSummary = () => {
+    summary.mutate({
+      periodLabel: view.periodLabel,
+      spent: view.breakdown.reduce((sum, row) => sum + row.amount, 0),
+      saved: view.saved,
+      goal: view.goal,
+      onTrack: view.onTrack,
+      breakdown: view.breakdown,
+    });
   };
 
   return (
@@ -56,6 +67,12 @@ export default function InsightsScreen() {
           onNext={() => setIndex((i) => Math.min(view.periodCount - 1, i + 1))}
         />
 
+        {summary.isIdle ? (
+          <SpendingSummaryButton onPress={requestSummary} />
+        ) : (
+          <SpendingSummaryCard summary={summary} onRetry={requestSummary} />
+        )}
+
         <SavedSummary
           caption={view.savedCaption}
           saved={view.saved}
@@ -66,8 +83,6 @@ export default function InsightsScreen() {
 
         <InsightsChart title={view.chartTitle} footer={view.chartFooter} bars={view.bars} />
         <CategoryBreakdown breakdown={view.breakdown} mode={mode} periodIndex={index} />
-        <SavingsTargetsCard targets={savingsTargets} />
-        <InsightsTips />
       </ScrollView>
     </Screen>
   );

@@ -5,15 +5,18 @@ import { DerivationCard } from '@/components/recurring/derivation-card';
 import { RecurringHeader } from '@/components/recurring/recurring-header';
 import { RecurringSection } from '@/components/recurring/recurring-section';
 import { SavingsGoalSlider } from '@/components/recurring/savings-goal-slider';
+import { SavingsTargetsCard } from '@/components/recurring/savings-targets-card';
 import { Screen } from '@/components/ui/screen';
 import { WidgetCard } from '@/components/ui/widget-card';
 import { Spacing } from '@/constants/theme';
 import { useAllowance } from '@/hooks/use-allowance';
 import { useRecurring } from '@/hooks/use-recurring';
+import { useSavingsTargets } from '@/hooks/use-savings-targets';
 
 export default function RecurringScreen() {
   const { t } = useTranslation();
   const { data: items = [] } = useRecurring();
+  const { data: savingsTargets = [] } = useSavingsTargets();
   const { incomeTotal, costsTotal } = useAllowance();
 
   const income = items.filter((item) => item.type === 'income');
@@ -27,6 +30,7 @@ export default function RecurringScreen() {
         <WidgetCard>
           <SavingsGoalSlider />
         </WidgetCard>
+        <SavingsTargetsCard targets={savingsTargets} />
         <RecurringSection
           title={t('recurring.income')}
           total={incomeTotal}
