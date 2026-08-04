@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet } from 'react-native';
 
 import { AppText } from '@/components/ui/text';
-import { Spacing } from '@/constants/theme';
+import { FontFamily, Spacing } from '@/constants/theme';
 
 type SeeMoreLinkProps = {
   /** Section name, interpolated into the accessibility label (e.g. "See all Income"). */
@@ -21,7 +21,7 @@ export function SeeMoreLink({ section, onPress }: SeeMoreLinkProps) {
       accessibilityLabel={t('common.seeMoreOf', { section })}
       style={styles.seeMore}
     >
-      <AppText variant="caption" color="accent">
+      <AppText variant="caption" color="accent" style={styles.label}>
         {t('common.seeMore')}
       </AppText>
     </Pressable>
@@ -31,5 +31,8 @@ export function SeeMoreLink({ section, onPress }: SeeMoreLinkProps) {
 const styles = StyleSheet.create({
   seeMore: {
     paddingTop: Spacing.three,
+  },
+  label: {
+    fontFamily: FontFamily.semibold,
   },
 });

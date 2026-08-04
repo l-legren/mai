@@ -26,7 +26,7 @@ export function SpendingSummaryButton({ onPress }: SpendingSummaryButtonProps) {
         label={t('insights.aiSummaryButton')}
         accessibilityLabel={t('insights.aiSummaryButtonA11y')}
         onPress={onPress}
-        variant="primary"
+        variant="tinted"
         style={styles.button}
       />
     </View>
@@ -35,7 +35,7 @@ export function SpendingSummaryButton({ onPress }: SpendingSummaryButtonProps) {
 
 const styles = StyleSheet.create({
   wrap: {
-    gap: Spacing.one,
+    gap: Spacing.three,
   },
   eyebrow: {
     textAlign: 'center',

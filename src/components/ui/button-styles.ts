@@ -8,7 +8,7 @@ import type { ViewStyle } from 'react-native';
 
 import type { Palette, PaletteColor, ThemeName } from '@/constants/theme';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'destructive';
+export type ButtonVariant = 'primary' | 'secondary' | 'destructive' | 'tinted';
 export type ButtonTone = Extract<PaletteColor, 'accent' | 'good' | 'bad'>;
 
 export type ButtonColors = {
@@ -48,6 +48,9 @@ export function resolveButtonColors(
     return { background: palette[tone], border: 'transparent', borderWidth: 0, text: 'onAccent' };
   if (variant === 'destructive')
     return { background: palette.card, border: palette.bad, borderWidth: 1.5, text: 'bad' };
+  if (variant === 'tinted')
+    // Translucent tone-colored chip (accent-only — `good`/`bad` have no `*Light` fill token).
+    return { background: palette.accentLight, border: palette.accent, borderWidth: 1, text: tone };
   // Secondary uses `text3` instead of the near-invisible `hairline` so the outline still reads
   // against the gradient background, not just the flat card fill it was designed for.
   return { background: palette.card, border: palette.text3, borderWidth: 1.5, text: 'text' };

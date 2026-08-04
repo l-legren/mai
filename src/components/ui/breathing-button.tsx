@@ -128,11 +128,11 @@ export function BreathingButton({
 
 const styles = StyleSheet.create({
   base: {
-    height: 52,
+    height: 60,
     borderRadius: Radius.pill,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: Spacing.four,
+    paddingHorizontal: Spacing.five,
   },
   outline: {
     position: 'absolute',

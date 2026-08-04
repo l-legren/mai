@@ -31,9 +31,7 @@ function SavedHeader({ caption, saved, goal }: SavedHeaderProps) {
         <AppText variant="sectionLabel" color="text3">
           {caption}
         </AppText>
-        <AppText variant="amount" color="accent2">
-          {savedLabel}
-        </AppText>
+        <AppText variant="amount">{savedLabel}</AppText>
       </View>
       <AppText variant="small" color="text3" importantForAccessibility="no">
         {t('insights.goalAmount', { amount: fmtR(goal) })}
@@ -55,7 +53,7 @@ function ProgressBar({ pct }: ProgressBarProps) {
       importantForAccessibility="no"
       style={[styles.track, { backgroundColor: palette.hairline }]}
     >
-      <View style={[styles.fill, { backgroundColor: palette.accent2, width: `${pct}%` }]} />
+      <View style={[styles.fill, { backgroundColor: palette.accent, width: `${pct}%` }]} />
     </View>
   );
 }

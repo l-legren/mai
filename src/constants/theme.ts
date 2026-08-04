@@ -28,8 +28,6 @@ export const Palettes = {
     hairline: 'rgba(240,225,235,0.08)',
     accent: '#FF4FA3',
     accentLight: 'rgba(255,79,163,0.16)',
-    accent2: '#5FA8E8',
-    accent2Light: 'rgba(95,168,232,0.14)',
     good: '#5FBF86',
     goodLight: 'rgba(95,191,134,0.14)',
     bad: '#F2637A',
@@ -53,8 +51,6 @@ export const Palettes = {
     hairline: 'rgba(60,30,45,0.09)',
     accent: '#D91E85',
     accentLight: 'rgba(217,30,133,0.12)',
-    accent2: '#2E7BC4',
-    accent2Light: 'rgba(46,123,196,0.12)',
     good: '#3E9A64',
     goodLight: 'rgba(62,154,100,0.14)',
     bad: '#D94F63',
@@ -125,6 +121,8 @@ export const FontFamily = {
   regular: 'PlusJakartaSans_400Regular',
   medium: 'PlusJakartaSans_500Medium',
   semibold: 'PlusJakartaSans_600SemiBold',
+  bold: 'PlusJakartaSans_700Bold',
+  extrabold: 'PlusJakartaSans_800ExtraBold',
 } as const;
 
 const tabular: TextStyle = { fontVariant: ['tabular-nums'] };
@@ -140,7 +138,7 @@ export const Typography = {
   },
   /** Remaining-balance hero (Today) / daily-allowance hero (Recurring). */
   hero: {
-    fontFamily: FontFamily.light,
+    fontFamily: FontFamily.extrabold,
     fontSize: 40,
     lineHeight: 46,
     letterSpacing: -1.5,
@@ -148,14 +146,14 @@ export const Typography = {
   },
   /** Insights "saved this period" figure. */
   amount: {
-    fontFamily: FontFamily.light,
+    fontFamily: FontFamily.extrabold,
     fontSize: 32,
     lineHeight: 38,
     letterSpacing: -1,
     ...tabular,
   },
   /** Page / screen title. */
-  title: { fontFamily: FontFamily.medium, fontSize: 18, lineHeight: 24 },
+  title: { fontFamily: FontFamily.bold, fontSize: 18, lineHeight: 24 },
   /** Uppercase eyebrow / section label (e.g. "INCOME", "TODAY'S ACTIVITY"). */
   sectionLabel: {
     fontFamily: FontFamily.semibold,
@@ -165,11 +163,12 @@ export const Typography = {
     textTransform: 'uppercase',
   },
   body: { fontFamily: FontFamily.regular, fontSize: 14, lineHeight: 20 },
-  bodyMedium: { fontFamily: FontFamily.medium, fontSize: 14, lineHeight: 20 },
+  /** Buttons, card footer text (e.g. "Behind your goal"), selected toggle labels. */
+  bodyMedium: { fontFamily: FontFamily.semibold, fontSize: 14, lineHeight: 20 },
   caption: { fontFamily: FontFamily.regular, fontSize: 13, lineHeight: 18 },
   small: { fontFamily: FontFamily.regular, fontSize: 11, lineHeight: 14 },
   /** Numbers in lists / rows. */
-  mono: { fontFamily: FontFamily.medium, fontSize: 14, lineHeight: 20, ...tabular },
+  mono: { fontFamily: FontFamily.semibold, fontSize: 14, lineHeight: 20, ...tabular },
 } as const satisfies Record<string, TextStyle>;
 
 export type TypographyVariant = keyof typeof Typography;

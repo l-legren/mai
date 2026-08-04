@@ -56,7 +56,6 @@ export default function InsightsScreen() {
           ]}
           value={mode}
           onChange={changeMode}
-          tone="accent2"
         />
 
         <PeriodNavigator
