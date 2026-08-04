@@ -76,7 +76,8 @@ const styles = StyleSheet.create({
   pill: {
     flex: 1,
     height: 44,
-    borderRadius: Radius.pill,
+    // Intentionally less than `Radius.pill` (full capsule) — a squarer segmented control per design.
+    borderRadius: Radius.card,
     borderWidth: StyleSheet.hairlineWidth,
     alignItems: 'center',
     justifyContent: 'center',

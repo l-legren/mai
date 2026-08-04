@@ -35,7 +35,7 @@ export function SpendingSummaryButton({ onPress }: SpendingSummaryButtonProps) {
 
 const styles = StyleSheet.create({
   wrap: {
-    gap: Spacing.one,
+    gap: Spacing.three,
   },
   eyebrow: {
     textAlign: 'center',

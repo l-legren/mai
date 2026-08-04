@@ -163,11 +163,12 @@ export const Typography = {
     textTransform: 'uppercase',
   },
   body: { fontFamily: FontFamily.regular, fontSize: 14, lineHeight: 20 },
-  bodyMedium: { fontFamily: FontFamily.medium, fontSize: 14, lineHeight: 20 },
+  /** Buttons, card footer text (e.g. "Behind your goal"), selected toggle labels. */
+  bodyMedium: { fontFamily: FontFamily.semibold, fontSize: 14, lineHeight: 20 },
   caption: { fontFamily: FontFamily.regular, fontSize: 13, lineHeight: 18 },
   small: { fontFamily: FontFamily.regular, fontSize: 11, lineHeight: 14 },
   /** Numbers in lists / rows. */
-  mono: { fontFamily: FontFamily.medium, fontSize: 14, lineHeight: 20, ...tabular },
+  mono: { fontFamily: FontFamily.semibold, fontSize: 14, lineHeight: 20, ...tabular },
 } as const satisfies Record<string, TextStyle>;
 
 export type TypographyVariant = keyof typeof Typography;
