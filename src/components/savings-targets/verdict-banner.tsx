@@ -28,9 +28,9 @@ export function VerdictBanner({ verdict }: VerdictBannerProps) {
   return (
     <View
       accessibilityLiveRegion="polite"
-      style={[styles.banner, { backgroundColor: palette.accent2Light }]}
+      style={[styles.banner, { backgroundColor: palette.card }]}
     >
-      <AppText variant="sectionLabel" color="accent2">
+      <AppText variant="sectionLabel" color="text2">
         {t('addSavingsTarget.verdictLabel')}
       </AppText>
       <AppText variant="caption" color="text2" style={styles.text}>

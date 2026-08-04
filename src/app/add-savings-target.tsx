@@ -175,7 +175,6 @@ export default function AddSavingsTargetScreen() {
                   ]}
                   value={priority}
                   onChange={setPriority}
-                  tone="accent2"
                 />
               </View>
 

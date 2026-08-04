@@ -19,7 +19,7 @@ export function AllowancePreview({ amount }: AllowancePreviewProps) {
     <View
       accessible
       accessibilityLabel={`${t('recurring.previewLabel')} ${amount}`}
-      style={[styles.preview, { backgroundColor: palette.accent2Light }]}
+      style={[styles.preview, { backgroundColor: palette.card }]}
     >
       <AppText
         variant="small"
@@ -29,7 +29,7 @@ export function AllowancePreview({ amount }: AllowancePreviewProps) {
       >
         {t('recurring.previewLabel')}
       </AppText>
-      <AppText variant="bodyMedium" color="accent2" importantForAccessibility="no">
+      <AppText variant="bodyMedium" importantForAccessibility="no">
         {amount}
       </AppText>
     </View>

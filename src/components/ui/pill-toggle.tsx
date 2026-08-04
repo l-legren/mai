@@ -5,7 +5,7 @@ import { Radius, Spacing, type Palette } from '@/constants/theme';
 import { useAppTheme } from '@/hooks/use-app-theme';
 
 /** Semantic color of the selected segment. `neutral` = a structural (non-status) choice. */
-type PillToggleTone = 'accent' | 'good' | 'accent2' | 'neutral';
+type PillToggleTone = 'accent' | 'good' | 'neutral';
 
 type PillToggleOption<T extends string> = {
   value: T;
@@ -23,8 +23,6 @@ function selectedColors(palette: Palette, tone: PillToggleTone) {
   switch (tone) {
     case 'good':
       return { bg: palette.goodLight, border: palette.good, text: palette.good };
-    case 'accent2':
-      return { bg: palette.accent2Light, border: palette.accent2, text: palette.accent2 };
     case 'neutral':
       return { bg: palette.neutralSel, border: palette.text3, text: palette.text };
     default:
@@ -78,7 +76,7 @@ const styles = StyleSheet.create({
   pill: {
     flex: 1,
     height: 44,
-    borderRadius: Radius.base,
+    borderRadius: Radius.pill,
     borderWidth: StyleSheet.hairlineWidth,
     alignItems: 'center',
     justifyContent: 'center',

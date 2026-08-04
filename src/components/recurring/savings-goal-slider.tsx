@@ -33,9 +33,7 @@ export function SavingsGoalSlider() {
         <AppText variant="sectionLabel" color="text3">
           {t('recurring.savingsTarget')}
         </AppText>
-        <AppText variant="mono" color="accent2">
-          {fmtR(draft)}
-        </AppText>
+        <AppText variant="mono">{fmtR(draft)}</AppText>
       </View>
 
       <Slider
@@ -45,9 +43,9 @@ export function SavingsGoalSlider() {
         value={draft}
         onValueChange={setDraft}
         onSlidingComplete={(value) => setSavingsGoal.mutate(value)}
-        minimumTrackTintColor={palette.accent2}
+        minimumTrackTintColor={palette.accent}
         maximumTrackTintColor={palette.hairline}
-        thumbTintColor={palette.accent2}
+        thumbTintColor={palette.accent}
         accessibilityLabel={t('recurring.savingsTarget')}
         accessibilityValue={{ min: MIN, max: MAX, now: draft, text: fmtR(draft) }}
       />

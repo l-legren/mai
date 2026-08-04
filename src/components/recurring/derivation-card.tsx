@@ -51,7 +51,7 @@ export function DerivationCard() {
       <DerivationRow
         label={t('recurring.savingsGoal')}
         amount={`−${fmtR(savingsGoal)}`}
-        color="accent2"
+        color="text"
       />
 
       <Hairline style={styles.divider} />
@@ -70,7 +70,7 @@ export function DerivationCard() {
             {t('recurring.perDays', { days: DAYS_PER_MONTH })}
           </AppText>
         </View>
-        <AppText variant="hero" color="accent2" importantForAccessibility="no">
+        <AppText variant="hero" importantForAccessibility="no">
           {allowanceLabel}
         </AppText>
       </View>

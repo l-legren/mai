@@ -48,7 +48,7 @@ export function SpendingSummaryCard({ summary, onRetry }: SpendingSummaryCardPro
         </>
       )}
       {!summary.isPending && (
-        <BreathingButton label={t('insights.aiSummaryRetry')} onPress={onRetry} variant="primary" />
+        <BreathingButton label={t('insights.aiSummaryRetry')} onPress={onRetry} variant="tinted" />
       )}
     </WidgetCard>
   );

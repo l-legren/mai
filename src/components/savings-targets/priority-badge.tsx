@@ -6,9 +6,9 @@ import { useAppTheme } from '@/hooks/use-app-theme';
 import type { SavingsTargetPriority } from '@/services/savings-targets.service';
 
 const TONE: Record<SavingsTargetPriority, { bg: PaletteColor; text: PaletteColor }> = {
-  high: { bg: 'accentLight', text: 'accent' },
-  medium: { bg: 'accent2Light', text: 'accent2' },
-  low: { bg: 'neutralSel', text: 'text3' },
+  high: { bg: 'neutralSel', text: 'text' },
+  medium: { bg: 'card', text: 'text2' },
+  low: { bg: 'card', text: 'text3' },
 };
 
 type PriorityBadgeProps = {
