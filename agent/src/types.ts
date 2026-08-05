@@ -1,23 +1,18 @@
-export type CategoryTotal = { category: string; amount: number };
+import { z } from 'zod';
 
-export type SpendingSummaryInput = {
-  periodLabel: string;
-  spent: number;
-  saved: number;
-  goal: number;
-  onTrack: boolean;
-  breakdown: CategoryTotal[];
-};
+export const CategoryTotalSchema = z.object({
+  category: z.string(),
+  amount: z.number(),
+});
 
-export function isSpendingSummaryInput(value: unknown): value is SpendingSummaryInput {
-  if (typeof value !== 'object' || value === null) return false;
-  const v = value as Record<string, unknown>;
-  return (
-    typeof v.periodLabel === 'string' &&
-    typeof v.spent === 'number' &&
-    typeof v.saved === 'number' &&
-    typeof v.goal === 'number' &&
-    typeof v.onTrack === 'boolean' &&
-    Array.isArray(v.breakdown)
-  );
-}
+export const SpendingSummaryInputSchema = z.object({
+  periodLabel: z.string(),
+  spent: z.number(),
+  saved: z.number(),
+  goal: z.number(),
+  onTrack: z.boolean(),
+  breakdown: z.array(CategoryTotalSchema),
+});
+
+export type CategoryTotal = z.infer<typeof CategoryTotalSchema>;
+export type SpendingSummaryInput = z.infer<typeof SpendingSummaryInputSchema>;

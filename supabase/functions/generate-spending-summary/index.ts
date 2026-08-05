@@ -9,24 +9,25 @@
 // this file is type-checked by `deno check` / the Supabase CLI at deploy time instead.
 
 import { runWeeklyAnalysis } from '../../../agent/src/run.ts';
-import { isSpendingSummaryInput } from '../../../agent/src/types.ts';
+import { SpendingSummaryInputSchema } from '../../../agent/src/types.ts';
 
 Deno.serve(async (req) => {
-  let payload: unknown;
+  let body: unknown;
   try {
-    payload = await req.json();
+    body = await req.json();
   } catch {
     return new Response(JSON.stringify({ error: 'Invalid JSON body' }), { status: 400 });
   }
 
-  if (!isSpendingSummaryInput(payload)) {
+  const parsed = SpendingSummaryInputSchema.safeParse(body);
+  if (!parsed.success) {
     return new Response(JSON.stringify({ error: 'Invalid spending summary payload' }), {
       status: 400,
     });
   }
 
   try {
-    const text = await runWeeklyAnalysis(payload);
+    const text = await runWeeklyAnalysis(parsed.data);
     return new Response(JSON.stringify({ text }), {
       headers: { 'Content-Type': 'application/json' },
     });
