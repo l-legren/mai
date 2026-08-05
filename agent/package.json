@@ -1,0 +1,17 @@
+{
+  "name": "@moniq/agent",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@ai-sdk/anthropic": "^4.0.30",
+    "ai": "^7.0.52",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "typescript": "~6.0.3"
+  }
+}
