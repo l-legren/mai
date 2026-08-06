@@ -58,6 +58,7 @@
     "jest-expo": "~57.0.3",
     "lint-staged": "^17.2.0",
     "prettier": "^3.9.6",
+    "turbo": "^2.10.8",
     "typescript": "~6.0.3"
   },
   "scripts": {
@@ -70,7 +71,7 @@
     "lint:a11y": "eslint --config eslint.a11y.config.js src --max-warnings=0",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "typecheck": "tsc --noEmit && pnpm --dir agent typecheck",
+    "typecheck": "tsc --noEmit",
     "test": "jest",
     "test:watch": "jest --watch",
     "smoke": "node scripts/smoke-test-supabase.mjs",

@@ -1,0 +1,29 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "tasks": {
+    "typecheck": {
+      "outputs": []
+    },
+    "//#typecheck": {
+      "outputs": []
+    },
+    "lint": {
+      "outputs": []
+    },
+    "//#lint": {
+      "outputs": []
+    },
+    "test": {
+      "outputs": []
+    },
+    "//#test": {
+      "outputs": []
+    },
+    "format:check": {
+      "outputs": []
+    },
+    "//#format:check": {
+      "outputs": []
+    }
+  }
+}

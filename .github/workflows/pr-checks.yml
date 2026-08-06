@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: ./.github/actions/setup
-      - run: pnpm lint
+      - run: pnpm exec turbo run lint
 
   typecheck:
     name: Typecheck
@@ -23,10 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: ./.github/actions/setup
-      # agent/ is its own standalone package (own lockfile/deps) — the shared setup action only
-      # installs the root workspace, so it needs its own install before `pnpm typecheck` runs it.
-      - run: pnpm --dir agent install --frozen-lockfile
-      - run: pnpm typecheck
+      - run: pnpm exec turbo run typecheck
 
   format:
     name: Format check
@@ -34,7 +31,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: ./.github/actions/setup
-      - run: pnpm format:check
+      - run: pnpm exec turbo run format:check
 
   test:
     name: Test
@@ -42,4 +39,4 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: ./.github/actions/setup
-      - run: pnpm exec jest --ci
+      - run: pnpm exec turbo run test -- --ci
