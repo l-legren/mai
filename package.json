@@ -70,10 +70,11 @@
     "lint:a11y": "eslint --config eslint.a11y.config.js src --max-warnings=0",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && pnpm --dir agent typecheck",
     "test": "jest",
     "test:watch": "jest --watch",
     "smoke": "node scripts/smoke-test-supabase.mjs",
+    "seed:expenses": "node scripts/seed-expenses.mjs",
     "prepare": "husky"
   },
   "lint-staged": {

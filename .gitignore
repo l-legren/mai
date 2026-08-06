@@ -34,6 +34,12 @@ yarn-error.*
 .env
 .env*.local
 
+# machine-local launchd job (hardcodes this user's absolute paths)
+scripts/com.moniq.seed-expenses.plist
+
+# Claude Design MCP local tool state
+.design-sync/
+
 # typescript
 *.tsbuildinfo
 
