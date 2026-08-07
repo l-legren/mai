@@ -32,6 +32,25 @@ export async function signInWithPassword(email: string, password: string): Promi
   return data.session;
 }
 
+/**
+ * Local Supabase has `enable_confirmations = false`, so this returns a session immediately.
+ * Against a hosted project with email confirmation on, `data.session` is `null` until the user
+ * confirms — callers that need to support that should check for it explicitly.
+ */
+export async function signUpWithPassword(
+  email: string,
+  password: string,
+  name: string
+): Promise<Session | null> {
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: { data: { name } },
+  });
+  if (error) throw new ApiError(error.message, error);
+  return data.session;
+}
+
 export async function signOut(): Promise<void> {
   const { error } = await supabase.auth.signOut();
   if (error) throw new ApiError(error.message, error);

@@ -4,14 +4,20 @@
 
 import type { Session } from '@supabase/supabase-js';
 
-import { deleteAccount, onAuthStateChange, signInWithPassword, signOut } from '@/data/auth.data';
+import {
+  deleteAccount,
+  onAuthStateChange,
+  signInWithPassword,
+  signOut,
+  signUpWithPassword,
+} from '@/data/auth.data';
 
 export type AuthUser = {
   id: string;
   email: string | null;
 };
 
-export type AuthErrorCode = 'invalidInput' | 'invalidCredentials' | 'unknown';
+export type AuthErrorCode = 'invalidInput' | 'invalidCredentials' | 'emailInUse' | 'unknown';
 
 export class AuthServiceError extends Error {
   code: AuthErrorCode;
@@ -47,6 +53,36 @@ export async function signIn(email: string, password: string): Promise<AuthUser>
   const user = mapSessionToUser(session);
   if (!user) throw new AuthServiceError('unknown');
   return user;
+}
+
+/**
+ * `null` means the account was created but needs email confirmation before it can sign in — a
+ * real, expected outcome (not the case locally, where `enable_confirmations = false`), distinct
+ * from the `unknown` error case below.
+ */
+export async function signUp(
+  name: string,
+  email: string,
+  password: string
+): Promise<AuthUser | null> {
+  const trimmedName = name.trim();
+  const trimmedEmail = email.trim();
+  if (!trimmedName || !trimmedEmail || !password) {
+    throw new AuthServiceError('invalidInput');
+  }
+
+  let session: Session | null;
+  try {
+    session = await signUpWithPassword(trimmedEmail, password, trimmedName);
+  } catch (err) {
+    const message = err instanceof Error ? err.message.toLowerCase() : '';
+    if (message.includes('already registered') || message.includes('already exists')) {
+      throw new AuthServiceError('emailInUse');
+    }
+    throw new AuthServiceError('unknown');
+  }
+
+  return mapSessionToUser(session);
 }
 
 export async function signOutUser(): Promise<void> {

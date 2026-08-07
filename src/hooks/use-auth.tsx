@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from '
 import {
   signIn as signInService,
   signOutUser,
+  signUp as signUpService,
   subscribeToAuthChanges,
   type AuthUser,
 } from '@/services/auth.service';
@@ -16,6 +17,8 @@ type Auth = {
   /** True until the first auth-state event (current session, or none) has arrived. */
   isLoading: boolean;
   signIn: (email: string, password: string) => Promise<AuthUser>;
+  /** Returns `null` when the account needs email confirmation before it can sign in. */
+  signUp: (name: string, email: string, password: string) => Promise<AuthUser | null>;
   signOut: () => Promise<void>;
 };
 
@@ -36,6 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     user,
     isLoading,
     signIn: signInService,
+    signUp: signUpService,
     signOut: signOutUser,
   };
 

@@ -244,9 +244,11 @@
     "toggleLoginAction": "Sign up",
     "toggleSignupLead": "Already have an account?",
     "toggleSignupAction": "Log in",
+    "signUpConfirmationSent": "Check your email to confirm your account before signing in.",
     "errors": {
-      "invalidInput": "Enter your email and password.",
+      "invalidInput": "Enter your name, email and password.",
       "invalidCredentials": "Incorrect email or password.",
+      "emailInUse": "An account with this email already exists.",
       "unknown": "Something went wrong. Please try again."
     }
   }
