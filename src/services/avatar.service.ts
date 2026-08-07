@@ -28,9 +28,9 @@ function isAllowedType(contentType: string): boolean {
 }
 
 /** Uploads the avatar and returns its storage path (not a browsable URL — the bucket is private). */
-export async function uploadAvatar(bytes: Blob, contentType: string): Promise<string> {
+export async function uploadAvatar(bytes: ArrayBuffer, contentType: string): Promise<string> {
   if (!isAllowedType(contentType)) throw new AvatarUploadError('unsupportedType');
-  if (bytes.size > AVATAR_MAX_BYTES) throw new AvatarUploadError('tooLarge');
+  if (bytes.byteLength > AVATAR_MAX_BYTES) throw new AvatarUploadError('tooLarge');
   return uploadAvatarFile(bytes, contentType);
 }
 

@@ -10,10 +10,7 @@ import { supabase } from './supabase';
 const AVATAR_OBJECT_NAME = 'avatar';
 
 /** Uploads (or overwrites) the signed-in user's single avatar file. Returns its storage path. */
-export async function uploadAvatarFile(
-  bytes: Blob | ArrayBuffer,
-  contentType: string
-): Promise<string> {
+export async function uploadAvatarFile(bytes: ArrayBuffer, contentType: string): Promise<string> {
   const userId = await getCurrentUserId();
   const path = `${userId}/${AVATAR_OBJECT_NAME}`;
   const { error } = await supabase.storage

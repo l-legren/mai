@@ -6,7 +6,7 @@ import { queryKeys } from './query-keys';
 
 export function useUploadAvatar() {
   return useMutation({
-    mutationFn: ({ bytes, contentType }: { bytes: Blob; contentType: string }) =>
+    mutationFn: ({ bytes, contentType }: { bytes: ArrayBuffer; contentType: string }) =>
       uploadAvatar(bytes, contentType),
   });
 }

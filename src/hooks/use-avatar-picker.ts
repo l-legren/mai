@@ -1,3 +1,5 @@
+import { decode as decodeBase64 } from 'base64-arraybuffer';
+import * as FileSystem from 'expo-file-system';
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 import { useTransition } from 'react';
@@ -14,14 +16,22 @@ type AvatarPickerState = 'empty' | 'granted' | 'denied';
 const AVATAR_EDGE_PX = 256;
 const AVATAR_JPEG_QUALITY = 0.7;
 
-async function processPickedImage(uri: string): Promise<Blob> {
+/**
+ * Reads the resized file as base64 and decodes to an ArrayBuffer — not `fetch(uri).then(r =>
+ * r.blob())`, whose React Native Blob implementation unreliably detects (or drops) the MIME type
+ * for local `file://` URIs, causing Supabase Storage to see e.g. "text/plain" regardless of the
+ * `contentType` passed to `upload()`. This is the documented Expo + Supabase Storage pattern.
+ */
+async function processPickedImage(uri: string): Promise<ArrayBuffer> {
   const manipulated = await ImageManipulator.manipulateAsync(
     uri,
     [{ resize: { width: AVATAR_EDGE_PX, height: AVATAR_EDGE_PX } }],
     { compress: AVATAR_JPEG_QUALITY, format: ImageManipulator.SaveFormat.JPEG }
   );
-  const response = await fetch(manipulated.uri);
-  return response.blob();
+  const base64 = await FileSystem.readAsStringAsync(manipulated.uri, {
+    encoding: FileSystem.EncodingType.Base64,
+  });
+  return decodeBase64(base64);
 }
 
 type UseAvatarPickerOptions = {
@@ -50,8 +60,8 @@ export function useAvatarPicker({ onUploaded, onStateChange }: UseAvatarPickerOp
       });
       if (result.canceled || !result.assets[0]) return;
 
-      const blob = await processPickedImage(result.assets[0].uri);
-      const path = await uploadAvatar.mutateAsync({ bytes: blob, contentType: 'image/jpeg' });
+      const bytes = await processPickedImage(result.assets[0].uri);
+      const path = await uploadAvatar.mutateAsync({ bytes, contentType: 'image/jpeg' });
       onUploaded(path);
       onStateChange('granted');
     });
