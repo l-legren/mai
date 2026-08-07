@@ -43,6 +43,9 @@ scripts/com.moniq.seed-expenses.plist
 # typescript
 *.tsbuildinfo
 
+# turborepo
+.turbo/
+
 # eslint
 .eslintcache
 

@@ -1,0 +1,35 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "tasks": {
+    "format:check": {
+      "outputs": []
+    },
+    "//#format:check": {
+      "outputs": []
+    },
+    "typecheck": {
+      "outputs": [],
+      "dependsOn": ["format:check"]
+    },
+    "//#typecheck": {
+      "outputs": [],
+      "dependsOn": ["//#format:check"]
+    },
+    "lint": {
+      "outputs": [],
+      "dependsOn": ["typecheck"]
+    },
+    "//#lint": {
+      "outputs": [],
+      "dependsOn": ["//#typecheck"]
+    },
+    "test": {
+      "outputs": [],
+      "dependsOn": ["typecheck", "lint", "format:check"]
+    },
+    "//#test": {
+      "outputs": [],
+      "dependsOn": ["//#typecheck", "//#lint", "//#format:check"]
+    }
+  }
+}
