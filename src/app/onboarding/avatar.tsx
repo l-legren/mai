@@ -22,6 +22,7 @@ export default function OnboardingAvatarScreen() {
   });
 
   const initial = draft.firstName.trim().charAt(0).toUpperCase() || '?';
+  const hasPhoto = draft.avatarState === 'granted';
 
   return (
     <Screen edges={['top']}>
@@ -47,21 +48,30 @@ export default function OnboardingAvatarScreen() {
         </View>
 
         <View style={styles.actions}>
-          <Button
-            label={t('onboarding.avatar.choosePhoto')}
-            onPress={pick}
-            disabled={isProcessing}
-          />
-          <Pressable
-            onPress={() => router.push('/onboarding/notifications')}
-            accessibilityRole="button"
-            accessibilityLabel={t('onboarding.avatar.skip')}
-            style={styles.skip}
-          >
-            <AppText variant="bodyMedium" color="text3">
-              {t('onboarding.avatar.skip')}
-            </AppText>
-          </Pressable>
+          {hasPhoto ? (
+            <Button
+              label={t('onboarding.avatar.continue')}
+              onPress={() => router.push('/onboarding/notifications')}
+            />
+          ) : (
+            <>
+              <Button
+                label={t('onboarding.avatar.choosePhoto')}
+                onPress={pick}
+                disabled={isProcessing}
+              />
+              <Pressable
+                onPress={() => router.push('/onboarding/notifications')}
+                accessibilityRole="button"
+                accessibilityLabel={t('onboarding.avatar.skip')}
+                style={styles.skip}
+              >
+                <AppText variant="bodyMedium" color="text3">
+                  {t('onboarding.avatar.skip')}
+                </AppText>
+              </Pressable>
+            </>
+          )}
         </View>
       </View>
     </Screen>

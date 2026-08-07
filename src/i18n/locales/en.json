@@ -202,6 +202,7 @@
       "permissionDenied": "Photo access denied. You can enable it later.",
       "openSettings": "Open Settings",
       "choosePhoto": "Choose photo",
+      "continue": "Continue",
       "skip": "Skip",
       "tooLarge": "That photo is larger than 5MB — please choose a smaller one.",
       "unsupportedType": "That file type isn't supported — please choose a PNG, JPEG, or WebP image.",
