@@ -3,6 +3,7 @@
  */
 
 export const queryKeys = {
+  avatarUrl: (path: string) => ['avatarUrl', path] as const,
   expenses: () => ['expenses'] as const,
   profile: () => ['profile'] as const,
   recurring: () => ['recurring'] as const,
