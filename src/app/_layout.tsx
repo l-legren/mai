@@ -18,6 +18,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import { AppThemeProvider, useAppTheme } from '@/hooks/use-app-theme';
 import { AuthProvider, useAuth } from '@/hooks/use-auth';
+import { useProfile } from '@/hooks/use-profile';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -29,14 +30,24 @@ function NavThemeBridge({ children }: { children: ReactNode }) {
   return <ThemeProvider value={isDark ? DarkTheme : DefaultTheme}>{children}</ThemeProvider>;
 }
 
-/** Signed-out users only ever see `login`; signed-in users never see it. */
+/**
+ * Signed-out users only ever see `login`. Signed-in users without a completed profile only ever
+ * see `onboarding`. Everyone else sees the main app.
+ */
 function RootNavigator() {
   const { user, isLoading } = useAuth();
+  const profileQuery = useProfile(!!user);
+
   if (isLoading) return null;
+  // Avoid a flash into the wrong stack while the profile query resolves after sign-in.
+  if (user && profileQuery.isPending) return null;
+
+  const hasCompletedOnboarding = !!user && profileQuery.data != null;
+  const needsOnboarding = !!user && profileQuery.data === null;
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Protected guard={!!user}>
+      <Stack.Protected guard={hasCompletedOnboarding}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="settings" options={{ presentation: 'modal' }} />
         <Stack.Screen name="add-expense" options={{ presentation: 'modal' }} />
@@ -44,6 +55,9 @@ function RootNavigator() {
         <Stack.Screen name="breakdown" />
         <Stack.Screen name="savings-targets" />
         <Stack.Screen name="add-savings-target" options={{ presentation: 'modal' }} />
+      </Stack.Protected>
+      <Stack.Protected guard={needsOnboarding}>
+        <Stack.Screen name="onboarding" />
       </Stack.Protected>
       <Stack.Protected guard={!user}>
         <Stack.Screen name="login" />
