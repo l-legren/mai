@@ -15,6 +15,7 @@ export function mockQueryBuilder<T>(result: QueryResult<T>) {
     eq: jest.fn(() => builder),
     order: jest.fn(() => builder),
     single: jest.fn(() => Promise.resolve(result)),
+    maybeSingle: jest.fn(() => Promise.resolve(result)),
     then: (onFulfilled: (result: QueryResult<T>) => unknown) =>
       Promise.resolve(result).then(onFulfilled),
   };

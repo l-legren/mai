@@ -80,6 +80,7 @@ Data flows **app → hooks → services → data**; imports only ever point one 
 - File naming: `<resource>.data.ts` (e.g. `savings.data.ts`).
 - Raw stored types (`ExpenseRow`, `RecurringItemRow`, …) are defined and exported from here.
 - **Swap point for a future backend:** if Supabase (or any API) is ever added, only this layer changes — services and screens stay untouched.
+- **Types that come from the database must be runtime-typed with `zod`**, not just asserted via TypeScript. Define a `z.object` schema for the row shape and derive the type with `z.infer<>` rather than hand-writing a `type`/`interface` — a compile-time type is not a guarantee about what Supabase actually returns.
 
 ## `src/services/` — business layer
 
