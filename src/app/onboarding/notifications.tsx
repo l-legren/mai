@@ -20,27 +20,33 @@ export default function OnboardingNotificationsScreen() {
   const completeOnboarding = useCompleteOnboarding();
   const [isFinishing, startFinishing] = useTransition();
 
-  const finish = (notificationsEnabled: boolean) => {
+  // Guards against a second submission firing while the first is still in flight or has already
+  // succeeded (e.g. the root navigator hasn't unmounted this screen yet) — completeOnboarding
+  // inserts a row keyed by user_id, so a second attempt would otherwise hit a primary-key conflict.
+  const finish = async (notificationsEnabled: boolean) => {
+    if (completeOnboarding.isPending || completeOnboarding.isSuccess) return;
     setNotificationsEnabled(notificationsEnabled);
-    startFinishing(async () => {
-      await completeOnboarding.mutateAsync({
-        firstName: draft.firstName,
-        surname: draft.surname,
-        city: draft.city,
-        countryCode: draft.countryCode,
-        avatarUrl: draft.avatarPath,
-        notificationsEnabled,
-      });
-      // The root navigator re-renders into the main app now that a profile exists — no explicit
-      // navigation needed, and there'd be nothing to navigate back to from here regardless.
+    await completeOnboarding.mutateAsync({
+      firstName: draft.firstName,
+      surname: draft.surname,
+      city: draft.city,
+      countryCode: draft.countryCode,
+      avatarUrl: draft.avatarPath,
+      notificationsEnabled,
     });
+    // The root navigator re-renders into the main app now that a profile exists — no explicit
+    // navigation needed, and there'd be nothing to navigate back to from here regardless.
   };
 
   const handleEnable = () => {
     startFinishing(async () => {
       const permission = await Notifications.requestPermissionsAsync();
-      finish(permission.granted);
+      await finish(permission.granted);
     });
+  };
+
+  const handleNotNow = () => {
+    startFinishing(() => finish(false));
   };
 
   return (
@@ -71,7 +77,7 @@ export default function OnboardingNotificationsScreen() {
             disabled={isFinishing}
           />
           <Pressable
-            onPress={() => finish(false)}
+            onPress={handleNotNow}
             disabled={isFinishing}
             accessibilityRole="button"
             accessibilityLabel={t('onboarding.notifications.notNow')}
