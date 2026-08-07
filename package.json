@@ -12,7 +12,6 @@
     "@react-navigation/bottom-tabs": "^7.18.14",
     "@supabase/supabase-js": "^2.111.0",
     "@tanstack/react-query": "^5.101.4",
-    "base64-arraybuffer": "^1.0.2",
     "country-to-currency": "^3.0.1",
     "date-fns": "^4.4.0",
     "expo": "~57.0.9",

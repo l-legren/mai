@@ -1,5 +1,4 @@
-import { decode as decodeBase64 } from 'base64-arraybuffer';
-import * as FileSystem from 'expo-file-system';
+import { File } from 'expo-file-system';
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 import { useTransition } from 'react';
@@ -17,10 +16,10 @@ const AVATAR_EDGE_PX = 256;
 const AVATAR_JPEG_QUALITY = 0.7;
 
 /**
- * Reads the resized file as base64 and decodes to an ArrayBuffer — not `fetch(uri).then(r =>
- * r.blob())`, whose React Native Blob implementation unreliably detects (or drops) the MIME type
- * for local `file://` URIs, causing Supabase Storage to see e.g. "text/plain" regardless of the
- * `contentType` passed to `upload()`. This is the documented Expo + Supabase Storage pattern.
+ * Reads the resized file's raw bytes via the `File` class — not `fetch(uri).then(r => r.blob())`,
+ * whose React Native Blob implementation unreliably detects (or drops) the MIME type for local
+ * `file://` URIs, causing Supabase Storage to see e.g. "text/plain" regardless of the `contentType`
+ * passed to `upload()`.
  */
 async function processPickedImage(uri: string): Promise<ArrayBuffer> {
   const manipulated = await ImageManipulator.manipulateAsync(
@@ -28,10 +27,7 @@ async function processPickedImage(uri: string): Promise<ArrayBuffer> {
     [{ resize: { width: AVATAR_EDGE_PX, height: AVATAR_EDGE_PX } }],
     { compress: AVATAR_JPEG_QUALITY, format: ImageManipulator.SaveFormat.JPEG }
   );
-  const base64 = await FileSystem.readAsStringAsync(manipulated.uri, {
-    encoding: FileSystem.EncodingType.Base64,
-  });
-  return decodeBase64(base64);
+  return new File(manipulated.uri).arrayBuffer();
 }
 
 type UseAvatarPickerOptions = {
