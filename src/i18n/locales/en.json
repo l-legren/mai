@@ -167,6 +167,54 @@
     "targetDateLabel": "Target date",
     "priorityLabel": "Priority"
   },
+  "onboarding": {
+    "stepStatus": "Step {{step}} of {{total}}",
+    "welcome": {
+      "headline": "Track your money\nin minutes.",
+      "subline": "See exactly what's left to spend today — no spreadsheets, no guesswork.",
+      "cta": "Get started"
+    },
+    "city": {
+      "title": "Where are you based?",
+      "subline": "We use this to show your budget in the right currency.",
+      "label": "City",
+      "placeholder": "e.g. Berlin",
+      "useLocation": "Use current location",
+      "locationError": "Couldn't determine your location. You can still type your city manually.",
+      "cityUnresolved": "We couldn't confirm this city — currency will default to EUR.",
+      "currencyPreview": "We'll show your budget in {{currency}}",
+      "continue": "Continue"
+    },
+    "name": {
+      "title": "What should we call you?",
+      "subline": "Surname is optional.",
+      "firstNameLabel": "First name",
+      "firstNamePlaceholder": "Your first name",
+      "surnameLabel": "Surname",
+      "surnameOptional": "(optional)",
+      "surnamePlaceholder": "Your surname",
+      "continue": "Continue"
+    },
+    "avatar": {
+      "title": "Add a photo",
+      "subline": "Helps you recognize your account at a glance. Totally optional.",
+      "photoAdded": "Photo added",
+      "permissionDenied": "Photo access denied. You can enable it later.",
+      "openSettings": "Open Settings",
+      "choosePhoto": "Choose photo",
+      "skip": "Skip",
+      "tooLarge": "That photo is larger than 5MB — please choose a smaller one.",
+      "unsupportedType": "That file type isn't supported — please choose a PNG, JPEG, or WebP image.",
+      "uploadError": "Couldn't upload your photo. Please try again."
+    },
+    "notifications": {
+      "title": "Stay on top of it weekly",
+      "subline": "Get a short AI digest of how your spending's tracking against your goals — once a week, nothing else.",
+      "enable": "Enable notifications",
+      "notNow": "Not now",
+      "finishError": "Couldn't finish setting up your account. Please try again."
+    }
+  },
   "settings": {
     "title": "Settings",
     "appearance": "Appearance",
