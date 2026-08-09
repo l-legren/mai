@@ -8,8 +8,8 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@ai-sdk/anthropic": "^4.0.30",
-    "ai": "^7.0.52",
+    "@ai-sdk/anthropic": "^4.0.33",
+    "ai": "^7.0.55",
     "zod": "^4.4.3"
   },
   "devDependencies": {
