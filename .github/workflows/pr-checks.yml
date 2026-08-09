@@ -40,3 +40,17 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: ./.github/actions/setup
       - run: pnpm exec turbo run test -- --ci
+
+  eval:
+    name: Agent evals
+    runs-on: ubuntu-latest
+    # Non-blocking: these hit a live model and can flake on non-determinism, unlike the
+    # deterministic checks above. Visible as a status, but doesn't fail the PR (yet).
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: ./.github/actions/setup
+      - run: pnpm exec turbo run eval
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          LMNR_PROJECT_API_KEY: ${{ secrets.LMNR_PROJECT_API_KEY }}
