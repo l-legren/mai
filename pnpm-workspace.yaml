@@ -1,6 +1,8 @@
 packages:
   - 'agent'
 allowBuilds:
+  esbuild: true
+  protobufjs: true
   unrs-resolver: true
 # Delay installing any package version until it's been published this long (in minutes),
 # to dodge just-published supply-chain attacks (compromised maintainer / typosquat).

@@ -30,6 +30,12 @@
     "//#test": {
       "outputs": [],
       "dependsOn": ["//#typecheck", "//#lint", "//#format:check"]
+    },
+    "eval": {
+      "outputs": [],
+      "dependsOn": ["typecheck"],
+      "cache": false,
+      "env": ["ANTHROPIC_API_KEY", "LMNR_PROJECT_API_KEY"]
     }
   }
 }
