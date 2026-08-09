@@ -45,14 +45,18 @@ export type NewProfileOnboardingRow = {
   notifications_enabled: boolean;
 };
 
-/** One atomic insert completes onboarding — there is no partial/in-progress row. */
+/**
+ * One atomic write completes onboarding — there is no partial/in-progress row. `upsert` (not
+ * `insert`) so a retried/duplicate completion attempt (e.g. a double-submit from the UI) is
+ * idempotent instead of hitting the `user_id` primary-key conflict.
+ */
 export async function insertProfileOnboardingRow(
   row: NewProfileOnboardingRow
 ): Promise<ProfileOnboardingRow> {
   const userId = await getCurrentUserId();
   const { data, error } = await supabase
     .from('profile_onboarding')
-    .insert({ ...row, user_id: userId })
+    .upsert({ ...row, user_id: userId })
     .select(COLUMNS)
     .single();
   if (error) throw new ApiError(error.message, error);

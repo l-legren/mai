@@ -20,6 +20,7 @@ jest.mock('@/data/supabase', () => ({
       getUser: jest.fn(),
       onAuthStateChange: jest.fn(() => ({ data: { subscription: { unsubscribe: jest.fn() } } })),
       signInWithPassword: jest.fn(),
+      signUp: jest.fn(),
       signOut: jest.fn(),
     },
     rpc: jest.fn(),

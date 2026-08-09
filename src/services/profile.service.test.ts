@@ -1,16 +1,16 @@
-import { deriveCurrencyFromCity, mapRowToProfile } from './profile.service';
+import { deriveCurrency, mapRowToProfile } from './profile.service';
 
-describe('deriveCurrencyFromCity', () => {
-  it('resolves a known city to its currency', () => {
-    expect(deriveCurrencyFromCity('London')).toBe('GBP');
+describe('deriveCurrency', () => {
+  it('resolves a known country code to its currency', () => {
+    expect(deriveCurrency('GB')).toBe('GBP');
   });
 
   it('is case-insensitive and trims whitespace', () => {
-    expect(deriveCurrencyFromCity('  tokyo  ')).toBe('JPY');
+    expect(deriveCurrency('  jp  ')).toBe('JPY');
   });
 
-  it('falls back to EUR for an unrecognised city', () => {
-    expect(deriveCurrencyFromCity('Springfield')).toBe('EUR');
+  it('falls back to EUR when no country code is available', () => {
+    expect(deriveCurrency(null)).toBe('EUR');
   });
 });
 

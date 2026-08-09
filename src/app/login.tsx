@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, View } from 'react-native';
+import { AccessibilityInfo, StyleSheet, View } from 'react-native';
 
 import type { AuthMode } from '@/components/auth/auth-mode';
 import { AuthForm } from '@/components/auth/auth-form';
@@ -8,6 +8,7 @@ import { AuthHeader } from '@/components/auth/auth-header';
 import { AuthLogo } from '@/components/auth/auth-logo';
 import { ModeToggle } from '@/components/auth/mode-toggle';
 import { Screen } from '@/components/ui/screen';
+import { AppText } from '@/components/ui/text';
 import { Spacing } from '@/constants/theme';
 import { useAuth } from '@/hooks/use-auth';
 import { AuthServiceError, type AuthErrorCode } from '@/services/auth.service';
@@ -19,7 +20,7 @@ const LOGO_BOTTOM_MARGIN = 14;
 
 export default function LoginScreen() {
   const { t } = useTranslation();
-  const { signIn } = useAuth();
+  const { signIn, signUp } = useAuth();
 
   const [mode, setMode] = useState<AuthMode>('login');
   const [name, setName] = useState('');
@@ -27,20 +28,27 @@ export default function LoginScreen() {
   const [password, setPassword] = useState('');
   const [errorCode, setErrorCode] = useState<AuthErrorCode | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [confirmationPending, setConfirmationPending] = useState(false);
 
   const isSignUp = mode === 'signup';
 
   const handleSubmit = async () => {
     setErrorCode(null);
-
-    if (isSignUp) {
-      // Sign-up isn't wired to a backend yet — design-only for now.
-      return;
-    }
-
+    setConfirmationPending(false);
     setIsSubmitting(true);
     try {
-      await signIn(email, password);
+      if (isSignUp) {
+        const user = await signUp(name, email, password);
+        // `null` means the account needs email confirmation before it can sign in (not the case
+        // locally, where Supabase auth confirmations are disabled) — root navigator picks up a
+        // successful sign-up automatically via the auth-state subscription, no navigation here.
+        if (!user) {
+          setConfirmationPending(true);
+          AccessibilityInfo.announceForAccessibility(t('auth.signUpConfirmationSent'));
+        }
+      } else {
+        await signIn(email, password);
+      }
     } catch (err) {
       setErrorCode(err instanceof AuthServiceError ? err.code : 'unknown');
     } finally {
@@ -55,6 +63,7 @@ export default function LoginScreen() {
   const toggleMode = () => {
     setMode((current) => (current === 'login' ? 'signup' : 'login'));
     setErrorCode(null);
+    setConfirmationPending(false);
   };
 
   return (
@@ -84,6 +93,17 @@ export default function LoginScreen() {
           onSubmit={handleSubmit}
         />
 
+        {confirmationPending ? (
+          <AppText
+            color="good"
+            variant="caption"
+            style={styles.confirmation}
+            accessibilityLiveRegion="polite"
+          >
+            {t('auth.signUpConfirmationSent')}
+          </AppText>
+        ) : null}
+
         <ModeToggle mode={mode} onToggle={toggleMode} />
       </View>
     </Screen>
@@ -105,5 +125,9 @@ const styles = StyleSheet.create({
   },
   logoSpacing: {
     marginBottom: LOGO_BOTTOM_MARGIN,
+  },
+  confirmation: {
+    textAlign: 'center',
+    marginTop: Spacing.three,
   },
 });
