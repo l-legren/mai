@@ -2,20 +2,24 @@
  * Data layer — expenses persistence via Supabase. Raw stored shapes only; no business rules.
  */
 
+import { z } from 'zod';
+
 import { ApiError } from './api-error';
 import { getCurrentUserId } from './auth.data';
 import { supabase } from './supabase';
 
 /** Persisted expense row (`public.expenses`). `spent_on` is `YYYY-MM-DD`; `spent_at` is a full ISO timestamp. */
-export type ExpenseRow = {
-  id: string;
-  category: string;
-  amount: number;
-  spent_on: string;
-  spent_at: string;
+const ExpenseRowSchema = z.object({
+  id: z.string(),
+  category: z.string(),
+  amount: z.number(),
+  spent_on: z.string(),
+  spent_at: z.string(),
   /** Free-text label, only meaningful for the "other" category. */
-  note: string | null;
-};
+  note: z.string().nullable(),
+});
+
+export type ExpenseRow = z.infer<typeof ExpenseRowSchema>;
 
 const COLUMNS = 'id, category, amount, spent_on, spent_at, note';
 
@@ -27,7 +31,7 @@ export async function getExpenseRows(): Promise<ExpenseRow[]> {
     .eq('user_id', userId)
     .order('spent_at', { ascending: false });
   if (error) throw new ApiError(error.message, error);
-  return data;
+  return z.array(ExpenseRowSchema).parse(data);
 }
 
 export type NewExpenseRow = {
@@ -45,7 +49,7 @@ export async function insertExpenseRow(row: NewExpenseRow): Promise<ExpenseRow> 
     .select(COLUMNS)
     .single();
   if (error) throw new ApiError(error.message, error);
-  return data;
+  return ExpenseRowSchema.parse(data);
 }
 
 export async function deleteExpenseRow(id: string): Promise<void> {

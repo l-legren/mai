@@ -3,6 +3,8 @@
  * Income and expenses live in one table, discriminated by `type`.
  */
 
+import { z } from 'zod';
+
 import { ApiError } from './api-error';
 import { getCurrentUserId } from './auth.data';
 import { supabase } from './supabase';
@@ -12,17 +14,19 @@ import { supabase } from './supabase';
  * entered — monthly or yearly); the monthly-equivalent used by the allowance is derived in the
  * service, not stored. `end_date` (`YYYY-MM-DD`) is set only when `term_kind` is `'term'`.
  */
-export type RecurringRow = {
-  id: string;
-  type: string;
-  name: string;
-  amount: number;
-  cadence: string;
-  term_kind: string;
-  end_date: string | null;
+const RecurringRowSchema = z.object({
+  id: z.string(),
+  type: z.string(),
+  name: z.string(),
+  amount: z.number(),
+  cadence: z.string(),
+  term_kind: z.string(),
+  end_date: z.string().nullable(),
   /** Optional category id — the valid set depends on `type` (income vs expense), validated in the service. */
-  category: string | null;
-};
+  category: z.string().nullable(),
+});
+
+export type RecurringRow = z.infer<typeof RecurringRowSchema>;
 
 const COLUMNS = 'id, type, name, amount, cadence, term_kind, end_date, category';
 
@@ -34,7 +38,7 @@ export async function getRecurringRows(): Promise<RecurringRow[]> {
     .eq('user_id', userId)
     .order('created_at', { ascending: false });
   if (error) throw new ApiError(error.message, error);
-  return data;
+  return z.array(RecurringRowSchema).parse(data);
 }
 
 export type NewRecurringRow = {
@@ -54,7 +58,7 @@ export async function insertRecurringRow(row: NewRecurringRow): Promise<Recurrin
     .select(COLUMNS)
     .single();
   if (error) throw new ApiError(error.message, error);
-  return data;
+  return RecurringRowSchema.parse(data);
 }
 
 export async function deleteRecurringRow(id: string): Promise<void> {
