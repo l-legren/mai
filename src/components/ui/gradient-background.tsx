@@ -21,11 +21,11 @@ function parseRgba(value: string): { color: string; opacity: number } {
  * gradient feel (e.g. the Detail overlay); flat screens (e.g. Settings) use `Screen` alone.
  */
 export function GradientBackground({ style, children, ...rest }: GradientBackgroundProps) {
-  const { theme } = useAppTheme();
+  const { theme, palette } = useAppTheme();
   const glow = GradientGlow[theme];
 
   return (
-    <View style={[styles.fill, style]} {...rest}>
+    <View style={[styles.fill, { backgroundColor: palette.bg }, style]} {...rest}>
       <LinearGradient colors={glow.linear} style={StyleSheet.absoluteFill} />
       <Svg style={StyleSheet.absoluteFill} pointerEvents="none">
         <Defs>
