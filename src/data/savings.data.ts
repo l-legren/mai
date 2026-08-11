@@ -2,9 +2,15 @@
  * Data layer — monthly savings goal persistence (`public.profiles.savings_goal`, one row per user).
  */
 
+import { z } from 'zod';
+
 import { ApiError } from './api-error';
 import { getCurrentUserId } from './auth.data';
 import { supabase } from './supabase';
+
+const SavingsGoalRowSchema = z.object({
+  savings_goal: z.number().nullable(),
+});
 
 export async function getSavingsGoalValue(): Promise<number | null> {
   const userId = await getCurrentUserId();
@@ -14,7 +20,7 @@ export async function getSavingsGoalValue(): Promise<number | null> {
     .eq('id', userId)
     .single();
   if (error) throw new ApiError(error.message, error);
-  return data.savings_goal;
+  return SavingsGoalRowSchema.parse(data).savings_goal;
 }
 
 export async function saveSavingsGoalValue(value: number): Promise<void> {
