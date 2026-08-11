@@ -9,7 +9,7 @@ type ScreenProps = ViewProps & {
   edges?: readonly Edge[];
   /**
    * `gradient` (default) is the subtle `bgGradient` glow — the app's default background.
-   * `flat` is the plain `bg` fill, reserved for screens that opt out (e.g. Settings, Login).
+   * `flat` is the plain `bg` fill, reserved for screens that opt out (e.g. Login).
    */
   background?: 'flat' | 'gradient';
 };
