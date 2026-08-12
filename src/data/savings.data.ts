@@ -2,15 +2,11 @@
  * Data layer — monthly savings goal persistence (`public.profiles.savings_goal`, one row per user).
  */
 
-import { z } from 'zod';
+import { SavingsGoalRowSchema } from '@moniq/schemas';
 
 import { ApiError } from './api-error';
 import { getCurrentUserId } from './auth.data';
 import { supabase } from './supabase';
-
-const SavingsGoalRowSchema = z.object({
-  savings_goal: z.number().nullable(),
-});
 
 export async function getSavingsGoalValue(): Promise<number | null> {
   const userId = await getCurrentUserId();

@@ -2,27 +2,13 @@
  * Data layer — savings targets persistence (`public.savings_targets`). Raw stored shapes only.
  */
 
-import { z } from 'zod';
+import { SavingsTargetRowSchema, type SavingsTargetRow } from '@moniq/schemas';
 
 import { ApiError } from './api-error';
 import { getCurrentUserId } from './auth.data';
 import { supabase } from './supabase';
 
-/** Persisted savings target row. `target_date` is `YYYY-MM-DD`. `ai_verdict` is captured once at
- * creation time and never recalculated. */
-const SavingsTargetRowSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  category: z.string(),
-  goal_amount: z.number(),
-  saved_amount: z.number(),
-  target_date: z.string(),
-  priority: z.string(),
-  ai_verdict: z.string(),
-  status: z.string(),
-});
-
-export type SavingsTargetRow = z.infer<typeof SavingsTargetRowSchema>;
+export type { SavingsTargetRow };
 
 const COLUMNS =
   'id, name, category, goal_amount, saved_amount, target_date, priority, ai_verdict, status';
@@ -35,7 +21,7 @@ export async function getSavingsTargetRows(): Promise<SavingsTargetRow[]> {
     .eq('user_id', userId)
     .order('created_at', { ascending: false });
   if (error) throw new ApiError(error.message, error);
-  return z.array(SavingsTargetRowSchema).parse(data);
+  return SavingsTargetRowSchema.array().parse(data);
 }
 
 export type NewSavingsTargetRow = {

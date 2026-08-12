@@ -1,0 +1,21 @@
+{
+  "name": "@moniq/schemas",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "index.ts",
+  "types": "index.ts",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@moniq/config": "workspace:*",
+    "typescript": "~6.0.3"
+  }
+}
