@@ -156,6 +156,9 @@ importers:
       '@commitlint/config-conventional':
         specifier: ^21.2.0
         version: 21.2.0
+      '@moniq/config':
+        specifier: workspace:*
+        version: link:packages/config
       '@react-native/jest-preset':
         specifier: 0.86.2
         version: 0.86.2(@babel/core@7.29.7)(react@19.2.3)
@@ -217,6 +220,9 @@ importers:
         specifier: ^4.4.3
         version: 4.4.3
     devDependencies:
+      '@moniq/config':
+        specifier: workspace:*
+        version: link:../packages/config
       '@types/node':
         specifier: ^26.1.2
         version: 26.2.0
@@ -226,6 +232,12 @@ importers:
       typescript:
         specifier: ~6.0.3
         version: 6.0.3
+      typescript-eslint:
+        specifier: ^8.62.1
+        version: 8.66.0(eslint@9.39.5(jiti@2.6.1))(typescript@6.0.3)
+
+  packages/config:
+    dependencies:
       typescript-eslint:
         specifier: ^8.62.1
         version: 8.66.0(eslint@9.39.5(jiti@2.6.1))(typescript@6.0.3)

@@ -1,5 +1,6 @@
 packages:
   - 'agent'
+  - 'packages/*'
 allowBuilds:
   esbuild: true
   protobufjs: true

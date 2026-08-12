@@ -1,0 +1,16 @@
+{
+  // Base for TS *library* packages (agent, and the upcoming schemas/api). The Expo app does NOT
+  // extend this — it keeps expo/tsconfig.base. Package-specific keys (types, include,
+  // allowImportingTsExtensions, ...) stay in each consumer's own tsconfig.
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true
+  }
+}

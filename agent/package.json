@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "prettier": "@moniq/config/prettier.json",
   "scripts": {
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
@@ -15,6 +16,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@moniq/config": "workspace:*",
     "@types/node": "^26.1.2",
     "eslint": "^9.39.5",
     "typescript": "~6.0.3",

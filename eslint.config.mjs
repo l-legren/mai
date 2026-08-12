@@ -10,7 +10,7 @@ export default defineConfig([
     // `deno check` / the Supabase CLI instead (see the `@ts-nocheck` note in that file).
     // `agent/` is its own package (own tsconfig/deps, extractable to a separate repo) — its
     // types are checked via turbo (see turbo.json), but it's not linted by the app's eslint config.
-    ignores: ['dist/*', '.expo/*', 'supabase/functions/**', 'agent/**'],
+    ignores: ['dist/*', '.expo/*', 'supabase/functions/**', 'agent/**', 'packages/**'],
   },
   {
     // LEG-118: catches real circular `import` chains (not just cross-references) — warn while
