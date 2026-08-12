@@ -2,24 +2,13 @@
  * Data layer — expenses persistence via Supabase. Raw stored shapes only; no business rules.
  */
 
-import { z } from 'zod';
+import { ExpenseRowSchema, type ExpenseRow } from '@moniq/schemas';
 
 import { ApiError } from './api-error';
 import { getCurrentUserId } from './auth.data';
 import { supabase } from './supabase';
 
-/** Persisted expense row (`public.expenses`). `spent_on` is `YYYY-MM-DD`; `spent_at` is a full ISO timestamp. */
-const ExpenseRowSchema = z.object({
-  id: z.string(),
-  category: z.string(),
-  amount: z.number(),
-  spent_on: z.string(),
-  spent_at: z.string(),
-  /** Free-text label, only meaningful for the "other" category. */
-  note: z.string().nullable(),
-});
-
-export type ExpenseRow = z.infer<typeof ExpenseRowSchema>;
+export type { ExpenseRow };
 
 const COLUMNS = 'id, category, amount, spent_on, spent_at, note';
 
@@ -31,7 +20,7 @@ export async function getExpenseRows(): Promise<ExpenseRow[]> {
     .eq('user_id', userId)
     .order('spent_at', { ascending: false });
   if (error) throw new ApiError(error.message, error);
-  return z.array(ExpenseRowSchema).parse(data);
+  return ExpenseRowSchema.array().parse(data);
 }
 
 export type NewExpenseRow = {

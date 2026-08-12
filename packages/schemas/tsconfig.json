@@ -1,0 +1,4 @@
+{
+  "extends": "@moniq/config/tsconfig.base.json",
+  "include": ["index.ts"]
+}

@@ -3,23 +3,13 @@
  * only. A missing row means the user hasn't completed onboarding yet — there is no "empty" row state.
  */
 
-import { z } from 'zod';
+import { ProfileOnboardingRowSchema, type ProfileOnboardingRow } from '@moniq/schemas';
 
 import { ApiError } from './api-error';
 import { getCurrentUserId } from './auth.data';
 import { supabase } from './supabase';
 
-const ProfileOnboardingRowSchema = z.object({
-  first_name: z.string(),
-  surname: z.string(),
-  city: z.string(),
-  currency: z.string(),
-  avatar_url: z.string().nullable(),
-  notifications_enabled: z.boolean(),
-  completed_at: z.string(),
-});
-
-export type ProfileOnboardingRow = z.infer<typeof ProfileOnboardingRowSchema>;
+export type { ProfileOnboardingRow };
 
 const COLUMNS =
   'first_name, surname, city, currency, avatar_url, notifications_enabled, completed_at';
