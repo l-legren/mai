@@ -1,12 +1,14 @@
 import { format } from 'date-fns';
+import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { AppText } from '@/components/ui/text';
-import { PROFILE } from '@/constants/profile';
 import { Radius, Spacing } from '@/constants/theme';
 import { useAppTheme } from '@/hooks/use-app-theme';
+import { useAvatarUrl } from '@/hooks/use-avatar';
+import { useProfile } from '@/hooks/use-profile';
 
 function greetingKey(hour: number): string {
   if (hour < 12) return 'today.greetingMorning';
@@ -18,10 +20,14 @@ export function TodayHeader() {
   const { t } = useTranslation();
   const { palette } = useAppTheme();
   const router = useRouter();
+  const { data: profile } = useProfile();
+  const { data: avatarUrl } = useAvatarUrl(profile?.avatarUrl ?? null);
 
   const now = new Date();
   const dateLabel = format(now, "EEEE '·' d MMMM");
-  const greeting = t(greetingKey(now.getHours()), { name: PROFILE.name });
+  const firstName = profile?.firstName ?? '';
+  const initial = firstName.trim().charAt(0).toUpperCase() || '?';
+  const greeting = t(greetingKey(now.getHours()), { name: firstName });
 
   return (
     <View style={styles.row}>
@@ -31,7 +37,17 @@ export function TodayHeader() {
         accessibilityLabel={t('today.openSettings')}
         style={[styles.avatar, { backgroundColor: palette.card, borderColor: palette.hairline }]}
       >
-        <AppText variant="bodyMedium">{PROFILE.initial}</AppText>
+        {avatarUrl ? (
+          <Image
+            source={{ uri: avatarUrl }}
+            style={styles.photo}
+            accessibilityIgnoresInvertColors
+          />
+        ) : (
+          <AppText variant="bodyMedium" importantForAccessibility="no">
+            {initial}
+          </AppText>
+        )}
       </Pressable>
 
       <View style={styles.textColumn}>
@@ -59,6 +75,11 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  photo: {
+    width: '100%',
+    height: '100%',
   },
   textColumn: {
     flex: 1,
