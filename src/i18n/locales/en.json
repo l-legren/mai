@@ -5,6 +5,7 @@
     "confirm": "Confirm",
     "cancel": "Cancel",
     "close": "Close",
+    "save": "Save",
     "seeMore": "See more",
     "seeMoreOf": "See all {{section}}",
     "delete": "Delete",
@@ -218,14 +219,52 @@
   },
   "settings": {
     "title": "Settings",
-    "appearance": "Appearance",
-    "darkMode": "Dark mode",
-    "account": "Account",
-    "logOut": "Log out",
-    "deleteAccount": "Delete account",
-    "deleteAccountConfirmTitle": "Delete account?",
-    "deleteAccountConfirmMessage": "This permanently deletes your account and all your data. This can't be undone.",
-    "deleteAccountError": "Couldn't delete your account. Please try again."
+    "editLink": "Edit",
+    "profile": {
+      "yourPhoto": "Your photo",
+      "changePhoto": "Change",
+      "uploadError": "Couldn't upload your photo. Please try again."
+    },
+    "personal": {
+      "label": "Personal",
+      "cityCurrency": "{{city}} · {{currency}}",
+      "name": "Name",
+      "city": "City",
+      "currency": "Currency",
+      "currencyHint": "from city"
+    },
+    "nameSheet": {
+      "title": "Name",
+      "firstNameLabel": "First name",
+      "firstNamePlaceholder": "Your first name",
+      "surnameLabel": "Surname",
+      "surnameOptional": "Optional",
+      "surnamePlaceholder": "Your surname",
+      "saveError": "Couldn't save your changes. Please try again."
+    },
+    "citySheet": {
+      "title": "City",
+      "cityLabel": "City",
+      "cityPlaceholder": "Your city",
+      "saveError": "Couldn't save your changes. Please try again."
+    },
+    "preferences": {
+      "label": "Preferences",
+      "darkMode": "Dark mode",
+      "weeklyDigest": "Weekly digest",
+      "weeklyDigestDescription": "A short recap every Monday",
+      "permissionDenied": "Notifications are turned off in system settings.",
+      "openSettings": "Open settings"
+    },
+    "account": {
+      "label": "Account",
+      "logOut": "Log out",
+      "deleteAccount": "Delete account",
+      "deleteAccountConfirmTitle": "Delete account?",
+      "deleteAccountConfirmMessage": "This permanently deletes your account and all your data. This can't be undone.",
+      "deleteAccountError": "Couldn't delete your account. Please try again."
+    },
+    "help": "Help"
   },
   "auth": {
     "loginHeadline": "Welcome back",
