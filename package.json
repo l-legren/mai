@@ -3,6 +3,7 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "packageManager": "pnpm@11.5.1",
+  "prettier": "@moniq/config/prettier.json",
   "dependencies": {
     "@expo-google-fonts/plus-jakarta-sans": "^0.4.2",
     "@expo/ui": "~57.0.9",
@@ -54,6 +55,7 @@
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.1",
+    "@moniq/config": "workspace:*",
     "@commitlint/config-conventional": "^21.2.0",
     "@react-native/jest-preset": "0.86.2",
     "@types/jest": "29.5.14",

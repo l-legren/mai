@@ -9,5 +9,5 @@
     }
   },
   "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"],
-  "exclude": ["node_modules", "agent", "supabase/functions"]
+  "exclude": ["node_modules", "agent", "packages", "supabase/functions"]
 }
