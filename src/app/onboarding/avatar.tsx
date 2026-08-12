@@ -39,6 +39,7 @@ export default function OnboardingAvatarScreen() {
 
           <AvatarPicker
             state={draft.avatarState}
+            avatarPath={draft.avatarPath}
             initial={initial}
             onPress={pick}
             disabled={isProcessing}

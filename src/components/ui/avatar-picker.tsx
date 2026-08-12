@@ -1,8 +1,10 @@
+import { Image } from 'expo-image';
 import { useTranslation } from 'react-i18next';
 import { Linking, Pressable, StyleSheet, View } from 'react-native';
 
 import { Radius, Spacing } from '@/constants/theme';
 import { useAppTheme } from '@/hooks/use-app-theme';
+import { useAvatarUrl } from '@/hooks/use-avatar';
 
 import { AppText } from './text';
 
@@ -10,6 +12,8 @@ type AvatarPickerState = 'empty' | 'granted' | 'denied';
 
 type AvatarPickerProps = {
   state: AvatarPickerState;
+  /** Storage path of the uploaded photo (not a URL — the bucket is private), if any. */
+  avatarPath: string | null;
   initial: string;
   /** Opens the image picker — shared with the screen's own "Choose photo" button via `useAvatarPicker`. */
   onPress: () => void;
@@ -17,9 +21,10 @@ type AvatarPickerProps = {
 };
 
 /** The avatar circle + its state captions. Tapping the circle also opens the picker. */
-export function AvatarPicker({ state, initial, onPress, disabled }: AvatarPickerProps) {
+export function AvatarPicker({ state, avatarPath, initial, onPress, disabled }: AvatarPickerProps) {
   const { t } = useTranslation();
   const { palette } = useAppTheme();
+  const { data: avatarUrl } = useAvatarUrl(state === 'granted' ? avatarPath : null);
 
   return (
     <View style={styles.container}>
@@ -35,15 +40,23 @@ export function AvatarPicker({ state, initial, onPress, disabled }: AvatarPicker
             : { borderColor: palette.hairline, borderWidth: 2, borderStyle: 'dashed' },
         ]}
       >
-        {state === 'granted' ? (
+        {avatarUrl ? (
+          <Image
+            source={{ uri: avatarUrl }}
+            style={styles.photo}
+            accessibilityIgnoresInvertColors
+          />
+        ) : null}
+        {!avatarUrl && state === 'granted' ? (
           <AppText variant="hero" color="accent" importantForAccessibility="no">
             {initial}
           </AppText>
-        ) : (
+        ) : null}
+        {state !== 'granted' ? (
           <AppText variant="hero" color="text3" importantForAccessibility="no" style={styles.plus}>
             +
           </AppText>
-        )}
+        ) : null}
       </Pressable>
 
       {state === 'granted' ? (
@@ -85,6 +98,11 @@ const styles = StyleSheet.create({
     borderRadius: 48,
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  photo: {
+    width: '100%',
+    height: '100%',
   },
   plus: {
     fontSize: 28,

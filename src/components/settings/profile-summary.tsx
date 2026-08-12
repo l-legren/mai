@@ -1,4 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { Image } from 'expo-image';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
 
@@ -6,6 +7,7 @@ import { FormError } from '@/components/ui/form-error';
 import { AppText } from '@/components/ui/text';
 import { Spacing } from '@/constants/theme';
 import { useAppTheme } from '@/hooks/use-app-theme';
+import { useAvatarUrl } from '@/hooks/use-avatar';
 import { useAvatarPicker } from '@/hooks/use-avatar-picker';
 import { useUpdateProfile } from '@/hooks/use-profile';
 import { type Profile } from '@/services/profile.service';
@@ -34,6 +36,7 @@ export function ProfileSummary({ profile, onEditName }: ProfileSummaryProps) {
   });
 
   const initial = profile.firstName.trim().charAt(0).toUpperCase() || '?';
+  const { data: avatarUrl } = useAvatarUrl(profile.avatarUrl);
 
   return (
     <View style={styles.container}>
@@ -45,9 +48,17 @@ export function ProfileSummary({ profile, onEditName }: ProfileSummaryProps) {
           accessibilityLabel={t('settings.profile.changePhoto')}
         >
           <View style={[styles.avatar, { backgroundColor: palette.accentLight }]}>
-            <AppText variant="title" color="accent" importantForAccessibility="no">
-              {initial}
-            </AppText>
+            {avatarUrl ? (
+              <Image
+                source={{ uri: avatarUrl }}
+                style={styles.photo}
+                accessibilityIgnoresInvertColors
+              />
+            ) : (
+              <AppText variant="title" color="accent" importantForAccessibility="no">
+                {initial}
+              </AppText>
+            )}
           </View>
           <View
             style={[styles.badge, { backgroundColor: palette.bg }]}
@@ -102,6 +113,11 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  photo: {
+    width: '100%',
+    height: '100%',
   },
   badge: {
     position: 'absolute',
