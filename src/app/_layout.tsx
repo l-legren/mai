@@ -1,4 +1,6 @@
 import '@/i18n';
+// Builds the Supabase client and hands it to @moniq/api — must run before any data-layer call.
+import '@/data/supabase';
 
 import {
   PlusJakartaSans_300Light,

@@ -5,7 +5,7 @@
  */
 
 import { ApiError } from './api-error';
-import { supabase } from './supabase';
+import { getSupabaseClient } from './supabase-client';
 
 export type SpendingSummaryRequestRow = {
   periodLabel: string;
@@ -23,7 +23,7 @@ export type SpendingSummaryResponseRow = {
 export async function requestSpendingSummary(
   input: SpendingSummaryRequestRow
 ): Promise<SpendingSummaryResponseRow> {
-  const { data, error } = await supabase.functions.invoke('generate-spending-summary', {
+  const { data, error } = await getSupabaseClient().functions.invoke('generate-spending-summary', {
     body: input,
   });
   if (error) throw new ApiError(error.message, error);

@@ -4,7 +4,7 @@
  * user gets an immediate, friendly error instead of waiting on a rejected upload request.
  */
 
-import { getAvatarSignedUrl, uploadAvatarFile } from '@/data/avatar.data';
+import { getAvatarSignedUrl, uploadAvatarFile } from '@moniq/api';
 
 /** Matches the `avatars` bucket's `file_size_limit` (5242880 bytes = 5MB). */
 export const AVATAR_MAX_BYTES = 5 * 1024 * 1024;

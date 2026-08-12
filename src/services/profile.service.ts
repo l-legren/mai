@@ -3,9 +3,6 @@
  * rule (LEG-99/LEG-100). `null` means onboarding hasn't been completed yet.
  */
 
-import countryToCurrency, { type Countries } from 'country-to-currency';
-import { z } from 'zod';
-
 import {
   getProfileOnboardingRow,
   insertProfileOnboardingRow,
@@ -13,7 +10,9 @@ import {
   type NewProfileOnboardingRow,
   type ProfileOnboardingRow,
   type ProfileOnboardingRowUpdate,
-} from '@/data/profile.data';
+} from '@moniq/api';
+import countryToCurrency, { type Countries } from 'country-to-currency';
+import { z } from 'zod';
 
 export type Profile = {
   firstName: string;

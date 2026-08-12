@@ -2,7 +2,6 @@
  * Business layer — savings targets. Domain model + mapper + priority-ordering rules.
  */
 
-import { SAVINGS_TARGET_CATEGORY_IDS, type SavingsTargetCategoryId } from '@/constants/categories';
 import {
   deleteSavingsTargetRow,
   getSavingsTargetRows,
@@ -10,7 +9,9 @@ import {
   updateSavedAmountRow,
   type NewSavingsTargetRow,
   type SavingsTargetRow,
-} from '@/data/savings-targets.data';
+} from '@moniq/api';
+
+import { SAVINGS_TARGET_CATEGORY_IDS, type SavingsTargetCategoryId } from '@/constants/categories';
 
 export type SavingsTargetPriority = 'low' | 'medium' | 'high';
 export type SavingsTargetStatus = 'active' | 'achieved' | 'abandoned';

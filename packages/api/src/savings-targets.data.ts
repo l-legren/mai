@@ -6,7 +6,7 @@ import { SavingsTargetRowSchema, type SavingsTargetRow } from '@moniq/schemas';
 
 import { ApiError } from './api-error';
 import { getCurrentUserId } from './auth.data';
-import { supabase } from './supabase';
+import { getSupabaseClient } from './supabase-client';
 
 export type { SavingsTargetRow };
 
@@ -15,7 +15,7 @@ const COLUMNS =
 
 export async function getSavingsTargetRows(): Promise<SavingsTargetRow[]> {
   const userId = await getCurrentUserId();
-  const { data, error } = await supabase
+  const { data, error } = await getSupabaseClient()
     .from('savings_targets')
     .select(COLUMNS)
     .eq('user_id', userId)
@@ -34,7 +34,7 @@ export type NewSavingsTargetRow = {
 };
 
 export async function insertSavingsTargetRow(row: NewSavingsTargetRow): Promise<SavingsTargetRow> {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabaseClient()
     .from('savings_targets')
     .insert(row)
     .select(COLUMNS)
@@ -47,7 +47,7 @@ export async function updateSavedAmountRow(
   id: string,
   savedAmount: number
 ): Promise<SavingsTargetRow> {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabaseClient()
     .from('savings_targets')
     .update({ saved_amount: savedAmount })
     .eq('id', id)
@@ -58,6 +58,6 @@ export async function updateSavedAmountRow(
 }
 
 export async function deleteSavingsTargetRow(id: string): Promise<void> {
-  const { error } = await supabase.from('savings_targets').delete().eq('id', id);
+  const { error } = await getSupabaseClient().from('savings_targets').delete().eq('id', id);
   if (error) throw new ApiError(error.message, error);
 }

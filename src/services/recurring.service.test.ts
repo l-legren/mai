@@ -1,4 +1,4 @@
-import type { RecurringRow } from '@/data/recurring.data';
+import type { RecurringRow } from '@moniq/api';
 
 import { costsTotal, incomeTotal, mapRowToRecurring } from './recurring.service';
 

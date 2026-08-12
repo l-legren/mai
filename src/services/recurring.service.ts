@@ -3,17 +3,18 @@
  */
 
 import {
-  INCOME_CATEGORY_IDS,
-  RECURRING_EXPENSE_CATEGORY_IDS,
-  type RecurringCategoryId,
-} from '@/constants/categories';
-import {
   deleteRecurringRow,
   getRecurringRows,
   insertRecurringRow,
   type NewRecurringRow,
   type RecurringRow,
-} from '@/data/recurring.data';
+} from '@moniq/api';
+
+import {
+  INCOME_CATEGORY_IDS,
+  RECURRING_EXPENSE_CATEGORY_IDS,
+  type RecurringCategoryId,
+} from '@/constants/categories';
 
 export type RecurringType = 'income' | 'expense';
 export type Cadence = 'monthly' | 'yearly';

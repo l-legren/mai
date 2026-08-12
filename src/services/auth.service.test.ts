@@ -1,21 +1,22 @@
-import { deleteAccount, signOut } from '@/data/auth.data';
-import { supabase } from '@/data/supabase';
+import { deleteAccount, signOut } from '@moniq/api';
+import { getSupabaseClient } from '@moniq/api/supabase-client';
 
 import { AuthServiceError, deleteAccountAndSignOut, signIn, signUp } from './auth.service';
 
-jest.mock('@/data/auth.data', () => {
-  const actual = jest.requireActual('@/data/auth.data');
+jest.mock('@moniq/api', () => {
+  const actual = jest.requireActual('@moniq/api');
   return { ...actual, deleteAccount: jest.fn(), signOut: jest.fn() };
 });
 
 const mockDeleteAccount = deleteAccount as jest.MockedFunction<typeof deleteAccount>;
 const mockSignOut = signOut as jest.MockedFunction<typeof signOut>;
 
-const mockSignInWithPassword = supabase.auth.signInWithPassword as jest.MockedFunction<
-  typeof supabase.auth.signInWithPassword
+const client = getSupabaseClient();
+const mockSignInWithPassword = client.auth.signInWithPassword as jest.MockedFunction<
+  typeof client.auth.signInWithPassword
 >;
 
-const mockSignUp = supabase.auth.signUp as jest.MockedFunction<typeof supabase.auth.signUp>;
+const mockSignUp = client.auth.signUp as jest.MockedFunction<typeof client.auth.signUp>;
 
 describe('signIn', () => {
   afterEach(() => {
@@ -32,7 +33,7 @@ describe('signIn', () => {
     mockSignInWithPassword.mockResolvedValue({
       data: { session: { user: { id: 'user-1', email: 'user@example.com' } } },
       error: null,
-    } as Awaited<ReturnType<typeof supabase.auth.signInWithPassword>>);
+    } as Awaited<ReturnType<typeof client.auth.signInWithPassword>>);
 
     await expect(signIn('user@example.com', 'password')).resolves.toEqual({
       id: 'user-1',
@@ -44,7 +45,7 @@ describe('signIn', () => {
     mockSignInWithPassword.mockResolvedValue({
       data: { session: null },
       error: new Error('Invalid login credentials'),
-    } as Awaited<ReturnType<typeof supabase.auth.signInWithPassword>>);
+    } as Awaited<ReturnType<typeof client.auth.signInWithPassword>>);
 
     await expect(signIn('user@example.com', 'wrong')).rejects.toBeInstanceOf(AuthServiceError);
     await expect(signIn('user@example.com', 'wrong')).rejects.toMatchObject({
@@ -73,7 +74,7 @@ describe('signUp', () => {
     mockSignUp.mockResolvedValue({
       data: { session: { user: { id: 'user-1', email: 'user@example.com' } }, user: null },
       error: null,
-    } as Awaited<ReturnType<typeof supabase.auth.signUp>>);
+    } as Awaited<ReturnType<typeof client.auth.signUp>>);
 
     await expect(signUp('Mara', 'user@example.com', 'password')).resolves.toEqual({
       id: 'user-1',
@@ -85,7 +86,7 @@ describe('signUp', () => {
     mockSignUp.mockResolvedValue({
       data: { session: null, user: { id: 'user-1', email: 'user@example.com' } },
       error: null,
-    } as Awaited<ReturnType<typeof supabase.auth.signUp>>);
+    } as Awaited<ReturnType<typeof client.auth.signUp>>);
 
     await expect(signUp('Mara', 'user@example.com', 'password')).resolves.toBeNull();
   });
@@ -94,7 +95,7 @@ describe('signUp', () => {
     mockSignUp.mockResolvedValue({
       data: { session: null, user: null },
       error: new Error('User already registered'),
-    } as Awaited<ReturnType<typeof supabase.auth.signUp>>);
+    } as Awaited<ReturnType<typeof client.auth.signUp>>);
 
     await expect(signUp('Mara', 'user@example.com', 'password')).rejects.toMatchObject({
       code: 'emailInUse',
@@ -105,7 +106,7 @@ describe('signUp', () => {
     mockSignUp.mockResolvedValue({
       data: { session: null, user: null },
       error: new Error('network error'),
-    } as Awaited<ReturnType<typeof supabase.auth.signUp>>);
+    } as Awaited<ReturnType<typeof client.auth.signUp>>);
 
     await expect(signUp('Mara', 'user@example.com', 'password')).rejects.toBeInstanceOf(
       AuthServiceError

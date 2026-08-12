@@ -1,15 +1,16 @@
 import { ApiError } from './api-error';
-import { supabase } from './supabase';
 import {
   getProfileOnboardingRow,
   insertProfileOnboardingRow,
   updateProfileOnboardingRow,
 } from './profile.data';
-import { mockQueryBuilder } from './test-support/supabase-query-builder';
+import { getSupabaseClient } from './supabase-client';
+import { mockQueryBuilder } from './utils/supabase-query-builder';
 
-jest.mock('./auth.data', () => ({ getCurrentUserId: jest.fn().mockResolvedValue('user-1') }));
+jest.mock('./auth.data.ts', () => ({ getCurrentUserId: jest.fn().mockResolvedValue('user-1') }));
 
-const mockFrom = supabase.from as jest.MockedFunction<typeof supabase.from>;
+const client = getSupabaseClient();
+const mockFrom = client.from as jest.MockedFunction<typeof client.from>;
 
 const row = {
   first_name: 'Mara',

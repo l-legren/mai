@@ -5,7 +5,7 @@
 
 import { ApiError } from './api-error';
 import { getCurrentUserId } from './auth.data';
-import { supabase } from './supabase';
+import { getSupabaseClient } from './supabase-client';
 
 const AVATAR_OBJECT_NAME = 'avatar';
 
@@ -13,8 +13,8 @@ const AVATAR_OBJECT_NAME = 'avatar';
 export async function uploadAvatarFile(bytes: ArrayBuffer, contentType: string): Promise<string> {
   const userId = await getCurrentUserId();
   const path = `${userId}/${AVATAR_OBJECT_NAME}`;
-  const { error } = await supabase.storage
-    .from('avatars')
+  const { error } = await getSupabaseClient()
+    .storage.from('avatars')
     .upload(path, bytes, { contentType, upsert: true });
   if (error) throw new ApiError(error.message, error);
   return path;
@@ -22,8 +22,8 @@ export async function uploadAvatarFile(bytes: ArrayBuffer, contentType: string):
 
 /** The bucket is private, so display always goes through a time-limited signed URL. */
 export async function getAvatarSignedUrl(path: string, expiresInSeconds: number): Promise<string> {
-  const { data, error } = await supabase.storage
-    .from('avatars')
+  const { data, error } = await getSupabaseClient()
+    .storage.from('avatars')
     .createSignedUrl(path, expiresInSeconds);
   if (error) throw new ApiError(error.message, error);
   return data.signedUrl;

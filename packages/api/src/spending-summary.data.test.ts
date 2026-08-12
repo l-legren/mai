@@ -1,10 +1,9 @@
 import { ApiError } from './api-error';
-import { supabase } from './supabase';
+import { getSupabaseClient } from './supabase-client';
 import { requestSpendingSummary } from './spending-summary.data';
 
-const mockInvoke = supabase.functions.invoke as jest.MockedFunction<
-  typeof supabase.functions.invoke
->;
+const client = getSupabaseClient();
+const mockInvoke = client.functions.invoke as jest.MockedFunction<typeof client.functions.invoke>;
 
 describe('spending-summary.data', () => {
   const input = {

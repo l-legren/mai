@@ -1,6 +1,7 @@
 import { setSavingsGoal } from './savings.service';
 
-jest.mock('@/data/savings.data', () => ({
+jest.mock('@moniq/api', () => ({
+  ...jest.requireActual('@moniq/api'),
   saveSavingsGoalValue: jest.fn().mockResolvedValue(undefined),
 }));
 

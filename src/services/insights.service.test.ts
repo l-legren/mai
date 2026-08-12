@@ -1,4 +1,4 @@
-import type { ExpenseRow } from '@/data/expenses.data';
+import type { ExpenseRow } from '@moniq/api';
 
 import { mapRowToExpense } from './expenses.service';
 import {

@@ -8,6 +8,7 @@
     "@expo-google-fonts/plus-jakarta-sans": "^0.4.2",
     "@expo/ui": "~57.0.9",
     "@expo/vector-icons": "^15.1.1",
+    "@moniq/api": "workspace:*",
     "@moniq/schemas": "workspace:*",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-community/slider": "5.2.0",
