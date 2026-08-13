@@ -10,7 +10,7 @@ import {
   signInWithPassword,
   signOut,
   signUpWithPassword,
-} from '@/data/auth.data';
+} from '@moniq/api';
 
 export type AuthUser = {
   id: string;

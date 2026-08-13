@@ -6,11 +6,11 @@ import { SavingsGoalRowSchema } from '@moniq/schemas';
 
 import { ApiError } from './api-error';
 import { getCurrentUserId } from './auth.data';
-import { supabase } from './supabase';
+import { getSupabaseClient } from './supabase-client';
 
 export async function getSavingsGoalValue(): Promise<number | null> {
   const userId = await getCurrentUserId();
-  const { data, error } = await supabase
+  const { data, error } = await getSupabaseClient()
     .from('profiles')
     .select('savings_goal')
     .eq('id', userId)
@@ -21,7 +21,7 @@ export async function getSavingsGoalValue(): Promise<number | null> {
 
 export async function saveSavingsGoalValue(value: number): Promise<void> {
   const userId = await getCurrentUserId();
-  const { error } = await supabase
+  const { error } = await getSupabaseClient()
     .from('profiles')
     .update({ savings_goal: value })
     .eq('id', userId);

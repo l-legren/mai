@@ -2,15 +2,15 @@
  * Business layer — expenses. Domain model + mapper + rules. Composes the data layer.
  */
 
-import { CATEGORY_IDS, type CategoryId } from '@/constants/categories';
 import {
   deleteExpenseRow,
   getExpenseRows,
   insertExpenseRow,
   type ExpenseRow,
   type NewExpenseRow,
-} from '@/data/expenses.data';
+} from '@moniq/api';
 
+import { CATEGORY_IDS, type CategoryId } from '@/constants/categories';
 import { isoTime, todayISO } from '@/utils/date';
 
 export type Expense = {

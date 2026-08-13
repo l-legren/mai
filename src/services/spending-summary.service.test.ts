@@ -1,8 +1,9 @@
-import { requestSpendingSummary } from '@/data/spending-summary.data';
+import { requestSpendingSummary } from '@moniq/api';
 
 import { generateSpendingSummary } from './spending-summary.service';
 
-jest.mock('@/data/spending-summary.data', () => ({
+jest.mock('@moniq/api', () => ({
+  ...jest.requireActual('@moniq/api'),
   requestSpendingSummary: jest.fn(),
 }));
 

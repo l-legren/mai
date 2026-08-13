@@ -7,7 +7,7 @@ import { RecurringRowSchema, type RecurringRow } from '@moniq/schemas';
 
 import { ApiError } from './api-error';
 import { getCurrentUserId } from './auth.data';
-import { supabase } from './supabase';
+import { getSupabaseClient } from './supabase-client';
 
 export type { RecurringRow };
 
@@ -15,7 +15,7 @@ const COLUMNS = 'id, type, name, amount, cadence, term_kind, end_date, category'
 
 export async function getRecurringRows(): Promise<RecurringRow[]> {
   const userId = await getCurrentUserId();
-  const { data, error } = await supabase
+  const { data, error } = await getSupabaseClient()
     .from('recurring')
     .select(COLUMNS)
     .eq('user_id', userId)
@@ -35,7 +35,7 @@ export type NewRecurringRow = {
 };
 
 export async function insertRecurringRow(row: NewRecurringRow): Promise<RecurringRow> {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabaseClient()
     .from('recurring')
     .insert({ ...row, category: row.category ?? null })
     .select(COLUMNS)
@@ -45,6 +45,6 @@ export async function insertRecurringRow(row: NewRecurringRow): Promise<Recurrin
 }
 
 export async function deleteRecurringRow(id: string): Promise<void> {
-  const { error } = await supabase.from('recurring').delete().eq('id', id);
+  const { error } = await getSupabaseClient().from('recurring').delete().eq('id', id);
   if (error) throw new ApiError(error.message, error);
 }

@@ -5,7 +5,7 @@
  * in the mobile bundle.
  */
 
-import { requestSpendingSummary } from '@/data/spending-summary.data';
+import { requestSpendingSummary } from '@moniq/api';
 import type { CategoryTotal } from '@/services/insights.service';
 
 export type SpendingSummaryInput = {

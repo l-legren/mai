@@ -2,7 +2,7 @@
  * Business layer — monthly savings goal.
  */
 
-import { getSavingsGoalValue, saveSavingsGoalValue } from '@/data/savings.data';
+import { getSavingsGoalValue, saveSavingsGoalValue } from '@moniq/api';
 
 export async function getSavingsGoal(): Promise<number> {
   return (await getSavingsGoalValue()) ?? 0;

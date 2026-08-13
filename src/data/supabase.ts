@@ -1,15 +1,17 @@
 /**
- * Data layer — Supabase client. The single new file the data layer imports; every other
- * `*.data.ts` module that needs Supabase goes through this client rather than creating its own.
+ * Builds the Supabase client and hands it to `@moniq/api` (see `configureSupabaseClient`) — the
+ * package itself has no React Native dependency, so this is the one place AsyncStorage (the auth
+ * token store) and the Android-emulator URL rewrite live. Imported once for its side effect at app
+ * boot (`src/app/_layout.tsx`); every `@moniq/api` data function then reads the client back via
+ * `getSupabaseClient()`.
  */
 
 import 'react-native-url-polyfill/auto';
 
+import { configureSupabaseClient, resolveSupabaseUrl } from '@moniq/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createClient } from '@supabase/supabase-js';
 import { Platform } from 'react-native';
-
-import { resolveSupabaseUrl } from './resolve-supabase-url';
 
 const rawSupabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
@@ -30,3 +32,5 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     detectSessionInUrl: false,
   },
 });
+
+configureSupabaseClient(supabase);

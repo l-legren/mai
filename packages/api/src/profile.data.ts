@@ -7,7 +7,7 @@ import { ProfileOnboardingRowSchema, type ProfileOnboardingRow } from '@moniq/sc
 
 import { ApiError } from './api-error';
 import { getCurrentUserId } from './auth.data';
-import { supabase } from './supabase';
+import { getSupabaseClient } from './supabase-client';
 
 export type { ProfileOnboardingRow };
 
@@ -17,7 +17,7 @@ const COLUMNS =
 /** Returns `null` when the user hasn't completed onboarding yet. */
 export async function getProfileOnboardingRow(): Promise<ProfileOnboardingRow | null> {
   const userId = await getCurrentUserId();
-  const { data, error } = await supabase
+  const { data, error } = await getSupabaseClient()
     .from('profile_onboarding')
     .select(COLUMNS)
     .eq('user_id', userId)
@@ -44,7 +44,7 @@ export async function insertProfileOnboardingRow(
   row: NewProfileOnboardingRow
 ): Promise<ProfileOnboardingRow> {
   const userId = await getCurrentUserId();
-  const { data, error } = await supabase
+  const { data, error } = await getSupabaseClient()
     .from('profile_onboarding')
     .upsert({ ...row, user_id: userId })
     .select(COLUMNS)
@@ -60,7 +60,7 @@ export async function updateProfileOnboardingRow(
   update: ProfileOnboardingRowUpdate
 ): Promise<ProfileOnboardingRow> {
   const userId = await getCurrentUserId();
-  const { data, error } = await supabase
+  const { data, error } = await getSupabaseClient()
     .from('profile_onboarding')
     .update(update)
     .eq('user_id', userId)

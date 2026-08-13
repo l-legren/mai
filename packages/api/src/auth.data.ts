@@ -5,7 +5,7 @@
 import type { Session } from '@supabase/supabase-js';
 
 import { ApiError } from './api-error';
-import { supabase } from './supabase';
+import { getSupabaseClient } from './supabase-client';
 
 /**
  * The signed-in user's id, for scoping other tables' queries explicitly (in addition to, not instead
@@ -14,7 +14,7 @@ import { supabase } from './supabase';
  * check covers both the request-failed and not-signed-in cases.
  */
 export async function getCurrentUserId(): Promise<string> {
-  const { data, error } = await supabase.auth.getUser();
+  const { data, error } = await getSupabaseClient().auth.getUser();
   if (error) throw new ApiError(error.message, error);
   return data.user.id;
 }
@@ -22,12 +22,12 @@ export async function getCurrentUserId(): Promise<string> {
 export function onAuthStateChange(callback: (session: Session | null) => void): () => void {
   const {
     data: { subscription },
-  } = supabase.auth.onAuthStateChange((_event, session) => callback(session));
+  } = getSupabaseClient().auth.onAuthStateChange((_event, session) => callback(session));
   return () => subscription.unsubscribe();
 }
 
 export async function signInWithPassword(email: string, password: string): Promise<Session> {
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await getSupabaseClient().auth.signInWithPassword({ email, password });
   if (error) throw new ApiError(error.message, error);
   return data.session;
 }
@@ -42,7 +42,7 @@ export async function signUpWithPassword(
   password: string,
   name: string
 ): Promise<Session | null> {
-  const { data, error } = await supabase.auth.signUp({
+  const { data, error } = await getSupabaseClient().auth.signUp({
     email,
     password,
     options: { data: { name } },
@@ -52,12 +52,12 @@ export async function signUpWithPassword(
 }
 
 export async function signOut(): Promise<void> {
-  const { error } = await supabase.auth.signOut();
+  const { error } = await getSupabaseClient().auth.signOut();
   if (error) throw new ApiError(error.message, error);
 }
 
 /** Deletes the signed-in user's `auth.users` row via the `delete_own_account` RPC (LEG-52). */
 export async function deleteAccount(): Promise<void> {
-  const { error } = await supabase.rpc('delete_own_account');
+  const { error } = await getSupabaseClient().rpc('delete_own_account');
   if (error) throw new ApiError(error.message, error);
 }

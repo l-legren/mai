@@ -17,6 +17,9 @@ importers:
       '@expo/vector-icons':
         specifier: ^15.1.1
         version: 15.1.1(expo-font@57.0.1)(react-native@0.86.2(@babel/core@7.29.7)(@react-native/jest-preset@0.86.2(@babel/core@7.29.7)(react@19.2.3))(@react-native/metro-config@0.86.2(@babel/core@7.29.7))(@types/react@19.2.18)(react@19.2.3))(react@19.2.3)
+      '@moniq/api':
+        specifier: workspace:*
+        version: link:packages/api
       '@moniq/schemas':
         specifier: workspace:*
         version: link:packages/schemas
@@ -238,6 +241,25 @@ importers:
       typescript-eslint:
         specifier: ^8.62.1
         version: 8.66.0(eslint@9.39.5(jiti@2.6.1))(typescript@6.0.3)
+
+  packages/api:
+    dependencies:
+      '@moniq/schemas':
+        specifier: workspace:*
+        version: link:../schemas
+      '@supabase/supabase-js':
+        specifier: ^2.112.1
+        version: 2.112.2(@opentelemetry/api@1.9.1)
+    devDependencies:
+      '@moniq/config':
+        specifier: workspace:*
+        version: link:../config
+      '@types/jest':
+        specifier: 29.5.14
+        version: 29.5.14
+      typescript:
+        specifier: ~6.0.3
+        version: 6.0.3
 
   packages/config:
     dependencies:
@@ -2497,10 +2519,12 @@ packages:
   '@xmldom/xmldom@0.8.13':
     resolution: {integrity: sha512-KRYzxepc14G/CEpEGc3Yn+JKaAeT63smlDr+vjB8jRfgTBBI9wRj/nkQEO+ucV8p8I9bfKLWp37uHgFrbntPvw==}
     engines: {node: '>=10.0.0'}
+    deprecated: this version has critical issues, please update to the latest version
 
   '@xmldom/xmldom@0.9.10':
     resolution: {integrity: sha512-A9gOqLdi6cV4ibazAjcQufGj0B1y/vDqYrcuP6d/6x8P27gRS8643Dj9o1dEKtB6O7fwxb2FgBmJS2mX7gpvdw==}
     engines: {node: '>=14.6'}
+    deprecated: this version has critical issues, please update to the latest version
 
   abab@2.0.6:
     resolution: {integrity: sha512-j2afSsaIENvHZN2B8GOpF566vZ5WVk5opAiMTvWgaQT8DkbOqsTfvNAvHoRGU2zzP8cPoqys+xHTRDWW8L+/BA==}

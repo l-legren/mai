@@ -28,18 +28,26 @@ All interactive and informational UI in the app must be accessible to screen rea
 
 # Repository structure
 
-Single Expo React Native app (Expo Router), organised into strict layers under `src/`:
+Expo React Native app (Expo Router) at the repo root, plus a growing set of workspace packages
+(`packages/*`) as the LEG-97 monorepo restructure extracts pieces the app used to own directly:
 
 ```
 src/
   app/        → Expo Router screens (UI layer)
   hooks/      → React Query cache/state layer
   services/   → business logic + domain models
-  data/       → data layer (on-device persistence via AsyncStorage)
+  data/       → local device persistence (AsyncStorage) only — theme preference, etc.
   components/  → shared + screen-specific UI (components/ui = design primitives)
   constants/   → theme tokens, categories
   i18n/        → i18next setup + locale files
 assets/       → fonts, images, icons
+
+packages/
+  config/     → shared tsconfig/eslint/prettier bases
+  schemas/    → framework-agnostic zod row schemas (@moniq/schemas)
+  api/        → the Supabase-backed data layer (@moniq/api) — see "Data architecture" below
+
+agent/        → standalone AI agent package, its own tsconfig/deps
 ```
 
 # React Compiler
@@ -67,25 +75,31 @@ The codebase uses a strict layer separation. Never collapse layers or skip one.
 ```
 src/app/        → screens          (call hooks only)
 src/hooks/      → React Query       (import services only)
-src/services/   → business logic    (import data only)
-src/data/       → persistence       (AsyncStorage only)
+src/services/   → business logic    (import @moniq/api + src/data only)
+@moniq/api      → Supabase data layer (see "packages/api" below)
+src/data/       → local device persistence (AsyncStorage only — theme preference)
 ```
 
-Data flows **app → hooks → services → data**; imports only ever point one level down.
+Data flows **app → hooks → services → (`@moniq/api` + `src/data`)**; imports only ever point one level down. Services are the one layer allowed to import from both — most resources live in `@moniq/api` (Supabase), a couple (currently just the theme preference) live in `src/data` (AsyncStorage) — these are genuinely different data sources, not two names for the same layer.
 
-## `src/data/` — data layer
+## `packages/api` (`@moniq/api`) — the actual data layer
 
-- Only talks to on-device storage (AsyncStorage). Returns raw persisted row/value shapes.
+- Talks to Supabase (Postgres + Storage + Edge Functions + Auth). Returns raw persisted row/value shapes.
+- Framework-agnostic — no React/React Native imports. The Supabase client itself is built by the **app** (`src/data/supabase.ts`, which owns the RN-specific bits: `AsyncStorage` as the auth token store, `react-native-url-polyfill`, the Android-emulator URL rewrite) and handed to the package once via `configureSupabaseClient(client)`, called from that same file. Every function inside the package reads it back via `getSupabaseClient()` (`packages/api/src/supabase-client.ts`) rather than importing a client directly — this is what keeps the package reusable by a future non-RN consumer.
+- File naming: `<resource>.data.ts` (e.g. `savings.data.ts`), exported through the package's single `index.ts` barrel — services import everything from `'@moniq/api'`, never a submodule path.
+- Raw stored types (`ExpenseRow`, `RecurringRow`, …) live in `@moniq/schemas` (the zod schema + its inferred type) and are re-exported from each `<resource>.data.ts` / the barrel. Write-shape types (`New<Resource>Row`, `<Resource>RowUpdate`) — what a caller sends, not what the DB returns — stay defined in the data file itself, not in `@moniq/schemas`.
+- **Types that come from the database must be runtime-typed with `zod`**, not just asserted via TypeScript — define the schema in `packages/schemas` and derive the type with `z.infer<>` rather than hand-writing a `type`/`interface`. A compile-time type is not a guarantee about what Supabase actually returns.
+
+## `src/data/` — local device persistence
+
+- The AsyncStorage-only remainder of the old data layer: currently just the theme preference (`storage.ts`, `settings.data.ts`) and `supabase.ts` (builds the client — see above, not itself a data resource).
 - Never imports from `services/` or `hooks/`.
-- File naming: `<resource>.data.ts` (e.g. `savings.data.ts`).
-- Raw stored types (`ExpenseRow`, `RecurringItemRow`, …) are defined and exported from here.
-- **Swap point for a future backend:** if Supabase (or any API) is ever added, only this layer changes — services and screens stay untouched.
-- **Types that come from the database must be runtime-typed with `zod`**, not just asserted via TypeScript. Define a `z.object` schema for the row shape and derive the type with `z.infer<>` rather than hand-writing a `type`/`interface` — a compile-time type is not a guarantee about what Supabase actually returns.
+- **Swap point if this ever needs a backend too:** if AsyncStorage-only settings ever need to sync to Supabase, only this module changes.
 
 ## `src/services/` — business layer
 
 - Owns domain models (camelCase, e.g. `Expense`, `Income`, `Cost`), mappers, merges, and business rules (allowance/daily-budget formulas, insights aggregation, money formatting).
-- Composes multiple `data/` calls and applies rules.
+- Composes multiple `@moniq/api` (and, for local device settings, `src/data`) calls and applies rules.
 - Never imports from `hooks/`.
 - File naming: `<resource>.service.ts`.
 - Mappers (e.g. `mapRowToExpense`) live here and are exported for unit testing.
@@ -99,8 +113,8 @@ Data flows **app → hooks → services → data**; imports only ever point one 
 ## Adding a new query
 
 1. Add the key to `src/hooks/query-keys.ts` first.
-2. Add the data function to `src/data/<resource>.data.ts`.
-3. Add the service function to `src/services/<resource>.service.ts`.
+2. Add the row schema (if new) to `packages/schemas/index.ts`, then the data function to `packages/api/src/<resource>.data.ts` — export both from `packages/api/src/index.ts`.
+3. Add the service function to `src/services/<resource>.service.ts`, importing from `'@moniq/api'`.
 4. Add the hook in `src/hooks/`.
 
 ## Query keys
@@ -132,15 +146,16 @@ Prefer deleting a low-value test over keeping it. Quality and relevance over qua
 
 ## Supabase smoke test
 
-Jest mocks `@/data/supabase` (see `jest.setup.js`), so `pnpm test` can't catch a wrong column name, a
-missing RLS policy, or a missing table grant — only a real request to Postgres can. `scripts/smoke-test-supabase.mjs`
-round-trips every Supabase-backed resource (insert/read/update/delete, cleaning up after itself)
-against the local container. It has already caught real bugs mocks missed (a missing `note`/`category`
-column, and `authenticated` role grants that RLS alone doesn't provide).
+Jest mocks `@moniq/api`'s Supabase client seam (`@moniq/api/supabase-client`, see `jest.setup.js`),
+so `pnpm test` can't catch a wrong column name, a missing RLS policy, or a missing table grant —
+only a real request to Postgres can. `scripts/smoke-test-supabase.mjs` round-trips every
+Supabase-backed resource (insert/read/update/delete, cleaning up after itself) against the local
+container. It has already caught real bugs mocks missed (a missing `note`/`category` column, and
+`authenticated` role grants that RLS alone doesn't provide).
 
 Run it with `pnpm smoke` (requires `supabase start` running locally) whenever you change a
-`src/data/*.ts` or `src/services/*.ts` file that touches Supabase — before considering the change
-done, not just before committing.
+`packages/api/src/*.ts` or `src/services/*.ts` file that touches Supabase — before considering the
+change done, not just before committing.
 
 # Branching & commits
 

@@ -1,4 +1,4 @@
-import type { SavingsTargetRow } from '@/data/savings-targets.data';
+import type { SavingsTargetRow } from '@moniq/api';
 
 import { mapRowToSavingsTarget, sortByPriority } from './savings-targets.service';
 

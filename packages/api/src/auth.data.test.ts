@@ -1,13 +1,14 @@
 import { ApiError } from './api-error';
-import { supabase } from './supabase';
 import { deleteAccount, getCurrentUserId, signInWithPassword, signOut } from './auth.data';
+import { getSupabaseClient } from './supabase-client';
 
-const mockSignInWithPassword = supabase.auth.signInWithPassword as jest.MockedFunction<
-  typeof supabase.auth.signInWithPassword
+const client = getSupabaseClient();
+const mockSignInWithPassword = client.auth.signInWithPassword as jest.MockedFunction<
+  typeof client.auth.signInWithPassword
 >;
-const mockSignOut = supabase.auth.signOut as jest.MockedFunction<typeof supabase.auth.signOut>;
-const mockGetUser = supabase.auth.getUser as jest.MockedFunction<typeof supabase.auth.getUser>;
-const mockRpc = supabase.rpc as jest.MockedFunction<typeof supabase.rpc>;
+const mockSignOut = client.auth.signOut as jest.MockedFunction<typeof client.auth.signOut>;
+const mockGetUser = client.auth.getUser as jest.MockedFunction<typeof client.auth.getUser>;
+const mockRpc = client.rpc as jest.MockedFunction<typeof client.rpc>;
 
 describe('signInWithPassword', () => {
   it('throws an ApiError instead of returning a null session', async () => {
@@ -15,7 +16,7 @@ describe('signInWithPassword', () => {
     mockSignInWithPassword.mockResolvedValue({
       data: { session: null },
       error: authError,
-    } as Awaited<ReturnType<typeof supabase.auth.signInWithPassword>>);
+    } as Awaited<ReturnType<typeof client.auth.signInWithPassword>>);
 
     await expect(signInWithPassword('user@example.com', 'wrong')).rejects.toBeInstanceOf(ApiError);
   });
@@ -25,7 +26,7 @@ describe('signOut', () => {
   it('throws an ApiError when supabase reports an error', async () => {
     const authError = new Error('Network request failed');
     mockSignOut.mockResolvedValue({ error: authError } as Awaited<
-      ReturnType<typeof supabase.auth.signOut>
+      ReturnType<typeof client.auth.signOut>
     >);
 
     await expect(signOut()).rejects.toBeInstanceOf(ApiError);
@@ -37,7 +38,7 @@ describe('getCurrentUserId', () => {
     mockGetUser.mockResolvedValue({
       data: { user: { id: 'user-1' } },
       error: null,
-    } as Awaited<ReturnType<typeof supabase.auth.getUser>>);
+    } as Awaited<ReturnType<typeof client.auth.getUser>>);
 
     await expect(getCurrentUserId()).resolves.toBe('user-1');
   });
@@ -46,7 +47,7 @@ describe('getCurrentUserId', () => {
     mockGetUser.mockResolvedValue({
       data: { user: null },
       error: new Error('Auth session missing'),
-    } as Awaited<ReturnType<typeof supabase.auth.getUser>>);
+    } as Awaited<ReturnType<typeof client.auth.getUser>>);
 
     await expect(getCurrentUserId()).rejects.toBeInstanceOf(ApiError);
   });
@@ -57,7 +58,7 @@ describe('deleteAccount', () => {
     mockRpc.mockResolvedValue({
       data: null,
       error: new Error('permission denied'),
-    } as Awaited<ReturnType<typeof supabase.rpc>>);
+    } as Awaited<ReturnType<typeof client.rpc>>);
 
     await expect(deleteAccount()).rejects.toBeInstanceOf(ApiError);
   });
