@@ -1,5 +1,6 @@
 packages:
   - 'agent'
+  - 'apps/*'
   - 'packages/*'
 allowBuilds:
   esbuild: true

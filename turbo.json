@@ -11,17 +11,9 @@
       "outputs": [],
       "dependsOn": ["format:check"]
     },
-    "//#typecheck": {
-      "outputs": [],
-      "dependsOn": ["//#format:check"]
-    },
     "lint": {
       "outputs": [],
       "dependsOn": ["typecheck"]
-    },
-    "//#lint": {
-      "outputs": [],
-      "dependsOn": ["//#typecheck"]
     },
     "test": {
       "outputs": [],
@@ -29,7 +21,7 @@
     },
     "//#test": {
       "outputs": [],
-      "dependsOn": ["//#typecheck", "//#lint", "//#format:check"]
+      "dependsOn": ["//#format:check"]
     },
     "eval": {
       "outputs": [],

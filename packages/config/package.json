@@ -8,7 +8,13 @@
     "tsconfig.base.json",
     "eslint.base.mjs"
   ],
+  "scripts": {
+    "lint": "eslint ."
+  },
   "dependencies": {
     "typescript-eslint": "^8.62.1"
+  },
+  "devDependencies": {
+    "eslint": "^9.39.5"
   }
 }

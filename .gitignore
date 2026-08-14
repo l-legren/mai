@@ -35,7 +35,7 @@ yarn-error.*
 .env*.local
 
 # machine-local launchd job (hardcodes this user's absolute paths)
-scripts/com.moniq.seed-expenses.plist
+apps/mobile/scripts/com.moniq.seed-expenses.plist
 
 # Claude Design MCP local tool state
 .design-sync/
@@ -49,12 +49,6 @@ scripts/com.moniq.seed-expenses.plist
 # eslint
 .eslintcache
 
-example
-
 # generated native folders
-/ios
-/android
-
-# to delete
-Auth (Standalone).html
-HANDOFF.md
+/apps/mobile/ios
+/apps/mobile/android

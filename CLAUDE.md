@@ -28,19 +28,23 @@ All interactive and informational UI in the app must be accessible to screen rea
 
 # Repository structure
 
-Expo React Native app (Expo Router) at the repo root, plus a growing set of workspace packages
-(`packages/*`) as the LEG-97 monorepo restructure extracts pieces the app used to own directly:
+pnpm workspace monorepo. The Expo React Native app lives at `apps/mobile/` (LEG-97 moved it out of
+the repo root, which is now pure workspace glue — no app code of its own). A growing set of
+`packages/*` holds pieces the app used to own directly:
 
 ```
-src/
-  app/        → Expo Router screens (UI layer)
-  hooks/      → React Query cache/state layer
-  services/   → business logic + domain models
-  data/       → local device persistence (AsyncStorage) only — theme preference, etc.
-  components/  → shared + screen-specific UI (components/ui = design primitives)
-  constants/   → theme tokens, categories
-  i18n/        → i18next setup + locale files
-assets/       → fonts, images, icons
+apps/
+  mobile/
+    src/
+      app/        → Expo Router screens (UI layer)
+      hooks/      → React Query cache/state layer
+      services/   → business logic + domain models
+      data/       → local device persistence (AsyncStorage) only — theme preference, etc.
+      components/  → shared + screen-specific UI (components/ui = design primitives)
+      constants/   → theme tokens, categories
+      i18n/        → i18next setup + locale files
+    assets/       → fonts, images, icons
+    app.json, tsconfig.json, jest.config.js, eslint.config.mjs, .env → app-scoped config
 
 packages/
   config/     → shared tsconfig/eslint/prettier bases
@@ -48,7 +52,12 @@ packages/
   api/        → the Supabase-backed data layer (@moniq/api) — see "Data architecture" below
 
 agent/        → standalone AI agent package, its own tsconfig/deps
+
+jest.config.js (root) → orchestrates apps/mobile + packages/api as Jest projects; `pnpm test`
+                         from the root runs both in one report (see "Testing" below).
 ```
+
+Every `src/...` path referenced elsewhere in this doc is relative to `apps/mobile/`, unless stated otherwise.
 
 # React Compiler
 
@@ -146,16 +155,17 @@ Prefer deleting a low-value test over keeping it. Quality and relevance over qua
 
 ## Supabase smoke test
 
-Jest mocks `@moniq/api`'s Supabase client seam (`@moniq/api/supabase-client`, see `jest.setup.js`),
-so `pnpm test` can't catch a wrong column name, a missing RLS policy, or a missing table grant —
-only a real request to Postgres can. `scripts/smoke-test-supabase.mjs` round-trips every
-Supabase-backed resource (insert/read/update/delete, cleaning up after itself) against the local
-container. It has already caught real bugs mocks missed (a missing `note`/`category` column, and
-`authenticated` role grants that RLS alone doesn't provide).
+Jest mocks `@moniq/api`'s Supabase client seam (`@moniq/api/supabase-client`, see
+`packages/api/jest.setup.cjs`), so `pnpm test` can't catch a wrong column name, a missing RLS
+policy, or a missing table grant — only a real request to Postgres can.
+`apps/mobile/scripts/smoke-test-supabase.mjs` round-trips every Supabase-backed resource
+(insert/read/update/delete, cleaning up after itself) against the local container. It has already
+caught real bugs mocks missed (a missing `note`/`category` column, and `authenticated` role grants
+that RLS alone doesn't provide).
 
-Run it with `pnpm smoke` (requires `supabase start` running locally) whenever you change a
-`packages/api/src/*.ts` or `src/services/*.ts` file that touches Supabase — before considering the
-change done, not just before committing.
+Run it with `pnpm --dir apps/mobile smoke` (requires `supabase start` running locally) whenever you
+change a `packages/api/src/*.ts` or `src/services/*.ts` file that touches Supabase — before
+considering the change done, not just before committing.
 
 # Branching & commits
 
