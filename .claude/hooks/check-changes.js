@@ -54,7 +54,10 @@ if (changed.length === 0) process.exit(0);
 
 let report = '';
 
-const typecheck = run('pnpm', ['exec', 'tsc', '--noEmit']);
+// Plain `tsc --noEmit` needs a single root tsconfig.json, which no longer exists post-LEG-97
+// (the app's tsconfig moved to apps/mobile/) — turbo fans out typecheck across every workspace
+// package instead (apps/mobile, packages/*, agent), same as the rest of this repo's tooling.
+const typecheck = run('pnpm', ['exec', 'turbo', 'run', 'typecheck']);
 if (typecheck.status !== 0) {
   report += `\n### typecheck FAILED\n${typecheck.stdout || ''}${typecheck.stderr || ''}`;
 }
@@ -67,13 +70,16 @@ if (hasTestFiles) {
   }
 }
 
-// Missing-test nudge: changed src/services or src/data logic files with no matching test.
-// Scoped to these two layers — they're the high-value targets CLAUDE.md calls out; src/hooks and
-// src/app are excluded because "is this hook non-trivial enough to test" is a judgment call, not
-// something a filename check can safely enforce.
+// Missing-test nudge: changed services/data logic files with no matching test. Scoped to the
+// high-value layers CLAUDE.md calls out — apps/mobile/src/{services,data} (post-LEG-97 app
+// location) and packages/api/src (the Supabase data layer, extracted from src/data in LEG-124).
+// hooks/ and app/ are excluded because "is this hook non-trivial enough to test" is a judgment
+// call, not something a filename check can safely enforce.
 const missing = [];
 for (const file of changed) {
-  if (!/^src\/(services|data)\/.*\.ts$/.test(file)) continue;
+  const inAppLayer = /^apps\/mobile\/src\/(services|data)\/.*\.ts$/.test(file);
+  const inApiPackage = /^packages\/api\/src\/.*\.ts$/.test(file);
+  if (!inAppLayer && !inApiPackage) continue;
   if (/\.(test|spec)\.ts$/.test(file) || /\/index\.ts$/.test(file) || file.endsWith('.d.ts')) continue;
   const testPath = file.replace(/\.ts$/, '.test.ts');
   if (!fs.existsSync(path.join(root, testPath))) missing.push(file);
