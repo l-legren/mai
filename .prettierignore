@@ -2,8 +2,11 @@ node_modules
 .expo
 dist
 pnpm-lock.yaml
-Finance App (Standalone).html
-Auth (Standalone).html
-HANDOFF.md
 .claude
 supabase/.temp
+
+# each workspace package format-checks itself; avoid the root's own
+# format:check redundantly re-walking every package's files too
+apps
+packages
+agent
