@@ -57,6 +57,63 @@ Supporting directories (all under `apps/mobile/src/`):
 
 Plus `packages/config` (shared tsconfig/eslint/prettier bases), `packages/schemas` (framework-agnostic zod row schemas), and `agent/` (a standalone AI agent package, its own tsconfig/deps).
 
+### Workspace dependency graph
+
+```mermaid
+flowchart TB
+    ROOT["// (true repo root)<br/>pnpm-workspace.yaml, turbo.json,<br/>husky, commitlint, jest.config.js"]
+    APP["apps/mobile<br/>pkg name: moniq"]
+    API["packages/api<br/>@moniq/api"]
+    SCHEMAS["packages/schemas<br/>@moniq/schemas"]
+    CONFIG["packages/config<br/>@moniq/config"]
+    AGENT["agent<br/>@moniq/agent"]
+
+    APP -.->|workspace:*| API
+    APP -.->|workspace:*| SCHEMAS
+    APP -.->|workspace:*| CONFIG
+    API -.->|workspace:*| SCHEMAS
+    API -.->|workspace:*| CONFIG
+    SCHEMAS -.->|workspace:*| CONFIG
+    AGENT -.->|workspace:*| CONFIG
+
+    style ROOT fill:#374151,color:#fff
+```
+
+Dotted arrows are `package.json` dependencies (how pnpm resolves symlinks) — `turbo.json` never references them with `^task`, so this graph doesn't drive turbo's execution order, only module resolution.
+
+### Turborepo task pipeline
+
+```mermaid
+flowchart LR
+    subgraph apps_mobile["apps/mobile"]
+        direction TB
+        a1["format:check<br/>(prettier --check)"] --> a2["typecheck<br/>(tsc --noEmit)"] --> a3["lint<br/>(expo lint)"]
+    end
+    subgraph pkg_api["packages/api"]
+        direction TB
+        b2["typecheck<br/>(tsc --noEmit)"] --> b3["lint<br/>(eslint .)"]
+    end
+    subgraph pkg_schemas["packages/schemas"]
+        direction TB
+        c2["typecheck<br/>(tsc --noEmit)"] --> c3["lint<br/>(eslint .)"]
+    end
+    subgraph pkg_config["packages/config"]
+        direction TB
+        d3["lint<br/>(eslint .)"]
+    end
+    subgraph agent_pkg["agent"]
+        direction TB
+        e2["typecheck<br/>(tsc --noEmit)"] --> e3["lint<br/>(eslint .)"]
+        e2 --> e4["eval<br/>(npx lmnr eval, uncached)"]
+    end
+    subgraph root_only["// (root-scoped tasks, //# prefix)"]
+        direction TB
+        r1["//#format:check<br/>(prettier --check .)"] --> r2["//#test<br/>(jest — projects:<br/>apps/mobile + packages/api)"]
+    end
+```
+
+Each subgraph runs independently and in parallel (turbo caps concurrency by CPU, not by cross-package deps — see above). Within a subgraph, the chain comes from `turbo.json`'s `dependsOn`: `typecheck` waits on that _same package's_ `format:check`, `lint` waits on `typecheck`; a package missing a step (e.g. `packages/config` has no `typecheck`) just skips to the next one it does have. `pnpm exec turbo run typecheck lint format:check test` — what CI and the pre-commit hook both run — fires this whole graph in one invocation.
+
 ## Tech stack
 
 - **[Expo](https://expo.dev) / React Native 0.86** — cross-platform app shell (iOS, Android, web), with the **React Compiler** enabled for automatic memoization.
