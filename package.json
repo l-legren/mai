@@ -1,5 +1,5 @@
 {
-  "name": "moniq",
+  "name": "moniq-mono",
   "packageManager": "pnpm@11.5.1",
   "prettier": "@moniq/config/prettier.json",
   "private": true,
