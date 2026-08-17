@@ -61,7 +61,7 @@ Plus `packages/config` (shared tsconfig/eslint/prettier bases), `packages/schema
 
 ```mermaid
 flowchart TB
-    ROOT["// (true repo root)<br/>pnpm-workspace.yaml, turbo.json,<br/>husky, commitlint, jest.config.js"]
+    ROOT["// (true repo root)<br/>pnpm-workspace.yaml, turbo.json,<br/>husky, commitlint"]
     APP["apps/mobile<br/>pkg name: moniq"]
     API["packages/api<br/>@moniq/api"]
     SCHEMAS["packages/schemas<br/>@moniq/schemas"]
@@ -173,7 +173,7 @@ Run from the repo root unless noted. Package-scoped commands can also run via `p
 
 ## Testing
 
-Tests live next to the code they cover (`<name>.test.ts`) and target the `services`/`data` layers (`apps/mobile/`) and `@moniq/api` (`packages/api/`) — pure business logic (allowance formula, mappers, aggregation) and persistence behavior. `pnpm test` from the repo root runs both as one Jest run (see `jest.config.js`'s `projects`).
+Tests live next to the code they cover (`<name>.test.ts`) and target the `services`/`data` layers (`apps/mobile/`) and `@moniq/api` (`packages/api/`) — pure business logic (allowance formula, mappers, aggregation) and persistence behavior. `pnpm test` from the repo root fans out to each package's own `test` script via turbo, cached independently per package.
 
 ## Project conventions
 
