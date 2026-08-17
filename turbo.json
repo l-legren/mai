@@ -19,10 +19,6 @@
       "outputs": [],
       "dependsOn": ["typecheck", "lint", "format:check"]
     },
-    "//#test": {
-      "outputs": [],
-      "dependsOn": ["//#format:check"]
-    },
     "eval": {
       "outputs": [],
       "dependsOn": ["typecheck"],

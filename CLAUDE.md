@@ -53,8 +53,8 @@ packages/
 
 agent/        → standalone AI agent package, its own tsconfig/deps
 
-jest.config.js (root) → orchestrates apps/mobile + packages/api as Jest projects; `pnpm test`
-                         from the root runs both in one report (see "Testing" below).
+`pnpm test` (root) → `turbo run test`, fanning out to each package's own `test` script
+                      (apps/mobile, packages/api), cached independently per package.
 ```
 
 Every `src/...` path referenced elsewhere in this doc is relative to `apps/mobile/`, unless stated otherwise.
