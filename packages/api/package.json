@@ -16,14 +16,14 @@
   },
   "dependencies": {
     "@moniq/schemas": "workspace:*",
-    "@supabase/supabase-js": "^2.112.1"
+    "@supabase/supabase-js": "^2.112.3"
   },
   "devDependencies": {
     "@moniq/config": "workspace:*",
     "@types/jest": "29.5.14",
     "eslint": "^9.39.5",
     "jest": "~29.7.0",
-    "jest-expo": "~57.0.3",
+    "jest-expo": "~57.0.4",
     "typescript": "~6.0.3"
   }
 }
