@@ -15,32 +15,13 @@ updates:
       interval: 'weekly'
     open-pull-requests-limit: 10
     groups:
-      npm-patch:
+      npm-minor-patch:
         update-types:
+          - 'minor'
           - 'patch'
     ignore:
       # Major bumps are deferred until e2e coverage exists (LEG-77) — unit
       # tests alone don't catch behavioral/visual breakage from major upgrades.
-      # Minor bumps get their own monthly cadence below — some (react-native)
-      # break like majors despite the semver label, so they get more review room.
       - dependency-name: '*'
         update-types:
           - 'version-update:semver-major'
-          - 'version-update:semver-minor'
-
-  - package-ecosystem: 'npm'
-    directory: '/'
-    schedule:
-      interval: 'monthly'
-    open-pull-requests-limit: 10
-    groups:
-      npm-minor:
-        update-types:
-          - 'minor'
-    ignore:
-      # Major bumps are deferred until e2e coverage exists (LEG-77) — unit
-      # tests alone don't catch behavioral/visual breakage from major upgrades.
-      - dependency-name: '*'
-        update-types:
-          - 'version-update:semver-major'
-          - 'version-update:semver-patch'
