@@ -40,6 +40,9 @@ apps/mobile/scripts/com.moniq.seed-expenses.plist
 # Claude Design MCP local tool state
 .design-sync/
 
+# local MCP server config (may reference project-specific/internal endpoints)
+.mcp.json
+
 # typescript
 *.tsbuildinfo
 
