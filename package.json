@@ -5,13 +5,13 @@
   "private": true,
   "devDependencies": {
     "@commitlint/cli": "^21.2.1",
-    "@commitlint/config-conventional": "^21.2.0",
+    "@commitlint/config-conventional": "^21.2.2",
     "@moniq/config": "workspace:*",
     "husky": "^9.1.7",
     "jest": "~29.7.0",
     "lint-staged": "^17.2.0",
     "prettier": "^3.9.6",
-    "turbo": "^2.10.8"
+    "turbo": "^2.10.10"
   },
   "scripts": {
     "format": "prettier --write .",

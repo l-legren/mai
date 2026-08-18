@@ -10,9 +10,9 @@
     "eval": "npx lmnr eval"
   },
   "dependencies": {
-    "@lmnr-ai/lmnr": "^0.8.40",
-    "@ai-sdk/anthropic": "^4.0.33",
-    "ai": "^7.0.55",
+    "@lmnr-ai/lmnr": "^0.8.41",
+    "@ai-sdk/anthropic": "^4.0.39",
+    "ai": "^7.0.66",
     "zod": "^4.4.3"
   },
   "devDependencies": {
@@ -20,6 +20,6 @@
     "@types/node": "^26.1.2",
     "eslint": "^9.39.5",
     "typescript": "~6.0.3",
-    "typescript-eslint": "^8.62.1"
+    "typescript-eslint": "^8.67.0"
   }
 }
