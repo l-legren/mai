@@ -36,6 +36,10 @@ export default function TabsLayout() {
         <NativeTabs.Trigger.Icon sf="chart.bar" md="bar_chart" />
         <NativeTabs.Trigger.Label hidden>{t('tabs.insights')}</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="ask">
+        <NativeTabs.Trigger.Icon sf="sparkles" md="auto_awesome" />
+        <NativeTabs.Trigger.Label hidden>{t('tabs.ask')}</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
     </NativeTabs>
   );
 }
