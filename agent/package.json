@@ -10,9 +10,9 @@
     "eval": "npx lmnr eval"
   },
   "dependencies": {
-    "@lmnr-ai/lmnr": "^0.8.41",
-    "@ai-sdk/anthropic": "^4.0.39",
-    "ai": "^7.0.66",
+    "@lmnr-ai/lmnr": "^0.8.43",
+    "@ai-sdk/anthropic": "^4.0.40",
+    "ai": "^7.0.70",
     "zod": "^4.4.3"
   },
   "devDependencies": {
