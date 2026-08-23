@@ -28,6 +28,10 @@ export const Palettes = {
     hairline: 'rgba(240,225,235,0.08)',
     accent: '#FF4FA3',
     accentLight: 'rgba(255,79,163,0.16)',
+    // Lifted well above `card` (which reads as near-invisible against `bg` at this darkness) so
+    // the user's own chat bubble reads as a distinct surface. ≈8.7:1 on `text`, ≈1.8:1 on `bg`
+    // (luminance ~6.7x `bg`'s — the WCAG ratio compresses hard this close to black).
+    bubbleUser: '#4A3F4C',
     good: '#5FBF86',
     goodLight: 'rgba(95,191,134,0.14)',
     bad: '#F2637A',
@@ -51,6 +55,9 @@ export const Palettes = {
     hairline: 'rgba(60,30,45,0.09)',
     accent: '#D91E85',
     accentLight: 'rgba(217,30,133,0.12)',
+    // A pink tint rather than plain `card` (near-indistinguishable from `bg` at this lightness)
+    // so the user's own chat bubble stands out from the background. ≈11:1 on `text`.
+    bubbleUser: '#F5CDE5',
     good: '#3E9A64',
     goodLight: 'rgba(62,154,100,0.14)',
     bad: '#D94F63',
