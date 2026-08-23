@@ -33,4 +33,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   },
 });
 
-configureSupabaseClient(supabase);
+configureSupabaseClient(supabase, {
+  functionsUrl: `${supabaseUrl}/functions/v1`,
+  anonKey: supabaseAnonKey,
+});

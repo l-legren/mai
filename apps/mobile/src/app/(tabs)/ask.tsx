@@ -1,20 +1,16 @@
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
+import { AskLoadingIndicator } from '@/components/ask/ask-loading-indicator';
 import { AssistantMessage } from '@/components/ask/assistant-message';
 import { ChatHeader } from '@/components/ask/chat-header';
 import { ChatInputBar } from '@/components/ask/chat-input-bar';
-import { ConfirmActionCard } from '@/components/ask/confirm-action-card';
-import { SuggestionChipRow } from '@/components/ask/suggestion-chip-row';
 import { UserMessageBubble } from '@/components/ask/user-message-bubble';
+import { FormError } from '@/components/ui/form-error';
 import { Screen } from '@/components/ui/screen';
-import { AppText } from '@/components/ui/text';
 import { Spacing } from '@/constants/theme';
 import { useAskConversation, type AskDisplayTurn } from '@/hooks/use-ask-conversation';
-
-/**
- * TODO-remove this function once the agent is wired up and we have real actions
- */
-function noop() {}
 
 function AskTurnItem({ turn }: { turn: AskDisplayTurn }) {
   if (turn.kind === 'user') {
@@ -22,49 +18,53 @@ function AskTurnItem({ turn }: { turn: AskDisplayTurn }) {
   }
 
   if (turn.kind === 'assistant') {
-    return (
-      <View style={styles.turn}>
-        <AssistantMessage lines={turn.lines} statusLine={turn.statusLine} />
-        {turn.suggestions ? (
-          <SuggestionChipRow suggestions={turn.suggestions} onSelect={noop} />
-        ) : null}
-      </View>
-    );
+    return <AssistantMessage lines={turn.lines} statusLine={turn.statusLine} />;
   }
 
-  return (
-    <View style={styles.turn}>
-      <AssistantMessage lines={turn.lines} />
-      <ConfirmActionCard card={turn.card} onConfirm={noop} onDismiss={noop} />
-      <AppText variant="caption" color="text3">
-        {turn.reassurance}
-      </AppText>
-    </View>
-  );
+  if (turn.kind === 'loading') {
+    return <AskLoadingIndicator />;
+  }
+
+  return <FormError message={turn.message} />;
 }
 
 /**
- * Hardcoded demo per LEG-128 — the real agent backend (moniq-agent) isn't wired up yet, so this
- * showcases the conversation layout only: bare-text assistant replies (design 4a) flowing into a
- * permission-confirm card (design 4b), against a fixed scripted transcript.
+ * Ask Moniq: a stateless-per-request tool-calling agent loop (see agent/src/run.ts) behind a
+ * plain-text chat UI, per LEG-129. The screen holds only the input's draft text; the running
+ * transcript itself lives in `useAskConversation`.
  */
 export default function AskScreen() {
-  const conversation = useAskConversation();
+  const { t } = useTranslation();
+  const { turns, isSending, sendMessage, reset } = useAskConversation();
+  const [draft, setDraft] = useState('');
+
+  function handleSubmit() {
+    if (!draft.trim()) return;
+    sendMessage(draft);
+    setDraft('');
+  }
 
   return (
     <Screen edges={['top', 'bottom']}>
       <View style={styles.header}>
-        <ChatHeader onEndChat={noop} />
+        <ChatHeader onEndChat={reset} />
       </View>
 
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
-        {conversation.map((turn, index) => (
-          <AskTurnItem key={index} turn={turn} />
-        ))}
+        {turns.length === 0 ? (
+          <AssistantMessage lines={[t('ask.greeting')]} />
+        ) : (
+          turns.map((turn, index) => <AskTurnItem key={index} turn={turn} />)
+        )}
       </ScrollView>
 
       <View style={styles.inputWrap}>
-        <ChatInputBar />
+        <ChatInputBar
+          value={draft}
+          onChangeText={setDraft}
+          onSubmit={handleSubmit}
+          disabled={isSending}
+        />
       </View>
     </Screen>
   );
@@ -82,9 +82,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.four,
     paddingVertical: Spacing.three,
     gap: Spacing.five,
-  },
-  turn: {
-    gap: Spacing.two,
   },
   inputWrap: {
     paddingHorizontal: Spacing.four,

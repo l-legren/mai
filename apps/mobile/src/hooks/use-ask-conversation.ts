@@ -1,69 +1,120 @@
+import { useMutation } from '@tanstack/react-query';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { getDemoConversation } from '@/services/ask.service';
-
-export type AskDisplayConfirmCard = {
-  title: string;
-  fromAmount: string;
-  toAmount: string;
-  effective: string;
-  footnote: string;
-  changeA11yLabel: string;
-  doItLabel: string;
-  doItA11yLabel: string;
-  leaveItLabel: string;
-  leaveItA11yLabel: string;
-};
+import { sendAskMessage, type AskMessage } from '@/services/ask.service';
 
 export type AskDisplayTurn =
   | { kind: 'user'; text: string; a11yLabel: string }
-  | { kind: 'assistant'; lines: string[]; statusLine?: string; suggestions?: string[] }
-  | { kind: 'confirm'; lines: string[]; card: AskDisplayConfirmCard; reassurance: string };
+  | { kind: 'assistant'; lines: string[]; statusLine?: string }
+  | { kind: 'loading' }
+  | { kind: 'error'; message: string };
 
-/** Resolves the hardcoded demo conversation's i18next keys into display-ready turns. */
-export function useAskConversation(): AskDisplayTurn[] {
+/** Maps a tool name the agent loop reports using to a status-line i18n key, per LEG-129. */
+const TOOL_STATUS_KEYS: Record<string, string> = {
+  getRecentSpending: 'ask.statusLine.recentSpending',
+};
+
+function statusLineFor(toolsUsed: string[], t: (key: string) => string): string | undefined {
+  const key = toolsUsed.map((name) => TOOL_STATUS_KEYS[name]).find((value) => value !== undefined);
+  return key ? t(key) : undefined;
+}
+
+function linesFrom(text: string): string[] {
+  return text.split('\n').filter((line) => line.length > 0);
+}
+
+/**
+ * Owns the Ask Moniq transcript. The agent loop itself is stateless per request (see
+ * agent/src/run.ts), so this hook is the one place the running conversation lives — every send
+ * replays the full transcript so far, nothing is persisted server-side.
+ *
+ * The reply streams in token-by-token: each `text` event replaces the trailing turn (first the
+ * `loading` placeholder, then its own previous partial text) so the UI renders progressively
+ * instead of waiting for the whole turn to finish.
+ *
+ * `reset()` (the "End chat" action) can fire while a reply is still streaming. Every state-mutating
+ * callback below is guarded by a generation number bumped by `reset()`, so a stream that was
+ * already in flight can't repopulate the conversation after it's been cleared — and the fetch
+ * itself is aborted (via `controllerRef`) so ending a chat mid-reply stops the wasted request too.
+ */
+export function useAskConversation() {
   const { t } = useTranslation();
+  const [transcript, setTranscript] = useState<AskMessage[]>([]);
+  const [turns, setTurns] = useState<AskDisplayTurn[]>([]);
+  const generationRef = useRef(0);
+  const requestGenerationRef = useRef(0);
+  const controllerRef = useRef<AbortController | null>(null);
 
-  return getDemoConversation().map((turn): AskDisplayTurn => {
-    if (turn.kind === 'user') {
-      const text = t(turn.key);
-      return { kind: 'user', text, a11yLabel: t('ask.userMessageA11y', { message: text }) };
-    }
+  const mutation = useMutation({
+    mutationFn: async (nextTranscript: AskMessage[]) => {
+      const generation = generationRef.current;
+      requestGenerationRef.current = generation;
 
-    if (turn.kind === 'assistant') {
-      return {
-        kind: 'assistant',
-        lines: turn.lines.map((line) => t(line.key, line.values)),
-        statusLine: turn.statusKey ? t(turn.statusKey) : undefined,
-        suggestions: turn.suggestionKeys?.map((key) => t(key)),
-      };
-    }
+      const controller = new AbortController();
+      controllerRef.current = controller;
 
-    const { card } = turn;
-    const title = t(card.titleKey);
-    const effective = t(card.effectiveKey);
+      let text = '';
+      const toolsUsed = new Set<string>();
 
-    return {
-      kind: 'confirm',
-      lines: turn.lines.map((line) => t(line.key, line.values)),
-      card: {
-        title,
-        fromAmount: card.fromAmount,
-        toAmount: card.toAmount,
-        effective,
-        footnote: t('ask.demo.confirmFootnote', { total: card.totalAmount }),
-        changeA11yLabel: t('ask.demo.confirmChangeA11y', {
-          title,
-          from: card.fromAmount,
-          to: card.toAmount,
-          effective,
-        }),
-        doItLabel: t('ask.demo.confirmDoIt'),
-        doItA11yLabel: t('ask.demo.confirmDoItA11y', { to: card.toAmount }),
-        leaveItLabel: t('ask.demo.confirmLeaveIt'),
-        leaveItA11yLabel: t('ask.demo.confirmLeaveItA11y', { from: card.fromAmount }),
-      },
-      reassurance: t(turn.reassuranceKey),
-    };
+      await sendAskMessage(
+        nextTranscript,
+        (event) => {
+          if (generation !== generationRef.current) return;
+
+          if (event.type === 'tool') {
+            toolsUsed.add(event.toolName);
+            return;
+          }
+
+          text += event.text;
+          setTurns((prev) => [...prev.slice(0, -1), { kind: 'assistant', lines: linesFrom(text) }]);
+        },
+        controller.signal
+      );
+
+      return { generation, text, toolsUsed: [...toolsUsed] };
+    },
+    onSuccess: ({ generation, text, toolsUsed }) => {
+      if (generation !== generationRef.current) return;
+
+      setTurns((prev) => [
+        ...prev.slice(0, -1),
+        { kind: 'assistant', lines: linesFrom(text), statusLine: statusLineFor(toolsUsed, t) },
+      ]);
+      setTranscript((prev) => [...prev, { role: 'assistant', content: text }]);
+    },
+    onError: () => {
+      // Also fires when `reset()` aborts a deliberate cancellation — the generation check keeps
+      // that from surfacing a spurious error turn on top of the now-cleared conversation.
+      if (requestGenerationRef.current !== generationRef.current) return;
+
+      setTurns((prev) => [...prev.slice(0, -1), { kind: 'error', message: t('ask.error') }]);
+    },
   });
+
+  function sendMessage(text: string) {
+    const trimmed = text.trim();
+    if (!trimmed || mutation.isPending) return;
+
+    const userTurn: AskDisplayTurn = {
+      kind: 'user',
+      text: trimmed,
+      a11yLabel: t('ask.userMessageA11y', { message: trimmed }),
+    };
+    const nextTranscript: AskMessage[] = [...transcript, { role: 'user', content: trimmed }];
+
+    setTurns((prev) => [...prev, userTurn, { kind: 'loading' }]);
+    setTranscript(nextTranscript);
+    mutation.mutate(nextTranscript);
+  }
+
+  function reset() {
+    generationRef.current += 1;
+    controllerRef.current?.abort();
+    setTranscript([]);
+    setTurns([]);
+  }
+
+  return { turns, isSending: mutation.isPending, sendMessage, reset };
 }
