@@ -5,7 +5,11 @@
  */
 
 export { ApiError } from './api-error';
-export { configureSupabaseClient, getSupabaseClient } from './supabase-client';
+export {
+  configureSupabaseClient,
+  getSupabaseClient,
+  getSupabaseClientConfig,
+} from './supabase-client';
 export { resolveSupabaseUrl } from './resolve-supabase-url';
 
 export {
@@ -60,3 +64,5 @@ export {
   type SpendingSummaryRequestRow,
   type SpendingSummaryResponseRow,
 } from './spending-summary.data';
+
+export { streamAskMoniqReply, type AskMessageRow, type AskStreamEvent } from './ask.data';
