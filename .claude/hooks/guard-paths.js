@@ -6,6 +6,7 @@
 
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
 
 function readStdin() {
   try {
@@ -45,10 +46,23 @@ if (base === '.env' || base.startsWith('.env.')) {
   }
 }
 
-// 2) Block paths outside the monorepo. Resolve '..' without requiring the file to
-//    exist (Write creates new files), then prefix-check against the repo root.
+// 2) Block paths outside the monorepo, with one exception: this project's
+//    Claude Code auto-memory directory (~/.claude/projects/<slug>/memory/),
+//    which necessarily lives outside the repo but is legitimate for the
+//    memory system to read/write. Resolve '..' without requiring the file to
+//    exist (Write creates new files), then prefix-check against allowed roots.
+const memoryRoot = path.join(
+  os.homedir(),
+  '.claude',
+  'projects',
+  root.replace(/[/\\]/g, '-'),
+  'memory',
+);
+
 const abs = path.resolve(root, file);
-if (abs !== root && !abs.startsWith(root + path.sep)) {
+const isInRepo = abs === root || abs.startsWith(root + path.sep);
+const isInMemoryDir = abs === memoryRoot || abs.startsWith(memoryRoot + path.sep);
+if (!isInRepo && !isInMemoryDir) {
   console.error(`BLOCKED: '${file}' resolves outside the monorepo (${root}).`);
   process.exit(2);
 }
