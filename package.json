@@ -26,7 +26,6 @@
     "build:ios": "pnpm --dir apps/mobile build:ios",
     "test:watch": "pnpm --dir apps/mobile test:watch",
     "smoke": "pnpm --dir apps/mobile smoke",
-    "seed:expenses": "pnpm --dir apps/mobile seed:expenses",
     "prepare": "husky"
   },
   "lint-staged": {
