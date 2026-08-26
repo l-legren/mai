@@ -10,13 +10,13 @@
     "eval": "npx lmnr eval"
   },
   "dependencies": {
-    "@lmnr-ai/lmnr": "^0.8.41",
     "@ai-sdk/anthropic": "^4.0.39",
     "ai": "^7.0.66",
     "postgres": "^3.4.5",
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@lmnr-ai/lmnr": "^0.8.41",
     "@moniq/config": "workspace:*",
     "@types/node": "^26.1.2",
     "eslint": "^9.39.5",

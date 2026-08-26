@@ -59,10 +59,4 @@ export {
 
 export { getSavingsGoalValue, saveSavingsGoalValue } from './savings.data';
 
-export {
-  requestSpendingSummary,
-  type SpendingSummaryRequestRow,
-  type SpendingSummaryResponseRow,
-} from './spending-summary.data';
-
 export { streamAskMoniqReply, type AskMessageRow, type AskStreamEvent } from './ask.data';

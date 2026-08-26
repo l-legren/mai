@@ -132,14 +132,7 @@
     "whereItGoes": "Where it goes",
     "noData": "No spending logged for this period",
     "chartSummary": "{{title}}: {{values}}",
-    "barValue": "{{label}} {{amount}}",
-    "aiSummaryEyebrow": "Ask moniq",
-    "aiSummaryButton": "How am I doing?",
-    "aiSummaryButtonA11y": "How am I doing? Get an AI summary of your spending",
-    "aiSummaryResultEyebrow": "AI summary",
-    "aiSummaryLoading": "Generating your recap…",
-    "aiSummaryError": "Couldn't generate your recap. Check your connection and try again.",
-    "aiSummaryRetry": "Ask again"
+    "barValue": "{{label}} {{amount}}"
   },
   "savingsTargets": {
     "title": "Savings targets",
