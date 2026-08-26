@@ -43,13 +43,15 @@ export function useAskConversation() {
   const [transcript, setTranscript] = useState<AskMessage[]>([]);
   const [turns, setTurns] = useState<AskDisplayTurn[]>([]);
   const generationRef = useRef(0);
-  const requestGenerationRef = useRef(0);
   const controllerRef = useRef<AbortController | null>(null);
 
   const mutation = useMutation({
+    // Never throws: a failed/aborted stream is reported through the returned `failed` flag instead
+    // of a rejection, so `onSuccess` below is the single place that reconciles `transcript` with
+    // whatever partial reply actually streamed — otherwise a mid-stream error would permanently
+    // drop the assistant's turn from the conversation history sent on every subsequent message.
     mutationFn: async (nextTranscript: AskMessage[]) => {
       const generation = generationRef.current;
-      requestGenerationRef.current = generation;
 
       const controller = new AbortController();
       controllerRef.current = controller;
@@ -57,39 +59,50 @@ export function useAskConversation() {
       let text = '';
       const toolsUsed = new Set<string>();
 
-      await sendAskMessage(
-        nextTranscript,
-        (event) => {
-          if (generation !== generationRef.current) return;
+      try {
+        await sendAskMessage(
+          nextTranscript,
+          (event) => {
+            if (generation !== generationRef.current) return;
 
-          if (event.type === 'tool') {
-            toolsUsed.add(event.toolName);
-            return;
-          }
+            if (event.type === 'tool') {
+              toolsUsed.add(event.toolName);
+              return;
+            }
 
-          text += event.text;
-          setTurns((prev) => [...prev.slice(0, -1), { kind: 'assistant', lines: linesFrom(text) }]);
-        },
-        controller.signal
-      );
+            text += event.text;
+            setTurns((prev) => [
+              ...prev.slice(0, -1),
+              { kind: 'assistant', lines: linesFrom(text) },
+            ]);
+          },
+          controller.signal
+        );
 
-      return { generation, text, toolsUsed: [...toolsUsed] };
+        return { generation, text, toolsUsed: [...toolsUsed], failed: false };
+      } catch (error) {
+        // Also fires for `reset()` deliberately aborting — that's not a real failure, so it's not logged.
+        if (!controller.signal.aborted) {
+          console.error('useAskConversation: send failed', error);
+        }
+        return { generation, text, toolsUsed: [...toolsUsed], failed: true };
+      }
     },
-    onSuccess: ({ generation, text, toolsUsed }) => {
+    onSuccess: ({ generation, text, toolsUsed, failed }) => {
       if (generation !== generationRef.current) return;
+
+      if (failed && !text) {
+        // Nothing ever streamed before the failure — drop the loading placeholder. Per product
+        // decision, no visible error turn is shown; the failure is logged above instead.
+        setTurns((prev) => prev.slice(0, -1));
+        return;
+      }
 
       setTurns((prev) => [
         ...prev.slice(0, -1),
         { kind: 'assistant', lines: linesFrom(text), statusLine: statusLineFor(toolsUsed, t) },
       ]);
       setTranscript((prev) => [...prev, { role: 'assistant', content: text }]);
-    },
-    onError: () => {
-      // Also fires when `reset()` aborts a deliberate cancellation — the generation check keeps
-      // that from surfacing a spurious error turn on top of the now-cleared conversation.
-      if (requestGenerationRef.current !== generationRef.current) return;
-
-      setTurns((prev) => [...prev.slice(0, -1), { kind: 'error', message: t('ask.error') }]);
     },
   });
 
