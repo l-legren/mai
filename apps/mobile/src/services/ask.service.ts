@@ -1,72 +1,26 @@
 /**
- * Business layer — Ask Moniq conversation. The agent backend is still in construction (see the
- * moniq-agent project), so this currently exposes a single scripted demo conversation illustrating
- * the two message patterns from the design: plain-text replies, and a budget-change confirm card.
- * Turns carry i18next keys (+ interpolation values) rather than resolved strings, since `t()` can
- * only be called from a component/hook — `useAskConversation` resolves these into display text.
+ * Business layer — Ask Moniq conversation. Composes the `ask-moniq` Edge Function (via
+ * `@moniq/api`) into the app's message shape. The agent loop is stateless per request — this
+ * module sends the running transcript on every call; nothing is persisted server-side, so the
+ * hook layer owns holding the transcript across turns.
  */
 
-export type AskLineSpec = {
-  key: string;
-  values?: Record<string, string>;
-};
+import { streamAskMoniqReply, type AskMessageRow, type AskStreamEvent } from '@moniq/api';
+import { todayISO } from '@/utils/date';
 
-export type AskConfirmCardSpec = {
-  titleKey: string;
-  fromAmount: string;
-  toAmount: string;
-  effectiveKey: string;
-  totalAmount: string;
-};
+export type AskMessage = AskMessageRow;
+export type AskEvent = AskStreamEvent;
 
-export type AskTurnSpec =
-  | { kind: 'user'; key: string }
-  | { kind: 'assistant'; lines: AskLineSpec[]; statusKey?: string; suggestionKeys?: string[] }
-  | { kind: 'confirm'; lines: AskLineSpec[]; card: AskConfirmCardSpec; reassuranceKey: string };
-
-const DINING_FROM_AMOUNT = '€200';
-const DINING_TO_AMOUNT = '€250';
-const WEEK_SPEND_AMOUNT = '€310';
-const PROJECTED_AMOUNT = '€480';
-const OVER_BY_AMOUNT = '€30';
-const MONTHLY_TOTAL_AMOUNT = '€2,150';
-
-export function getDemoConversation(): AskTurnSpec[] {
-  return [
-    { kind: 'user', key: 'ask.demo.userQ1' },
-    {
-      kind: 'assistant',
-      lines: [
-        { key: 'ask.demo.reply1a' },
-        { key: 'ask.demo.reply1b', values: { amount: WEEK_SPEND_AMOUNT } },
-        { key: 'ask.demo.reply1c' },
-      ],
-      statusKey: 'ask.statusLine',
-    },
-    { kind: 'user', key: 'ask.demo.userQ2' },
-    {
-      kind: 'assistant',
-      lines: [
-        { key: 'ask.demo.reply2a' },
-        { key: 'ask.demo.reply2b', values: { projected: PROJECTED_AMOUNT, over: OVER_BY_AMOUNT } },
-      ],
-      suggestionKeys: ['ask.demo.chipWhatSpent', 'ask.demo.chipRestOfMonth'],
-    },
-    { kind: 'user', key: 'ask.demo.userQ3' },
-    {
-      kind: 'confirm',
-      lines: [
-        { key: 'ask.demo.reply3a' },
-        { key: 'ask.demo.reply3b', values: { amount: DINING_TO_AMOUNT } },
-      ],
-      card: {
-        titleKey: 'ask.demo.confirmTitle',
-        fromAmount: DINING_FROM_AMOUNT,
-        toAmount: DINING_TO_AMOUNT,
-        effectiveKey: 'ask.demo.confirmEffective',
-        totalAmount: MONTHLY_TOTAL_AMOUNT,
-      },
-      reassuranceKey: 'ask.demo.confirmReassurance',
-    },
-  ];
+/**
+ * Sends `today` (this device's local calendar date) alongside the transcript — the agent's
+ * getRecentSpending tool anchors its "last N days" window to this value rather than the
+ * database's own (UTC) `current_date`, so it agrees with the local date expenses were logged
+ * against instead of skewing near midnight for non-UTC users.
+ */
+export async function sendAskMessage(
+  messages: AskMessage[],
+  onEvent: (event: AskEvent) => void,
+  signal?: AbortSignal
+): Promise<void> {
+  return streamAskMoniqReply(todayISO(), messages, onEvent, signal);
 }

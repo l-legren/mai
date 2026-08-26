@@ -3,10 +3,22 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { AppText } from '@/components/ui/text';
 import { FontFamily, Radius, Spacing } from '@/constants/theme';
 import { useAppTheme } from '@/hooks/use-app-theme';
-import type { AskDisplayConfirmCard } from '@/hooks/use-ask-conversation';
+
+export type ConfirmActionCardData = {
+  title: string;
+  fromAmount: string;
+  toAmount: string;
+  effective: string;
+  footnote: string;
+  changeA11yLabel: string;
+  doItLabel: string;
+  doItA11yLabel: string;
+  leaveItLabel: string;
+  leaveItA11yLabel: string;
+};
 
 type ConfirmActionCardProps = {
-  card: AskDisplayConfirmCard;
+  card: ConfirmActionCardData;
   onConfirm: () => void;
   onDismiss: () => void;
 };

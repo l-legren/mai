@@ -132,14 +132,7 @@
     "whereItGoes": "Where it goes",
     "noData": "No spending logged for this period",
     "chartSummary": "{{title}}: {{values}}",
-    "barValue": "{{label}} {{amount}}",
-    "aiSummaryEyebrow": "Ask moniq",
-    "aiSummaryButton": "How am I doing?",
-    "aiSummaryButtonA11y": "How am I doing? Get an AI summary of your spending",
-    "aiSummaryResultEyebrow": "AI summary",
-    "aiSummaryLoading": "Generating your recap…",
-    "aiSummaryError": "Couldn't generate your recap. Check your connection and try again.",
-    "aiSummaryRetry": "Ask again"
+    "barValue": "{{label}} {{amount}}"
   },
   "savingsTargets": {
     "title": "Savings targets",
@@ -275,29 +268,11 @@
     "send": "Send message",
     "sendUnavailable": "Send message, not available yet",
     "userMessageA11y": "You said: {{message}}",
-    "statusLine": "Looked at this week's transactions",
-    "demo": {
-      "userQ1": "How am I doing this week?",
-      "reply1a": "Honestly? Better than last week — which I know isn't a high bar.",
-      "reply1b": "You're at **{{amount}}** since Monday. Groceries and transport are behaving. Dining is doing what dining does.",
-      "reply1c": "Two Friday dinners in one week is a choice, and I respect it.",
-      "userQ2": "is that bad?",
-      "reply2a": "Not bad. Just early.",
-      "reply2b": "If the rest of the week looks like a normal week you'll land around **{{projected}}**, which is **{{over}}** over where you wanted to be. Skip one dinner and you're fine — I'm not going to pretend that's a hardship.",
-      "chipWhatSpent": "What did I spend it on?",
-      "chipRestOfMonth": "Rest of the month?",
-      "userQ3": "or just give dining more room, it's always tight",
-      "reply3a": "Fair. You've gone over on dining four months running, so the budget is arguably the thing that's wrong, not you.",
-      "reply3b": "**{{amount}}** would cover every one of those months. Want me to make that the new number?",
-      "confirmTitle": "Dining budget",
-      "confirmEffective": "From September",
-      "confirmFootnote": "Monthly total goes to {{total}}. Nothing else moves.",
-      "confirmChangeA11y": "{{title}}: {{from}} changing to {{to}}, {{effective}}",
-      "confirmDoIt": "Do it",
-      "confirmDoItA11y": "Confirm: raise dining budget to {{to}}",
-      "confirmLeaveIt": "Leave it",
-      "confirmLeaveItA11y": "Dismiss, keep dining budget at {{from}}",
-      "confirmReassurance": "No rush — it'll still be here if you want to think about it."
+    "greeting": "Ask me anything about your spending — try \"how much have I spent this week?\"",
+    "loading": "Thinking…",
+    "error": "Something went wrong. Please try again.",
+    "statusLine": {
+      "recentSpending": "Reviewed your recent spending"
     }
   },
   "auth": {

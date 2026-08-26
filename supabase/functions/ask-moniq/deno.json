@@ -2,6 +2,8 @@
   "imports": {
     "ai": "npm:ai@^7.0.52",
     "@ai-sdk/anthropic": "npm:@ai-sdk/anthropic@^4.0.30",
+    "@supabase/supabase-js": "npm:@supabase/supabase-js@^2.45.0",
+    "postgres": "npm:postgres@^3.4.5",
     "zod": "npm:zod@^4.4.3"
   }
 }

@@ -7,13 +7,27 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-let client: SupabaseClient | null = null;
+export type SupabaseClientConfig = {
+  /** Base URL for Edge Functions, e.g. `${supabaseUrl}/functions/v1` — needed for the raw
+   * streaming fetch calls that `functions.invoke()` can't do (it buffers the whole response). */
+  functionsUrl: string;
+  anonKey: string;
+};
 
-export function configureSupabaseClient(c: SupabaseClient): void {
+let client: SupabaseClient | null = null;
+let config: SupabaseClientConfig | null = null;
+
+export function configureSupabaseClient(c: SupabaseClient, clientConfig: SupabaseClientConfig): void {
   client = c;
+  config = clientConfig;
 }
 
 export function getSupabaseClient(): SupabaseClient {
   if (!client) throw new Error('@moniq/api: call configureSupabaseClient() before use');
   return client;
+}
+
+export function getSupabaseClientConfig(): SupabaseClientConfig {
+  if (!config) throw new Error('@moniq/api: call configureSupabaseClient() before use');
+  return config;
 }

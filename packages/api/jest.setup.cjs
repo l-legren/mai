@@ -28,6 +28,10 @@ jest.mock('@moniq/api/supabase-client', () => {
   };
   return {
     getSupabaseClient: () => client,
+    getSupabaseClientConfig: () => ({
+      functionsUrl: 'https://example.supabase.co/functions/v1',
+      anonKey: 'test-anon-key',
+    }),
     configureSupabaseClient: jest.fn(),
   };
 });

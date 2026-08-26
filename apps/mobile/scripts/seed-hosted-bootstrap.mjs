@@ -3,8 +3,7 @@
  * One-time (idempotent, safe to re-run) setup of the dev@moniq.app test user against whichever
  * Supabase backend EXPO_PUBLIC_SUPABASE_URL/ANON_KEY point to (local or hosted, via .env) — mirrors
  * `supabase/seed.sql`'s user + recurring rows, which only ever runs locally on `supabase db reset`
- * and has no hosted equivalent. Daily expense data after this is `pnpm seed:expenses`'s job, not
- * this script's — this only creates the account and its recurring income/costs once.
+ * and has no hosted equivalent. This only creates the account and its recurring income/costs once.
  *
  * Usage: pnpm seed:hosted-bootstrap
  */

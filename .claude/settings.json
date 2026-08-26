@@ -2,6 +2,29 @@
   "enabledPlugins": {
     "expo@claude-plugins-official": true
   },
+  "permissions": {
+    "allow": [
+      "Bash(grep *)",
+      "Bash(find *)",
+      "Bash(ls *)",
+      "Bash(cat *)",
+      "Bash(git diff *)",
+      "Bash(git status *)",
+      "Bash(git log *)",
+      "Bash(git show *)",
+      "Bash(pnpm typecheck)",
+      "Bash(pnpm lint)",
+      "Bash(pnpm test)",
+      "Bash(pnpm --dir apps/mobile smoke)",
+      "Bash(supabase status)",
+      "Bash(wc *)",
+      "Bash(node -e *)",
+      "Agent",
+      "Read",
+      "Grep",
+      "Glob"
+    ]
+  },
   "hooks": {
     "PreToolUse": [
       {

@@ -82,7 +82,6 @@
     "typecheck": "tsc --noEmit",
     "test": "jest",
     "test:watch": "jest --watch",
-    "smoke": "node scripts/smoke-test-supabase.mjs",
-    "seed:expenses": "node scripts/seed-expenses.mjs"
+    "smoke": "node scripts/smoke-test-supabase.mjs"
   }
 }
