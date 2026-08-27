@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "defaultMode": "plan",
+    "allow": [
+      "Bash(git log *)",
+      "Bash(git diff *)",
+      "Bash(git show *)",
+      "WebFetch(domain:github.com)",
+      "Read",
+      "Grep",
+      "Glob"
+    ]
+  }
+}
