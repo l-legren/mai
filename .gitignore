@@ -37,6 +37,9 @@ yarn-error.*
 # Claude Design MCP local tool state
 .design-sync/
 
+# Stop hook's per-machine "last checked" state
+.claude/hooks/.check-changes-state.json
+
 # local MCP server config (may reference project-specific/internal endpoints)
 .mcp.json
 

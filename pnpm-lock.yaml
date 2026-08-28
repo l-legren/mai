@@ -38,9 +38,24 @@ importers:
       '@ai-sdk/anthropic':
         specifier: ^4.0.39
         version: 4.0.39(zod@4.4.3)
+      '@hono/node-server':
+        specifier: ^2.1.1
+        version: 2.1.1(hono@4.13.5)
+      '@moniq/api':
+        specifier: workspace:*
+        version: link:../packages/api
+      '@supabase/supabase-js':
+        specifier: ^2.112.3
+        version: 2.112.3(@opentelemetry/api@1.9.1)
       ai:
         specifier: ^7.0.66
         version: 7.0.66(zod@4.4.3)
+      dotenv:
+        specifier: ^17.4.2
+        version: 17.4.2
+      hono:
+        specifier: ^4.13.5
+        version: 4.13.5
       postgres:
         specifier: ^3.4.5
         version: 3.4.9
@@ -1300,6 +1315,12 @@ packages:
     resolution: {integrity: sha512-wtF6h+DY6M3YaDBPAmvuuA6jV8Sif9MjtOI5euKFWRgCDl5PeDpPsHR9u2l6St5ceY8AZgoNDww5+HvEsXFsGg==}
     engines: {node: '>=6'}
     hasBin: true
+
+  '@hono/node-server@2.1.1':
+    resolution: {integrity: sha512-ELuehkj5VCBdgEw9zs+ivkKwyzzUCSQuE96YmiPvn1ECBoZCczbFXJLeEGMTYjphP6gydh4pHMqEYPVMYUVgQg==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      hono: ^4
 
   '@humanfs/core@0.19.2':
     resolution: {integrity: sha512-UhXNm+CFMWcbChXywFwkmhqjs3PRCmcSa/hfBgLIb7oQ5HNb1wS0icWsGtSAUNgefHeI+eBrA8I1fxmbHsGdvA==}
@@ -4058,6 +4079,10 @@ packages:
 
   hoist-non-react-statics@3.3.2:
     resolution: {integrity: sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==}
+
+  hono@4.13.5:
+    resolution: {integrity: sha512-O6+/eCYRkzzzy0rPWwKLiGBR1nFuUPZynnwjxN1MBA62NNqbT0wQEzQyK2gSO5yDIDB336sXQleAhOHrzlYyKw==}
+    engines: {node: '>=16.9.0'}
 
   hosted-git-info@7.0.2:
     resolution: {integrity: sha512-puUZAUKT5m8Zzvs72XWy3HtvVbTWljRE66cP60bxJzAqf2DgICo7lYTY2IHUmLnNpjYvw5bvmoHvPc0QO2a62w==}
@@ -7616,6 +7641,10 @@ snapshots:
       protobufjs: 7.6.5
       yargs: 17.7.3
 
+  '@hono/node-server@2.1.1(hono@4.13.5)':
+    dependencies:
+      hono: 4.13.5
+
   '@humanfs/core@0.19.2':
     dependencies:
       '@humanfs/types': 0.15.0
@@ -10927,6 +10956,8 @@ snapshots:
   hoist-non-react-statics@3.3.2:
     dependencies:
       react-is: 16.13.1
+
+  hono@4.13.5: {}
 
   hosted-git-info@7.0.2:
     dependencies:

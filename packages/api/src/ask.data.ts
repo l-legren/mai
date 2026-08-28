@@ -7,8 +7,8 @@
 
 import { z } from 'zod';
 
-import { ApiError } from './api-error';
-import { getSupabaseClient, getSupabaseClientConfig } from './supabase-client';
+import { ApiError } from './api-error.js';
+import { getSupabaseClient } from './supabase-client.js';
 
 export type AskMessageRow = {
   role: 'user' | 'assistant';
@@ -38,7 +38,7 @@ export async function streamAskMoniqReply(
   signal?: AbortSignal
 ): Promise<void> {
   const client = getSupabaseClient();
-  const { anonKey, functionsUrl } = getSupabaseClientConfig();
+  const functionsUrl = 'http://localhost:3060' 
 
   const {
     data: { session },
@@ -50,7 +50,6 @@ export async function streamAskMoniqReply(
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${session.access_token}`,
-      apikey: anonKey,
     },
     body: JSON.stringify({ today, messages }),
     signal,

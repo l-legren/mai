@@ -4,13 +4,12 @@
  * at boot. See CLAUDE.md's "src/data/" section for the layering rules this package now implements.
  */
 
-export { ApiError } from './api-error';
+export { ApiError } from './api-error.js';
 export {
   configureSupabaseClient,
   getSupabaseClient,
   getSupabaseClientConfig,
-} from './supabase-client';
-export { resolveSupabaseUrl } from './resolve-supabase-url';
+} from './supabase-client.js';
 
 export {
   getCurrentUserId,
@@ -19,9 +18,9 @@ export {
   signUpWithPassword,
   signOut,
   deleteAccount,
-} from './auth.data';
+} from './auth.data.js';
 
-export { uploadAvatarFile, getAvatarSignedUrl } from './avatar.data';
+export { uploadAvatarFile, getAvatarSignedUrl } from './avatar.data.js';
 
 export {
   getExpenseRows,
@@ -29,7 +28,7 @@ export {
   deleteExpenseRow,
   type ExpenseRow,
   type NewExpenseRow,
-} from './expenses.data';
+} from './expenses.data.js';
 
 export {
   getProfileOnboardingRow,
@@ -38,7 +37,7 @@ export {
   type ProfileOnboardingRow,
   type NewProfileOnboardingRow,
   type ProfileOnboardingRowUpdate,
-} from './profile.data';
+} from './profile.data.js';
 
 export {
   getRecurringRows,
@@ -46,7 +45,7 @@ export {
   deleteRecurringRow,
   type RecurringRow,
   type NewRecurringRow,
-} from './recurring.data';
+} from './recurring.data.js';
 
 export {
   getSavingsTargetRows,
@@ -55,8 +54,8 @@ export {
   deleteSavingsTargetRow,
   type SavingsTargetRow,
   type NewSavingsTargetRow,
-} from './savings-targets.data';
+} from './savings-targets.data.js';
 
-export { getSavingsGoalValue, saveSavingsGoalValue } from './savings.data';
+export { getSavingsGoalValue, saveSavingsGoalValue } from './savings.data.js';
 
-export { streamAskMoniqReply, type AskMessageRow, type AskStreamEvent } from './ask.data';
+export { streamAskMoniqReply, type AskMessageRow, type AskStreamEvent } from './ask.data.js';
