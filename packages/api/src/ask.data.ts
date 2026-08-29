@@ -7,8 +7,8 @@
 
 import { z } from 'zod';
 
-import { ApiError } from './api-error';
-import { getSupabaseClient, getSupabaseClientConfig } from './supabase-client';
+import { ApiError } from './api-error.js';
+import { getSupabaseClient } from './supabase-client.js';
 
 export type AskMessageRow = {
   role: 'user' | 'assistant';
@@ -35,22 +35,21 @@ export async function streamAskMoniqReply(
   today: string,
   messages: AskMessageRow[],
   onEvent: (event: AskStreamEvent) => void,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  agentServiceUrl?: string
 ): Promise<void> {
   const client = getSupabaseClient();
-  const { anonKey, functionsUrl } = getSupabaseClientConfig();
 
   const {
     data: { session },
   } = await client.auth.getSession();
   if (!session) throw new ApiError('Not signed in');
 
-  const response = await fetch(`${functionsUrl}/ask-moniq`, {
+  const response = await fetch(`${agentServiceUrl ?? 'localhost:3060'}/ask-moniq`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${session.access_token}`,
-      apikey: anonKey,
     },
     body: JSON.stringify({ today, messages }),
     signal,

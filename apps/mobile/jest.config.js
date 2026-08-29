@@ -2,9 +2,13 @@
 module.exports = {
   preset: 'jest-expo',
   setupFiles: ['<rootDir>/jest.setup.js'],
-  // Mirror the tsconfig "@/*" path alias (Jest doesn't use Metro's resolver).
   moduleNameMapper: {
+    // Mirror the tsconfig "@/*" path alias (Jest doesn't use Metro's resolver).
     '^@/(.*)$': '<rootDir>/src/$1',
+    // @moniq/api's source uses explicit .js extensions on relative imports (required for NodeNext
+    // resolution, e.g. by the agent package) even though the files are .ts — Jest resolves module
+    // specifiers literally, so strip the .js suffix here to let it find the real .ts file.
+    '^(\\.{1,2}/.*)\\.js$': '$1',
   },
   // Unit-test the pure logic layers; skip the export-check bundle output.
   testPathIgnorePatterns: ['/node_modules/', '/dist/', '/.expo/'],

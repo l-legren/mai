@@ -13,6 +13,7 @@
 import type { SavingsTargetCategoryId } from '@/constants/categories';
 import type { SavingsTargetPriority } from '@/services/savings-targets.service';
 import { todayISO } from '@/utils/date';
+import { addMonths } from 'date-fns';
 
 export type DraftSavingsTargetInput = {
   prompt: string;
@@ -33,9 +34,7 @@ const STUB_CATEGORY: SavingsTargetCategoryId = 'other';
 const STUB_PRIORITY: SavingsTargetPriority = 'medium';
 
 function defaultTargetDate(): string {
-  const date = new Date();
-  date.setMonth(date.getMonth() + STUB_MONTHS_AHEAD);
-  return todayISO(date);
+  return todayISO(addMonths(new Date(), STUB_MONTHS_AHEAD));
 }
 
 export async function draftSavingsTarget(

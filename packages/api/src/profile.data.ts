@@ -5,9 +5,9 @@
 
 import { ProfileOnboardingRowSchema, type ProfileOnboardingRow } from '@moniq/schemas';
 
-import { ApiError } from './api-error';
-import { getCurrentUserId } from './auth.data';
-import { getSupabaseClient } from './supabase-client';
+import { ApiError } from './api-error.js';
+import { getCurrentUserId } from './auth.data.js';
+import { getSupabaseClient } from './supabase-client.js';
 
 export type { ProfileOnboardingRow };
 
