@@ -7,8 +7,8 @@
 
 import { z } from 'zod';
 
-import { ApiError } from './api-error.js';
-import { getSupabaseClient } from './supabase-client.js';
+import { ApiError } from './api-error';
+import { getSupabaseClient } from './supabase-client';
 
 export type AskMessageRow = {
   role: 'user' | 'assistant';

@@ -3,9 +3,9 @@
  * Raw upload/signed-URL operations only.
  */
 
-import { ApiError } from './api-error.js';
-import { getCurrentUserId } from './auth.data.js';
-import { getSupabaseClient } from './supabase-client.js';
+import { ApiError } from './api-error';
+import { getCurrentUserId } from './auth.data';
+import { getSupabaseClient } from './supabase-client';
 
 const AVATAR_OBJECT_NAME = 'avatar';
 

@@ -4,8 +4,8 @@
 
 import type { Session } from '@supabase/supabase-js';
 
-import { ApiError } from './api-error.js';
-import { getSupabaseClient } from './supabase-client.js';
+import { ApiError } from './api-error';
+import { getSupabaseClient } from './supabase-client';
 
 /**
  * The signed-in user's id, for scoping other tables' queries explicitly (in addition to, not instead
