@@ -15,7 +15,7 @@ app.post('/ask-moniq', async (ctx) => {
         const { data, error } = await supabase.auth.getUser(authHeader.replace('Bearer ', ''))
         if (!data.user) return ctx.json({error: `Unauthorized error: ${error}`}, 401);
     
-        const validationResult = AskMoniqRequestSchema.safeParse(ctx.req.json());
+        const validationResult = AskMoniqRequestSchema.safeParse(await ctx.req.json());
         if (!validationResult.success) return ctx.json({message: 'Invalid shape of the payload'}, 400)
     
         const result = runAskMoniq(data.user.id, validationResult.data.messages, validationResult.data.today)
