@@ -53,7 +53,7 @@ export function createMoniqTools(userId: string, today: string): ToolSet {
       description:
         "Get the user's total spending and per-category breakdown for the last N days, inclusive " +
         'of today. Use for questions about recent or relative spending (e.g. "this week", "the ' +
-        `last 10 days"). Do not use for savings goals or a specific calendar date range. N must be `+
+        `last 10 days"). Do not use for savings goals or a specific calendar date range. N must be ` +
         `between 1 and ${MAX_RECENT_SPENDING_DAYS}.`,
       inputSchema: z.object({
         days: z
@@ -61,7 +61,9 @@ export function createMoniqTools(userId: string, today: string): ToolSet {
           .int()
           .min(1)
           .max(MAX_RECENT_SPENDING_DAYS)
-          .describe(`Number of days to look back, inclusive of today. Max ${MAX_RECENT_SPENDING_DAYS}.`),
+          .describe(
+            `Number of days to look back, inclusive of today. Max ${MAX_RECENT_SPENDING_DAYS}.`
+          ),
       }),
       execute: async ({ days }): Promise<RecentSpendingResult> => {
         return withScopedRead(userId, async (tx) => {
