@@ -6,7 +6,9 @@ pnpm-lock.yaml
 supabase/.temp
 
 # each workspace package format-checks itself; avoid the root's own
-# format:check redundantly re-walking every package's files too
+# format:check redundantly re-walking every package's files too. (agent isn't
+# listed here — it has no local .prettierignore of its own, and the VS Code
+# Prettier extension resolves the nearest one walking up from the file being
+# formatted, so listing it here also blocked Format Document inside agent/.)
 apps
 packages
-agent
