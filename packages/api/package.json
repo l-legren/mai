@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@moniq/schemas": "workspace:*",
-    "@supabase/supabase-js": "^2.112.3",
+    "@supabase/supabase-js": "^2.112.4",
     "zod": "^4.4.3"
   },
   "devDependencies": {
@@ -24,7 +24,7 @@
     "@types/jest": "29.5.14",
     "eslint": "^9.39.5",
     "jest": "~29.7.0",
-    "jest-expo": "~57.0.4",
+    "jest-expo": "~57.0.5",
     "typescript": "~6.0.3"
   }
 }
