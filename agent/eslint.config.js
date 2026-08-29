@@ -1,3 +1,11 @@
-import base from '@moniq/config/eslint.base.mjs';
+import tseslint from 'typescript-eslint';
 
-export default [...base, { ignores: ['dist/**'] }];
+export default tseslint.config(
+  tseslint.configs.recommended,
+  {
+    rules: {
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+    },
+  },
+  { ignores: ['dist/**'] }
+);

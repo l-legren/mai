@@ -3,7 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "prettier": "@moniq/config/prettier.json",
+  "prettier": {
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "es5",
+    "printWidth": 100,
+    "tabWidth": 2,
+    "arrowParens": "always"
+  },
   "main": "src/server.ts",
   "scripts": {
     "typecheck": "tsc --noEmit",
@@ -25,7 +32,6 @@
   },
   "devDependencies": {
     "@lmnr-ai/lmnr": "^0.8.41",
-    "@moniq/config": "workspace:*",
     "@types/node": "^26.1.2",
     "eslint": "^9.39.5",
     "typescript": "~6.0.3",
