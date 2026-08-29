@@ -35,17 +35,17 @@ export async function streamAskMoniqReply(
   today: string,
   messages: AskMessageRow[],
   onEvent: (event: AskStreamEvent) => void,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  agentServiceUrl?: string
 ): Promise<void> {
   const client = getSupabaseClient();
-  const functionsUrl = 'http://localhost:3060' 
 
   const {
     data: { session },
   } = await client.auth.getSession();
   if (!session) throw new ApiError('Not signed in');
 
-  const response = await fetch(`${functionsUrl}/ask-moniq`, {
+  const response = await fetch(`${agentServiceUrl ?? 'localhost:3060'}/ask-moniq`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

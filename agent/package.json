@@ -4,21 +4,23 @@
   "private": true,
   "type": "module",
   "prettier": "@moniq/config/prettier.json",
+  "main": "src/server.ts",
   "scripts": {
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "eval": "npx lmnr eval",
-    "server": "node ./src/server.ts"
+    "start:dev": "tsx watch src/server.ts",
+    "start": "tsx src/server.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.39",
     "@hono/node-server": "^2.1.1",
-    "@moniq/api": "workspace:*",
     "@supabase/supabase-js": "^2.112.3",
     "ai": "^7.0.66",
     "dotenv": "^17.4.2",
     "hono": "^4.13.5",
     "postgres": "^3.4.5",
+    "tsx": "^4.23.12",
     "zod": "^4.4.3"
   },
   "devDependencies": {

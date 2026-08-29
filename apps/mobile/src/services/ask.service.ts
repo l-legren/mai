@@ -22,5 +22,11 @@ export async function sendAskMessage(
   onEvent: (event: AskEvent) => void,
   signal?: AbortSignal
 ): Promise<void> {
-  return streamAskMoniqReply(todayISO(), messages, onEvent, signal);
+  return streamAskMoniqReply(
+    todayISO(),
+    messages,
+    onEvent,
+    signal,
+    process.env.EXPO_PUBLIC_RAILWAY_AGENT_SERVICE_URL
+  );
 }

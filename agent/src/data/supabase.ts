@@ -1,4 +1,3 @@
-import { configureSupabaseClient } from '@moniq/api';
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.SUPABASE_URL;
@@ -17,9 +16,4 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     persistSession: false,
     detectSessionInUrl: false,
   },
-});
-
-configureSupabaseClient(supabase, {
-  functionsUrl: `${supabaseUrl}/functions/v1`,
-  anonKey: supabaseAnonKey,
 });
