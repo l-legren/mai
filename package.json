@@ -13,12 +13,18 @@
     "prettier": "^3.9.6",
     "turbo": "^2.10.10"
   },
+  "dev": "next dev",
+  "build": "next build",
+  "start": "next start",
   "scripts": {
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "typecheck": "turbo run typecheck",
     "lint": "turbo run lint",
     "test": "turbo run test",
+    "web:dev": "pnpm --dir apps/web dev",
+    "web:build": "pnpm --dir apps/web build",
+    "web:start": "pnpm --dir apps/web start",
     "start": "pnpm --dir apps/mobile start",
     "android": "pnpm --dir apps/mobile android",
     "ios": "pnpm --dir apps/mobile ios",
