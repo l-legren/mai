@@ -5,11 +5,7 @@
  */
 
 export { ApiError } from './api-error';
-export {
-  configureSupabaseClient,
-  getSupabaseClient,
-  getSupabaseClientConfig,
-} from './supabase-client';
+export { configureSupabaseClient, getSupabaseClient } from './supabase-client';
 
 export {
   getCurrentUserId,

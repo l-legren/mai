@@ -49,6 +49,10 @@
       "pnpm --dir agent exec eslint --cache --fix --max-warnings=0 --no-warn-ignored",
       "prettier --write"
     ],
+    "apps/web/**/*.{js,jsx,ts,tsx}": [
+      "pnpm --dir apps/web exec eslint --cache --fix --max-warnings=0 --no-warn-ignored",
+      "prettier --write"
+    ],
     "*.{json,md,yml,yaml}": [
       "prettier --write"
     ]
