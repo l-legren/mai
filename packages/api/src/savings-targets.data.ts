@@ -2,20 +2,20 @@
  * Data layer — savings targets persistence (`public.savings_targets`). Raw stored shapes only.
  */
 
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { SavingsTargetRowSchema, type SavingsTargetRow } from '@moniq/schemas';
 
 import { ApiError } from './api-error';
 import { getCurrentUserId } from './auth.data';
-import { getSupabaseClient } from './supabase-client';
 
 export type { SavingsTargetRow };
 
 const COLUMNS =
   'id, name, category, goal_amount, saved_amount, target_date, priority, ai_verdict, status';
 
-export async function getSavingsTargetRows(): Promise<SavingsTargetRow[]> {
-  const userId = await getCurrentUserId();
-  const { data, error } = await getSupabaseClient()
+export async function getSavingsTargetRows(client: SupabaseClient): Promise<SavingsTargetRow[]> {
+  const userId = await getCurrentUserId(client);
+  const { data, error } = await client
     .from('savings_targets')
     .select(COLUMNS)
     .eq('user_id', userId)
@@ -33,8 +33,11 @@ export type NewSavingsTargetRow = {
   ai_verdict: string;
 };
 
-export async function insertSavingsTargetRow(row: NewSavingsTargetRow): Promise<SavingsTargetRow> {
-  const { data, error } = await getSupabaseClient()
+export async function insertSavingsTargetRow(
+  client: SupabaseClient,
+  row: NewSavingsTargetRow
+): Promise<SavingsTargetRow> {
+  const { data, error } = await client
     .from('savings_targets')
     .insert(row)
     .select(COLUMNS)
@@ -44,10 +47,11 @@ export async function insertSavingsTargetRow(row: NewSavingsTargetRow): Promise<
 }
 
 export async function updateSavedAmountRow(
+  client: SupabaseClient,
   id: string,
   savedAmount: number
 ): Promise<SavingsTargetRow> {
-  const { data, error } = await getSupabaseClient()
+  const { data, error } = await client
     .from('savings_targets')
     .update({ saved_amount: savedAmount })
     .eq('id', id)
@@ -57,7 +61,7 @@ export async function updateSavedAmountRow(
   return SavingsTargetRowSchema.parse(data);
 }
 
-export async function deleteSavingsTargetRow(id: string): Promise<void> {
-  const { error } = await getSupabaseClient().from('savings_targets').delete().eq('id', id);
+export async function deleteSavingsTargetRow(client: SupabaseClient, id: string): Promise<void> {
+  const { error } = await client.from('savings_targets').delete().eq('id', id);
   if (error) throw new ApiError(error.message, error);
 }

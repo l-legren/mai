@@ -14,6 +14,8 @@ import {
 import countryToCurrency, { type Countries } from 'country-to-currency';
 import { z } from 'zod';
 
+import { supabase } from '@/data/supabase';
+
 export type Profile = {
   firstName: string;
   surname: string;
@@ -37,7 +39,7 @@ export function mapRowToProfile(row: ProfileOnboardingRow): Profile {
 }
 
 export async function getProfile(): Promise<Profile | null> {
-  const row = await getProfileOnboardingRow();
+  const row = await getProfileOnboardingRow(supabase);
   return row ? mapRowToProfile(row) : null;
 }
 
@@ -87,7 +89,7 @@ export async function completeOnboarding(input: NewProfile): Promise<Profile> {
     avatar_url: parsed.avatarUrl,
     notifications_enabled: parsed.notificationsEnabled,
   };
-  const inserted = await insertProfileOnboardingRow(row);
+  const inserted = await insertProfileOnboardingRow(supabase, row);
   return mapRowToProfile(inserted);
 }
 
@@ -109,6 +111,6 @@ export async function updateProfile(input: ProfileUpdate): Promise<Profile> {
     ...(parsed.countryCode !== undefined && { currency: deriveCurrency(parsed.countryCode) }),
   };
 
-  const updated = await updateProfileOnboardingRow(update);
+  const updated = await updateProfileOnboardingRow(supabase, update);
   return mapRowToProfile(updated);
 }

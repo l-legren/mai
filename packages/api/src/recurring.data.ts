@@ -3,19 +3,19 @@
  * Income and expenses live in one table, discriminated by `type`.
  */
 
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { RecurringRowSchema, type RecurringRow } from '@moniq/schemas';
 
 import { ApiError } from './api-error';
 import { getCurrentUserId } from './auth.data';
-import { getSupabaseClient } from './supabase-client';
 
 export type { RecurringRow };
 
 const COLUMNS = 'id, type, name, amount, cadence, term_kind, end_date, category';
 
-export async function getRecurringRows(): Promise<RecurringRow[]> {
-  const userId = await getCurrentUserId();
-  const { data, error } = await getSupabaseClient()
+export async function getRecurringRows(client: SupabaseClient): Promise<RecurringRow[]> {
+  const userId = await getCurrentUserId(client);
+  const { data, error } = await client
     .from('recurring')
     .select(COLUMNS)
     .eq('user_id', userId)
@@ -34,8 +34,11 @@ export type NewRecurringRow = {
   category?: string;
 };
 
-export async function insertRecurringRow(row: NewRecurringRow): Promise<RecurringRow> {
-  const { data, error } = await getSupabaseClient()
+export async function insertRecurringRow(
+  client: SupabaseClient,
+  row: NewRecurringRow
+): Promise<RecurringRow> {
+  const { data, error } = await client
     .from('recurring')
     .insert({ ...row, category: row.category ?? null })
     .select(COLUMNS)
@@ -44,7 +47,7 @@ export async function insertRecurringRow(row: NewRecurringRow): Promise<Recurrin
   return RecurringRowSchema.parse(data);
 }
 
-export async function deleteRecurringRow(id: string): Promise<void> {
-  const { error } = await getSupabaseClient().from('recurring').delete().eq('id', id);
+export async function deleteRecurringRow(client: SupabaseClient, id: string): Promise<void> {
+  const { error } = await client.from('recurring').delete().eq('id', id);
   if (error) throw new ApiError(error.message, error);
 }

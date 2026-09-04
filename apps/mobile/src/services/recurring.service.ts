@@ -15,6 +15,7 @@ import {
   RECURRING_EXPENSE_CATEGORY_IDS,
   type RecurringCategoryId,
 } from '@/constants/categories';
+import { supabase } from '@/data/supabase';
 
 export type RecurringType = 'income' | 'expense';
 export type Cadence = 'monthly' | 'yearly';
@@ -78,7 +79,7 @@ export function mapRowToRecurring(row: RecurringRow): RecurringItem {
 }
 
 export async function getRecurring(): Promise<RecurringItem[]> {
-  const rows = await getRecurringRows();
+  const rows = await getRecurringRows(supabase);
   return rows.map(mapRowToRecurring);
 }
 
@@ -100,12 +101,12 @@ export async function addRecurring(input: NewRecurring): Promise<RecurringItem> 
     end_date: input.frequency.kind === 'term' ? `${input.frequency.endDate}-01` : null,
     category: input.category,
   };
-  const inserted = await insertRecurringRow(row);
+  const inserted = await insertRecurringRow(supabase, row);
   return mapRowToRecurring(inserted);
 }
 
 export async function deleteRecurring(id: string): Promise<void> {
-  await deleteRecurringRow(id);
+  await deleteRecurringRow(supabase, id);
 }
 
 export function incomeTotal(items: RecurringItem[]): number {

@@ -4,12 +4,12 @@ import {
   getSavingsTargetRows,
   insertSavingsTargetRow,
 } from './savings-targets.data';
-import { getSupabaseClient } from './supabase-client';
+import { createMockSupabaseClient } from './test-helpers';
 import { mockQueryBuilder } from './utils/supabase-query-builder';
 
 jest.mock('./auth.data.ts', () => ({ getCurrentUserId: jest.fn().mockResolvedValue('user-1') }));
 
-const client = getSupabaseClient();
+const client = createMockSupabaseClient();
 const mockFrom = client.from as jest.MockedFunction<typeof client.from>;
 
 describe('savings-targets.data', () => {
@@ -18,7 +18,7 @@ describe('savings-targets.data', () => {
       mockQueryBuilder({ data: null, error: { message: 'network error' } }) as never
     );
 
-    await expect(getSavingsTargetRows()).rejects.toBeInstanceOf(ApiError);
+    await expect(getSavingsTargetRows(client as never)).rejects.toBeInstanceOf(ApiError);
   });
 
   it('returns the inserted row on success', async () => {
@@ -36,7 +36,7 @@ describe('savings-targets.data', () => {
     mockFrom.mockReturnValue(mockQueryBuilder({ data: row, error: null }) as never);
 
     await expect(
-      insertSavingsTargetRow({
+      insertSavingsTargetRow(client as never, {
         name: 'Japan trip',
         category: 'travel',
         goal_amount: 3000,
@@ -52,6 +52,8 @@ describe('savings-targets.data', () => {
       mockQueryBuilder({ data: null, error: { message: 'not found' } }) as never
     );
 
-    await expect(deleteSavingsTargetRow('missing-id')).rejects.toBeInstanceOf(ApiError);
+    await expect(deleteSavingsTargetRow(client as never, 'missing-id')).rejects.toBeInstanceOf(
+      ApiError
+    );
   });
 });

@@ -2,15 +2,15 @@
  * Data layer — monthly savings goal persistence (`public.profiles.savings_goal`, one row per user).
  */
 
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { SavingsGoalRowSchema } from '@moniq/schemas';
 
 import { ApiError } from './api-error';
 import { getCurrentUserId } from './auth.data';
-import { getSupabaseClient } from './supabase-client';
 
-export async function getSavingsGoalValue(): Promise<number | null> {
-  const userId = await getCurrentUserId();
-  const { data, error } = await getSupabaseClient()
+export async function getSavingsGoalValue(client: SupabaseClient): Promise<number | null> {
+  const userId = await getCurrentUserId(client);
+  const { data, error } = await client
     .from('profiles')
     .select('savings_goal')
     .eq('id', userId)
@@ -19,11 +19,8 @@ export async function getSavingsGoalValue(): Promise<number | null> {
   return SavingsGoalRowSchema.parse(data).savings_goal;
 }
 
-export async function saveSavingsGoalValue(value: number): Promise<void> {
-  const userId = await getCurrentUserId();
-  const { error } = await getSupabaseClient()
-    .from('profiles')
-    .update({ savings_goal: value })
-    .eq('id', userId);
+export async function saveSavingsGoalValue(client: SupabaseClient, value: number): Promise<void> {
+  const userId = await getCurrentUserId(client);
+  const { error } = await client.from('profiles').update({ savings_goal: value }).eq('id', userId);
   if (error) throw new ApiError(error.message, error);
 }

@@ -12,6 +12,7 @@ import {
 } from '@moniq/api';
 
 import { SAVINGS_TARGET_CATEGORY_IDS, type SavingsTargetCategoryId } from '@/constants/categories';
+import { supabase } from '@/data/supabase';
 
 export type SavingsTargetPriority = 'low' | 'medium' | 'high';
 export type SavingsTargetStatus = 'active' | 'achieved' | 'abandoned';
@@ -60,7 +61,7 @@ export function mapRowToSavingsTarget(row: SavingsTargetRow): SavingsTarget {
 }
 
 export async function getSavingsTargets(): Promise<SavingsTarget[]> {
-  const rows = await getSavingsTargetRows();
+  const rows = await getSavingsTargetRows(supabase);
   return rows.map(mapRowToSavingsTarget);
 }
 
@@ -82,18 +83,18 @@ export async function addSavingsTarget(input: NewSavingsTarget): Promise<Savings
     priority: input.priority,
     ai_verdict: input.aiVerdict,
   };
-  const inserted = await insertSavingsTargetRow(row);
+  const inserted = await insertSavingsTargetRow(supabase, row);
   return mapRowToSavingsTarget(inserted);
 }
 
 /** Manually log progress toward a target — `saved_amount` is never auto-derived. */
 export async function logSavedAmount(id: string, savedAmount: number): Promise<SavingsTarget> {
-  const updated = await updateSavedAmountRow(id, Math.max(0, savedAmount));
+  const updated = await updateSavedAmountRow(supabase, id, Math.max(0, savedAmount));
   return mapRowToSavingsTarget(updated);
 }
 
 export async function deleteSavingsTarget(id: string): Promise<void> {
-  await deleteSavingsTargetRow(id);
+  await deleteSavingsTargetRow(supabase, id);
 }
 
 const PRIORITY_RANK: Record<SavingsTargetPriority, number> = { high: 0, medium: 1, low: 2 };

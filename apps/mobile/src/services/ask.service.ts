@@ -6,6 +6,7 @@
  */
 
 import { streamAskMoniqReply, type AskMessageRow, type AskStreamEvent } from '@moniq/api';
+import { supabase } from '@/data/supabase';
 import { todayISO } from '@/utils/date';
 
 export type AskMessage = AskMessageRow;
@@ -23,6 +24,7 @@ export async function sendAskMessage(
   signal?: AbortSignal
 ): Promise<void> {
   return streamAskMoniqReply(
+    supabase,
     todayISO(),
     messages,
     onEvent,

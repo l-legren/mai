@@ -3,6 +3,10 @@
 // call — dynamic import() would need --experimental-vm-modules, which isn't configured.
 /* eslint-disable @typescript-eslint/no-require-imports */
 
+// jest.setup.js globally mocks this module for every other test in the app — this file tests the
+// real thing, so it opts back out.
+jest.unmock('./supabase');
+
 const ORIGINAL_ENV = process.env;
 
 describe('src/data/supabase', () => {
@@ -29,13 +33,11 @@ describe('src/data/supabase', () => {
     expect(() => require('./supabase')).toThrow(/Missing EXPO_PUBLIC_SUPABASE_URL/);
   });
 
-  it('hands the built client to @moniq/api when both env vars are present', () => {
+  it('builds a client when both env vars are present', () => {
     process.env.EXPO_PUBLIC_SUPABASE_URL = 'http://127.0.0.1:54321';
     process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY = 'anon-key';
 
-    require('./supabase');
-
-    const { configureSupabaseClient } = require('@moniq/api/supabase-client');
-    expect(configureSupabaseClient).toHaveBeenCalledTimes(1);
+    const { supabase } = require('./supabase');
+    expect(supabase.auth).toBeDefined();
   });
 });

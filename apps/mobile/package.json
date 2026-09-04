@@ -8,6 +8,7 @@
     "@expo/ui": "~57.0.11",
     "@expo/vector-icons": "^15.1.1",
     "@moniq/api": "workspace:*",
+    "@moniq/auth": "workspace:*",
     "@moniq/schemas": "workspace:*",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-community/slider": "5.2.0",
