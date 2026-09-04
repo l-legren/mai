@@ -1,0 +1,43 @@
+{
+  "common": {
+    "appName": "Moniq"
+  },
+  "nav": {
+    "homeLink": "Moniq home",
+    "signIn": "Sign in",
+    "signUp": "Sign up"
+  },
+  "landing": {
+    "badge": "Now on the web, not just your phone",
+    "headline": "Know where your money went.",
+    "headlineAccent": "Before it goes.",
+    "subline": "Moniq sorts every transaction, watches your budgets and tells you plainly how the month is going — so you find out on the 9th, not on the 30th.",
+    "getStarted": "Get started free"
+  },
+  "auth": {
+    "loginHeadline": "Welcome back",
+    "loginSubline": "Sign in to keep tracking.",
+    "signUpHeadline": "Create your account",
+    "signUpSubline": "Track your money in minutes.",
+    "name": "Name",
+    "namePlaceholder": "Your name",
+    "email": "Email",
+    "emailPlaceholder": "you@email.com",
+    "password": "Password",
+    "forgotPassword": "Forgot?",
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "pleaseWait": "Please wait…",
+    "toggleLoginLead": "Don't have an account?",
+    "toggleLoginAction": "Sign up",
+    "toggleSignupLead": "Already have an account?",
+    "toggleSignupAction": "Sign in",
+    "signUpConfirmationSent": "Check your email to confirm your account before signing in.",
+    "errors": {
+      "invalidInput": "Enter your name, email and password.",
+      "invalidCredentials": "Incorrect email or password.",
+      "emailInUse": "An account with this email already exists.",
+      "unknown": "Something went wrong. Please try again."
+    }
+  }
+}

@@ -29,8 +29,9 @@ All interactive and informational UI in the app must be accessible to screen rea
 # Repository structure
 
 pnpm workspace monorepo. The Expo React Native app lives at `apps/mobile/` (LEG-97 moved it out of
-the repo root, which is now pure workspace glue — no app code of its own). A growing set of
-`packages/*` holds pieces the app used to own directly:
+the repo root, which is now pure workspace glue — no app code of its own). `apps/web/` is a Next.js
+App Router app (landing + auth so far). A growing set of `packages/*` holds pieces shared between
+them — no longer just things carved out of mobile:
 
 ```
 apps/
@@ -50,11 +51,12 @@ packages/
   config/     → shared tsconfig/eslint/prettier bases
   schemas/    → framework-agnostic zod row schemas (@moniq/schemas)
   api/        → the Supabase-backed data layer (@moniq/api) — see "Data architecture" below
+  auth/       → shared auth business logic (@moniq/auth) — see "Data architecture" below
 
 agent/        → standalone AI agent package, its own tsconfig/deps
 
 `pnpm test` (root) → `turbo run test`, fanning out to each package's own `test` script
-                      (apps/mobile, packages/api), cached independently per package.
+                      (apps/mobile, packages/api, packages/auth), cached independently per package.
 ```
 
 Every `src/...` path referenced elsewhere in this doc is relative to `apps/mobile/`, unless stated otherwise.
@@ -77,6 +79,10 @@ The compiler auto-memoizes components, values, and functions. **Do not hand-writ
 - **Type props and parameters precisely.** Define a domain union (e.g. `AmountKey`) in the layer that owns it (usually a service) and use it, rather than `string`/`any`.
 - **No nested or chained ternary operators.** A single `a ? b : c` is fine, but never chain them (`a ? b : c ? d : e`). Use early returns, a small resolver function, or a lookup map keyed by the discriminant instead.
 
+# Comments
+
+Keep comments to **1–2 lines**. Extend only for genuinely complex logic that needs it — not by default.
+
 # Data architecture
 
 The codebase uses a strict layer separation. Never collapse layers or skip one.
@@ -84,20 +90,29 @@ The codebase uses a strict layer separation. Never collapse layers or skip one.
 ```
 src/app/        → screens          (call hooks only)
 src/hooks/      → React Query       (import services only)
-src/services/   → business logic    (import @moniq/api + src/data only)
+src/services/   → business logic    (import @moniq/api + @moniq/auth + src/data only)
 @moniq/api      → Supabase data layer (see "packages/api" below)
+@moniq/auth     → shared auth business logic (see "packages/auth" below)
 src/data/       → local device persistence (AsyncStorage only — theme preference)
 ```
 
-Data flows **app → hooks → services → (`@moniq/api` + `src/data`)**; imports only ever point one level down. Services are the one layer allowed to import from both — most resources live in `@moniq/api` (Supabase), a couple (currently just the theme preference) live in `src/data` (AsyncStorage) — these are genuinely different data sources, not two names for the same layer.
+Data flows **app → hooks → services → (`@moniq/api` + `@moniq/auth` + `src/data`)**; imports only ever point one level down. Services are the layer allowed to import from all three — most resources live in `@moniq/api` (Supabase), auth logic lives in `@moniq/auth` (its own package, not built on `@moniq/api` — see below for why), and a couple of resources (currently just the theme preference) live in `src/data` (AsyncStorage) — these are genuinely different data sources, not different names for the same layer.
 
 ## `packages/api` (`@moniq/api`) — the actual data layer
 
 - Talks to Supabase (Postgres + Storage + Edge Functions + Auth). Returns raw persisted row/value shapes.
-- Framework-agnostic — no React/React Native imports. The Supabase client itself is built by the **app** (`src/data/supabase.ts`, which owns the RN-specific bits: `AsyncStorage` as the auth token store, `react-native-url-polyfill`, the Android-emulator URL rewrite) and handed to the package once via `configureSupabaseClient(client)`, called from that same file. Every function inside the package reads it back via `getSupabaseClient()` (`packages/api/src/supabase-client.ts`) rather than importing a client directly — this is what keeps the package reusable by a future non-RN consumer.
+- Framework-agnostic — no React/React Native imports, and **no client singleton**. Every exported function takes the Supabase client as its **first parameter** (e.g. `getExpenseRows(client, ...)`) instead of reaching for one internally. This is what lets the package be shared safely by both `apps/mobile` (one client for the whole app lifetime, built once in `src/data/supabase.ts` — AsyncStorage-backed, imported directly by mobile's `services/` layer) and `apps/web`'s server-rendered routes (a fresh client per request, built via `@supabase/ssr` inside whichever Route Handler/Server Component needs it). A module-level singleton — the package's original design — can't serve both: a Node server handles many concurrent users through one process, so a shared mutable "current client" variable would race across requests. Each app owns building its own client; this package only ever receives one as an argument.
+- Functions that need the signed-in user's id (`getCurrentUserId`) are themselves called internally by several other data functions (expenses, avatar, profile, recurring, savings, savings-targets) — thread `client` into those internal cross-file calls too, not just each function's own exported signature. The compiler will catch anything missed once a signature changes.
 - File naming: `<resource>.data.ts` (e.g. `savings.data.ts`), exported through the package's single `index.ts` barrel — services import everything from `'@moniq/api'`, never a submodule path.
 - Raw stored types (`ExpenseRow`, `RecurringRow`, …) live in `@moniq/schemas` (the zod schema + its inferred type) and are re-exported from each `<resource>.data.ts` / the barrel. Write-shape types (`New<Resource>Row`, `<Resource>RowUpdate`) — what a caller sends, not what the DB returns — stay defined in the data file itself, not in `@moniq/schemas`.
 - **Types that come from the database must be runtime-typed with `zod`**, not just asserted via TypeScript — define the schema in `packages/schemas` and derive the type with `z.infer<>` rather than hand-writing a `type`/`interface`. A compile-time type is not a guarantee about what Supabase actually returns.
+- Tests build a plain mock client object and pass it directly into the function under test — no client-seam module to mock.
+
+## `packages/auth` (`@moniq/auth`) — shared auth, business logic and raw calls together
+
+- Framework-agnostic sign-in/sign-up validation, error-code mapping (`AuthError` / `AuthErrorCode`), session handling, **and** the raw `client.auth.*`/`client.rpc(...)` Supabase calls behind them, all in one file — shared because both `apps/mobile` and `apps/web` implement the same auth feature against the same Supabase project. Same client-as-first-parameter rule as `packages/api`, for the same reason.
+- **Does not depend on `@moniq/api`.** This package does _not_ follow the `packages/api` (raw) → `services/` (business rules) split — unlike `getCurrentUserId` (which stays in `@moniq/api` because six unrelated resources call it directly), nothing outside this package ever calls `signInWithPassword`/`signUpWithPassword`/etc., so there's no cross-package reuse to justify keeping a separate raw layer. Every error this package's public functions can throw is an `AuthError` — never a lower-level `ApiError`.
+- Each app's own auth entry point (`apps/mobile/src/services/auth.service.ts`, `apps/web/lib/auth.ts`) binds this app's one Supabase client to `@moniq/auth`'s functions and re-exports the bound versions — kept so callers (mobile's hooks, web's `AuthForm`) never pass a client explicitly and never need to know `@moniq/auth` exists, and so each app's own layering rules (e.g. mobile's hooks only ever importing from `services/`) still hold.
 
 ## `src/data/` — local device persistence
 
@@ -108,7 +123,7 @@ Data flows **app → hooks → services → (`@moniq/api` + `src/data`)**; impor
 ## `src/services/` — business layer
 
 - Owns domain models (camelCase, e.g. `Expense`, `Income`, `Cost`), mappers, merges, and business rules (allowance/daily-budget formulas, insights aggregation, money formatting).
-- Composes multiple `@moniq/api` (and, for local device settings, `src/data`) calls and applies rules.
+- Composes multiple `@moniq/api`/`@moniq/auth` (and, for local device settings, `src/data`) calls and applies rules.
 - Never imports from `hooks/`.
 - File naming: `<resource>.service.ts`.
 - Mappers (e.g. `mapRowToExpense`) live here and are exported for unit testing.
@@ -122,8 +137,8 @@ Data flows **app → hooks → services → (`@moniq/api` + `src/data`)**; impor
 ## Adding a new query
 
 1. Add the key to `src/hooks/query-keys.ts` first.
-2. Add the row schema (if new) to `packages/schemas/index.ts`, then the data function to `packages/api/src/<resource>.data.ts` — export both from `packages/api/src/index.ts`.
-3. Add the service function to `src/services/<resource>.service.ts`, importing from `'@moniq/api'`.
+2. Add the row schema (if new) to `packages/schemas/index.ts`, then the data function to `packages/api/src/<resource>.data.ts` — takes `client: SupabaseClient` as its first parameter; export both from `packages/api/src/index.ts`.
+3. Add the service function to `src/services/<resource>.service.ts`, importing from `'@moniq/api'` and passing through the app's own `supabase` client (from `src/data/supabase.ts`).
 4. Add the hook in `src/hooks/`.
 
 ## Query keys

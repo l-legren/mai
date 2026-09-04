@@ -5,10 +5,10 @@
  * generated instead of only once the full (possibly tool-calling) turn finishes.
  */
 
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { z } from 'zod';
 
 import { ApiError } from './api-error';
-import { getSupabaseClient } from './supabase-client';
 
 export type AskMessageRow = {
   role: 'user' | 'assistant';
@@ -32,14 +32,13 @@ const AskStreamLineSchema = z.discriminatedUnion('type', [
  * chat mid-reply doesn't keep streaming a response nothing will render.
  */
 export async function streamAskMoniqReply(
+  client: SupabaseClient,
   today: string,
   messages: AskMessageRow[],
   onEvent: (event: AskStreamEvent) => void,
   signal?: AbortSignal,
   agentServiceUrl?: string
 ): Promise<void> {
-  const client = getSupabaseClient();
-
   const {
     data: { session },
   } = await client.auth.getSession();

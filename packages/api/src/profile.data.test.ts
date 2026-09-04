@@ -4,12 +4,12 @@ import {
   insertProfileOnboardingRow,
   updateProfileOnboardingRow,
 } from './profile.data';
-import { getSupabaseClient } from './supabase-client';
+import { createMockSupabaseClient } from './test-helpers';
 import { mockQueryBuilder } from './utils/supabase-query-builder';
 
 jest.mock('./auth.data.ts', () => ({ getCurrentUserId: jest.fn().mockResolvedValue('user-1') }));
 
-const client = getSupabaseClient();
+const client = createMockSupabaseClient();
 const mockFrom = client.from as jest.MockedFunction<typeof client.from>;
 
 const row = {
@@ -26,7 +26,7 @@ describe('profile.data', () => {
   it('returns null when the user has no onboarding row yet', async () => {
     mockFrom.mockReturnValue(mockQueryBuilder({ data: null, error: null }) as never);
 
-    await expect(getProfileOnboardingRow()).resolves.toBeNull();
+    await expect(getProfileOnboardingRow(client as never)).resolves.toBeNull();
   });
 
   it('throws an ApiError instead of silently returning null when the fetch fails', async () => {
@@ -34,14 +34,14 @@ describe('profile.data', () => {
       mockQueryBuilder({ data: null, error: { message: 'network error' } }) as never
     );
 
-    await expect(getProfileOnboardingRow()).rejects.toBeInstanceOf(ApiError);
+    await expect(getProfileOnboardingRow(client as never)).rejects.toBeInstanceOf(ApiError);
   });
 
   it('returns the inserted row on success', async () => {
     mockFrom.mockReturnValue(mockQueryBuilder({ data: row, error: null }) as never);
 
     await expect(
-      insertProfileOnboardingRow({
+      insertProfileOnboardingRow(client as never, {
         first_name: 'Mara',
         surname: 'Lund',
         city: 'London',
@@ -57,6 +57,8 @@ describe('profile.data', () => {
       mockQueryBuilder({ data: null, error: { message: 'not found' } }) as never
     );
 
-    await expect(updateProfileOnboardingRow({ city: 'Paris' })).rejects.toBeInstanceOf(ApiError);
+    await expect(
+      updateProfileOnboardingRow(client as never, { city: 'Paris' })
+    ).rejects.toBeInstanceOf(ApiError);
   });
 });

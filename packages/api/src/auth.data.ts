@@ -1,11 +1,17 @@
 /**
- * Data layer — Supabase Auth. Raw session/credential operations only; no business rules.
+ * Data layer — the one raw Supabase Auth call shared outside the auth feature itself. Sign-in,
+ * sign-up, sign-out, and session subscription all moved to `@moniq/auth` (nothing else ever called
+ * them). This one stays here because it isn't auth-specific in practice: `expenses.data.ts`,
+ * `avatar.data.ts`, `profile.data.ts`, `recurring.data.ts`, `savings.data.ts`, and
+ * `savings-targets.data.ts` all call it directly to scope their own queries — moving it to
+ * `@moniq/auth` would mean every one of those unrelated resources depends on the auth package for
+ * a basic primitive, inverting the intended dependency direction (`@moniq/auth` builds on
+ * `@moniq/api`, not the other way around).
  */
 
-import type { Session } from '@supabase/supabase-js';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 import { ApiError } from './api-error';
-import { getSupabaseClient } from './supabase-client';
 
 /**
  * The signed-in user's id, for scoping other tables' queries explicitly (in addition to, not instead
@@ -13,51 +19,8 @@ import { getSupabaseClient } from './supabase-client';
  * (unlike `getSession()`) already returns an error when there's no authenticated user, so a single
  * check covers both the request-failed and not-signed-in cases.
  */
-export async function getCurrentUserId(): Promise<string> {
-  const { data, error } = await getSupabaseClient().auth.getUser();
+export async function getCurrentUserId(client: SupabaseClient): Promise<string> {
+  const { data, error } = await client.auth.getUser();
   if (error) throw new ApiError(error.message, error);
   return data.user.id;
-}
-
-export function onAuthStateChange(callback: (session: Session | null) => void): () => void {
-  const {
-    data: { subscription },
-  } = getSupabaseClient().auth.onAuthStateChange((_event, session) => callback(session));
-  return () => subscription.unsubscribe();
-}
-
-export async function signInWithPassword(email: string, password: string): Promise<Session> {
-  const { data, error } = await getSupabaseClient().auth.signInWithPassword({ email, password });
-  if (error) throw new ApiError(error.message, error);
-  return data.session;
-}
-
-/**
- * Local Supabase has `enable_confirmations = false`, so this returns a session immediately.
- * Against a hosted project with email confirmation on, `data.session` is `null` until the user
- * confirms — callers that need to support that should check for it explicitly.
- */
-export async function signUpWithPassword(
-  email: string,
-  password: string,
-  name: string
-): Promise<Session | null> {
-  const { data, error } = await getSupabaseClient().auth.signUp({
-    email,
-    password,
-    options: { data: { name } },
-  });
-  if (error) throw new ApiError(error.message, error);
-  return data.session;
-}
-
-export async function signOut(): Promise<void> {
-  const { error } = await getSupabaseClient().auth.signOut();
-  if (error) throw new ApiError(error.message, error);
-}
-
-/** Deletes the signed-in user's `auth.users` row via the `delete_own_account` RPC (LEG-52). */
-export async function deleteAccount(): Promise<void> {
-  const { error } = await getSupabaseClient().rpc('delete_own_account');
-  if (error) throw new ApiError(error.message, error);
 }

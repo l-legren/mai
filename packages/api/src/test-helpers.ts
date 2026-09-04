@@ -1,8 +1,9 @@
-// A single stable object, not a fresh one per call — data-layer functions call
-// getSupabaseClient() internally, separately from a test's own `const client =
-// getSupabaseClient()`; both must resolve to the exact same mock instance for
-// mockFrom.mockReturnValue(...) etc. to actually take effect.
-jest.mock('@moniq/api/supabase-client', () => {
+/**
+ * Shared mock Supabase client for `packages/api`/`packages/auth` tests — every data function now
+ * takes `client` as an explicit argument (no more singleton seam to mock), so tests just build one
+ * of these and pass it directly to the function under test.
+ */
+export function createMockSupabaseClient() {
   const client = {
     auth: {
       getSession: jest.fn(),
@@ -26,12 +27,7 @@ jest.mock('@moniq/api/supabase-client', () => {
       single: jest.fn(() => Promise.resolve({ data: null, error: null })),
     })),
   };
-  return {
-    getSupabaseClient: () => client,
-    getSupabaseClientConfig: () => ({
-      functionsUrl: 'https://example.supabase.co/functions/v1',
-      anonKey: 'test-anon-key',
-    }),
-    configureSupabaseClient: jest.fn(),
-  };
-});
+  return client;
+}
+
+export type MockSupabaseClient = ReturnType<typeof createMockSupabaseClient>;

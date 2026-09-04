@@ -6,6 +6,8 @@
 
 import { getAvatarSignedUrl, uploadAvatarFile } from '@moniq/api';
 
+import { supabase } from '@/data/supabase';
+
 /** Matches the `avatars` bucket's `file_size_limit` (5242880 bytes = 5MB). */
 export const AVATAR_MAX_BYTES = 5 * 1024 * 1024;
 
@@ -31,11 +33,11 @@ function isAllowedType(contentType: string): boolean {
 export async function uploadAvatar(bytes: ArrayBuffer, contentType: string): Promise<string> {
   if (!isAllowedType(contentType)) throw new AvatarUploadError('unsupportedType');
   if (bytes.byteLength > AVATAR_MAX_BYTES) throw new AvatarUploadError('tooLarge');
-  return uploadAvatarFile(bytes, contentType);
+  return uploadAvatarFile(supabase, bytes, contentType);
 }
 
 const SIGNED_URL_TTL_SECONDS = 60 * 60;
 
 export async function getAvatarUrl(path: string): Promise<string> {
-  return getAvatarSignedUrl(path, SIGNED_URL_TTL_SECONDS);
+  return getAvatarSignedUrl(supabase, path, SIGNED_URL_TTL_SECONDS);
 }

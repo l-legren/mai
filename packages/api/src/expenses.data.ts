@@ -2,19 +2,19 @@
  * Data layer — expenses persistence via Supabase. Raw stored shapes only; no business rules.
  */
 
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { ExpenseRowSchema, type ExpenseRow } from '@moniq/schemas';
 
 import { ApiError } from './api-error';
 import { getCurrentUserId } from './auth.data';
-import { getSupabaseClient } from './supabase-client';
 
 export type { ExpenseRow };
 
 const COLUMNS = 'id, category, amount, spent_on, spent_at, note';
 
-export async function getExpenseRows(): Promise<ExpenseRow[]> {
-  const userId = await getCurrentUserId();
-  const { data, error } = await getSupabaseClient()
+export async function getExpenseRows(client: SupabaseClient): Promise<ExpenseRow[]> {
+  const userId = await getCurrentUserId(client);
+  const { data, error } = await client
     .from('expenses')
     .select(COLUMNS)
     .eq('user_id', userId)
@@ -31,8 +31,11 @@ export type NewExpenseRow = {
   note?: string;
 };
 
-export async function insertExpenseRow(row: NewExpenseRow): Promise<ExpenseRow> {
-  const { data, error } = await getSupabaseClient()
+export async function insertExpenseRow(
+  client: SupabaseClient,
+  row: NewExpenseRow
+): Promise<ExpenseRow> {
+  const { data, error } = await client
     .from('expenses')
     .insert({ ...row, note: row.note ?? null })
     .select(COLUMNS)
@@ -41,7 +44,7 @@ export async function insertExpenseRow(row: NewExpenseRow): Promise<ExpenseRow> 
   return ExpenseRowSchema.parse(data);
 }
 
-export async function deleteExpenseRow(id: string): Promise<void> {
-  const { error } = await getSupabaseClient().from('expenses').delete().eq('id', id);
+export async function deleteExpenseRow(client: SupabaseClient, id: string): Promise<void> {
+  const { error } = await client.from('expenses').delete().eq('id', id);
   if (error) throw new ApiError(error.message, error);
 }

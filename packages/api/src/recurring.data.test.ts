@@ -1,11 +1,11 @@
 import { deleteRecurringRow, getRecurringRows, insertRecurringRow } from './recurring.data';
 import { ApiError } from './api-error';
-import { getSupabaseClient } from './supabase-client';
+import { createMockSupabaseClient } from './test-helpers';
 import { mockQueryBuilder } from './utils/supabase-query-builder';
 
 jest.mock('./auth.data.ts', () => ({ getCurrentUserId: jest.fn().mockResolvedValue('user-1') }));
 
-const client = getSupabaseClient();
+const client = createMockSupabaseClient();
 const mockFrom = client.from as jest.MockedFunction<typeof client.from>;
 
 describe('recurring.data', () => {
@@ -14,7 +14,7 @@ describe('recurring.data', () => {
       mockQueryBuilder({ data: null, error: { message: 'network error' } }) as never
     );
 
-    await expect(getRecurringRows()).rejects.toBeInstanceOf(ApiError);
+    await expect(getRecurringRows(client as never)).rejects.toBeInstanceOf(ApiError);
   });
 
   it('returns the inserted row on success', async () => {
@@ -31,7 +31,7 @@ describe('recurring.data', () => {
     mockFrom.mockReturnValue(mockQueryBuilder({ data: row, error: null }) as never);
 
     await expect(
-      insertRecurringRow({
+      insertRecurringRow(client as never, {
         type: 'income',
         name: 'Day job',
         amount: 3000,
@@ -48,6 +48,8 @@ describe('recurring.data', () => {
       mockQueryBuilder({ data: null, error: { message: 'not found' } }) as never
     );
 
-    await expect(deleteRecurringRow('missing-id')).rejects.toBeInstanceOf(ApiError);
+    await expect(deleteRecurringRow(client as never, 'missing-id')).rejects.toBeInstanceOf(
+      ApiError
+    );
   });
 });

@@ -1,8 +1,8 @@
 import { ApiError } from './api-error';
-import { getSupabaseClient } from './supabase-client';
+import { createMockSupabaseClient } from './test-helpers';
 import { streamAskMoniqReply } from './ask.data';
 
-const client = getSupabaseClient();
+const client = createMockSupabaseClient();
 const mockGetSession = client.auth.getSession as jest.MockedFunction<typeof client.auth.getSession>;
 
 /** Builds a fetch Response whose body streams the given NDJSON lines in one or more chunks. */
@@ -47,7 +47,7 @@ describe('ask.data', () => {
     ) as never;
 
     const events: unknown[] = [];
-    await streamAskMoniqReply(today, messages, (event) => events.push(event));
+    await streamAskMoniqReply(client as never, today, messages, (event) => events.push(event));
 
     expect(events).toEqual([
       { type: 'tool', toolName: 'getRecentSpending' },
@@ -60,24 +60,33 @@ describe('ask.data', () => {
     mockGetSession.mockResolvedValue({ data: { session: null }, error: null } as never);
     globalThis.fetch = jest.fn() as never;
 
-    await expect(streamAskMoniqReply(today, messages, jest.fn())).rejects.toBeInstanceOf(ApiError);
+    await expect(
+      streamAskMoniqReply(client as never, today, messages, jest.fn())
+    ).rejects.toBeInstanceOf(ApiError);
   });
 
   it('throws an ApiError when the request itself fails', async () => {
-    globalThis.fetch = jest.fn().mockResolvedValue(fakeStreamResponse([], { ok: false, status: 502 })) as never;
+    globalThis.fetch = jest
+      .fn()
+      .mockResolvedValue(fakeStreamResponse([], { ok: false, status: 502 })) as never;
 
-    await expect(streamAskMoniqReply(today, messages, jest.fn())).rejects.toBeInstanceOf(ApiError);
+    await expect(
+      streamAskMoniqReply(client as never, today, messages, jest.fn())
+    ).rejects.toBeInstanceOf(ApiError);
   });
 
   it('throws rather than silently continuing when the stream reports a mid-stream error', async () => {
     globalThis.fetch = jest.fn().mockResolvedValue(
-      fakeStreamResponse([JSON.stringify({ type: 'text', text: 'partial' }), JSON.stringify({ type: 'error' })])
+      fakeStreamResponse([
+        JSON.stringify({ type: 'text', text: 'partial' }),
+        JSON.stringify({ type: 'error' }),
+      ])
     ) as never;
 
     const events: unknown[] = [];
-    await expect(streamAskMoniqReply(today, messages, (event) => events.push(event))).rejects.toBeInstanceOf(
-      ApiError
-    );
+    await expect(
+      streamAskMoniqReply(client as never, today, messages, (event) => events.push(event))
+    ).rejects.toBeInstanceOf(ApiError);
     expect(events).toEqual([{ type: 'text', text: 'partial' }]);
   });
 });

@@ -11,6 +11,7 @@ import {
 } from '@moniq/api';
 
 import { CATEGORY_IDS, type CategoryId } from '@/constants/categories';
+import { supabase } from '@/data/supabase';
 import { isoTime, todayISO } from '@/utils/date';
 
 export type Expense = {
@@ -44,7 +45,7 @@ export function mapRowToExpense(row: ExpenseRow): Expense {
 }
 
 export async function getExpenses(): Promise<Expense[]> {
-  const rows = await getExpenseRows();
+  const rows = await getExpenseRows(supabase);
   return rows.map(mapRowToExpense);
 }
 
@@ -59,12 +60,12 @@ export async function addExpense(input: NewExpense): Promise<Expense> {
     spent_at: now.toISOString(),
     note: input.note,
   };
-  const inserted = await insertExpenseRow(row);
+  const inserted = await insertExpenseRow(supabase, row);
   return mapRowToExpense(inserted);
 }
 
 export async function deleteExpense(id: string): Promise<void> {
-  await deleteExpenseRow(id);
+  await deleteExpenseRow(supabase, id);
 }
 
 /** Expenses logged on `day` (defaults to today). */
