@@ -271,6 +271,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@moniq/api':
+        specifier: workspace:*
+        version: link:../../packages/api
       '@moniq/auth':
         specifier: workspace:*
         version: link:../../packages/auth

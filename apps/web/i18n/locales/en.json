@@ -1,11 +1,22 @@
 {
   "common": {
-    "appName": "Moniq"
+    "appName": "Moniq",
+    "loading": "Loading…"
   },
   "nav": {
     "homeLink": "Moniq home",
     "signIn": "Sign in",
-    "signUp": "Sign up"
+    "signUp": "Sign up",
+    "primary": "Main navigation",
+    "recurring": "Recurring",
+    "insights": "Insights",
+    "askMoniq": "Ask Moniq",
+    "collapseSidebar": "Collapse sidebar",
+    "expandSidebar": "Expand sidebar",
+    "accountMenu": "Account menu"
+  },
+  "home": {
+    "title": "Home"
   },
   "landing": {
     "badge": "Now on the web, not just your phone",
@@ -33,6 +44,7 @@
     "toggleSignupLead": "Already have an account?",
     "toggleSignupAction": "Sign in",
     "signUpConfirmationSent": "Check your email to confirm your account before signing in.",
+    "signOut": "Sign out",
     "errors": {
       "invalidInput": "Enter your name, email and password.",
       "invalidCredentials": "Incorrect email or password.",

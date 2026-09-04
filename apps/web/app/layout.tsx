@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import I18nProvider from './i18n-provider';
-import SupabaseProvider from './supabase-provider';
 import './globals.css';
 
 const geistSans = Geist({
@@ -23,9 +22,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col font-sans">
-        <I18nProvider>
-          <SupabaseProvider>{children}</SupabaseProvider>
-        </I18nProvider>
+        <I18nProvider>{children}</I18nProvider>
       </body>
     </html>
   );

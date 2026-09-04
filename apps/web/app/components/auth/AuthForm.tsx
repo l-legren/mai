@@ -54,7 +54,7 @@ const AuthForm = ({ mode }: AuthFormProps) => {
       return { errorCode: null, confirmationPending: true };
     }
 
-    router.push('/dashboard');
+    router.push('/');
     return initialState;
   };
 

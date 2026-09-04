@@ -10,7 +10,7 @@ const SiteHeader = () => {
 
   return (
     <header className="flex items-center justify-between px-6 py-6 sm:px-10 lg:px-14">
-      <Link href="/" aria-label={t('nav.homeLink')}>
+      <Link href="/welcome" aria-label={t('nav.homeLink')}>
         <Logo />
       </Link>
 
