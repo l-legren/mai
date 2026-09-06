@@ -6,6 +6,8 @@ export type Transaction = {
   note: string | null;
   amount: string;
   time: string;
+  /** Raw YYYY-MM-DD, kept alongside the formatted `time` for day-grouping (see groupTransactionsByDay). */
+  date: string;
 };
 
 // Currency formatting is hardcoded to EUR for now — this app has no per-user currency wiring
@@ -24,5 +26,6 @@ export function toTransaction(expense: ExpenseRow): Transaction {
     note: expense.note,
     amount: currencyFormatter.format(expense.amount),
     time: timeFormatter.format(new Date(expense.spent_at)),
+    date: expense.spent_on,
   };
 }

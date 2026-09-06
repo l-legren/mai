@@ -99,11 +99,16 @@ body {
   margin: 0;
 }
 
-a {
-  color: var(--mq-accent);
-  text-decoration: none;
-}
+/* @layer base, not a bare rule: Tailwind v4 wraps its utilities in `@layer utilities`, and an
+   unlayered rule always wins over a layered one regardless of specificity — a bare `a { color }`
+   here would silently beat any `text-*` utility applied directly to a Link/anchor. */
+@layer base {
+  a {
+    color: var(--mq-accent);
+    text-decoration: none;
+  }
 
-a:hover {
-  color: #ff7bbb;
+  a:hover {
+    color: #ff7bbb;
+  }
 }

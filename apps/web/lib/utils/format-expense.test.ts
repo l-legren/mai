@@ -25,6 +25,7 @@ describe('toTransaction', () => {
         categoryId: 'groceries',
         note: null,
         amount: '€12.50',
+        date: '2026-07-09',
       })
     );
   });

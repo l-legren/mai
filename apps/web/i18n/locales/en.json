@@ -26,6 +26,8 @@
   "transactions": {
     "title": "Transactions",
     "empty": "No transactions yet.",
+    "today": "Today",
+    "yesterday": "Yesterday",
     "pageOf": "Page {{page}} of {{totalPages}}",
     "previous": "Previous",
     "next": "Next"

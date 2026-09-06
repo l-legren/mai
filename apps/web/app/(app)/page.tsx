@@ -1,5 +1,5 @@
 import { getCurrentExpenses } from '@/lib/dal/expenses';
-import { formatCurrency, toTransaction } from '@/lib/format-expense';
+import { formatCurrency, toTransaction } from '@/lib/utils/format-expense';
 import HomeView from './HomeView';
 
 const RECENT_TRANSACTIONS_LIMIT = 3;

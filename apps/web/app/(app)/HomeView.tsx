@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { Button, Card, StatCard, TransactionRow } from '@/app/components/ui';
-import type { Transaction } from '@/lib/format-expense';
+import type { Transaction } from '@/lib/utils/format-expense';
 import { cn } from '@/lib/utils';
 
 export type HomeViewProps = {

@@ -1,5 +1,5 @@
 import { getPaginatedExpenses } from '@/lib/dal/expenses';
-import { toTransaction } from '@/lib/format-expense';
+import { toTransaction } from '@/lib/utils/format-expense';
 import TransactionsView from './TransactionsView';
 
 const PAGE_SIZE = 20;
