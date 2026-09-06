@@ -10,7 +10,7 @@ export type PageHeadingProps = {
 const PageHeading = ({ titleKey }: PageHeadingProps) => {
   const { t } = useTranslation();
 
-  return <h1 className="text-2xl font-semibold text-[#F1EFF0]">{t(titleKey)}</h1>;
+  return <h1 className="text-2xl font-semibold text-text">{t(titleKey)}</h1>;
 };
 
 export default PageHeading;

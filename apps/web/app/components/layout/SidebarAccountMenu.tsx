@@ -19,13 +19,13 @@ const SidebarAccountMenuDropdown = () => {
     <div
       role="menu"
       aria-label={t('nav.accountMenu')}
-      className="absolute bottom-[calc(100%+6px)] left-0 right-0 flex flex-col gap-0.5 rounded-xl bg-[#2E282E] p-1.5 shadow-[0_14px_34px_rgba(0,0,0,0.5)]"
+      className="absolute bottom-[calc(100%+6px)] left-0 right-0 flex flex-col gap-0.5 rounded-mq-xl bg-hover p-1.5 shadow-mq-pop"
     >
       <form action={signOut}>
         <button
           type="submit"
           role="menuitem"
-          className="flex h-[38px] w-full items-center gap-2.5 rounded-lg px-2.5 text-left text-[13.5px] font-medium text-[#F1EFF0] hover:bg-white/[0.06]"
+          className="flex h-[38px] w-full items-center gap-2.5 rounded-mq-lg px-2.5 text-left text-[13.5px] font-medium text-text hover:bg-fill"
         >
           {t('auth.signOut')}
         </button>
@@ -72,22 +72,22 @@ const SidebarAccountMenu = ({ profile, collapsed }: SidebarAccountMenuProps) => 
         aria-expanded={isOpen}
         aria-label={collapsed ? t('nav.accountMenu') : undefined}
         className={cn(
-          'flex h-11 w-full items-center gap-3 rounded-[11px] px-3 hover:bg-white/[0.04]',
+          'flex h-11 w-full items-center gap-3 rounded-mq-sm px-3 hover:bg-white/[0.04]',
           collapsed && 'justify-center px-0'
         )}
       >
         <span
           aria-hidden="true"
-          className="flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-full bg-[#FF4FA3]/16 text-xs font-bold text-[#FF4FA3]"
+          className="flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-full bg-accent-tint-strong text-xs font-bold text-accent"
         >
           {initial}
         </span>
         {!collapsed && (
           <>
-            <span className="min-w-0 flex-1 truncate text-left text-sm font-medium text-[#F1EFF0]">
+            <span className="min-w-0 flex-1 truncate text-left text-sm font-medium text-text">
               {profile?.first_name}
             </span>
-            <span aria-hidden="true" className="text-[13px] text-[#5A545A]">
+            <span aria-hidden="true" className="text-[13px] text-text-5">
               •••
             </span>
           </>

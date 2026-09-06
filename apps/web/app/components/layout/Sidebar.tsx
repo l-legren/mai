@@ -22,7 +22,7 @@ const Sidebar = ({ profile }: SidebarProps) => {
     <nav
       aria-label={t('nav.primary')}
       className={cn(
-        'flex shrink-0 flex-col border-r border-white/[0.07] bg-[#1C171C] py-[22px] transition-[width] duration-150',
+        'flex shrink-0 flex-col border-r border-border bg-surface py-[22px] transition-[width] duration-150',
         collapsed ? 'w-[68px] items-center px-0' : 'w-[252px] px-3.5'
       )}
     >
@@ -38,7 +38,7 @@ const Sidebar = ({ profile }: SidebarProps) => {
           onClick={toggleCollapsed}
           aria-label={t(collapsed ? 'nav.expandSidebar' : 'nav.collapseSidebar')}
           className={cn(
-            'flex items-center justify-center rounded-lg text-[#6E686E] hover:bg-white/[0.04] hover:text-[#A9A3A8]',
+            'flex items-center justify-center rounded-mq-lg text-text-4 hover:bg-white/[0.04] hover:text-text-2',
             collapsed ? 'h-11 w-11' : 'h-7 w-7'
           )}
         >

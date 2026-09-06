@@ -13,7 +13,7 @@ const AppLayout = async ({ children }: PropsWithChildren) => {
   const profile = await getCurrentProfile();
 
   return (
-    <div className="flex min-h-svh bg-[#171316]">
+    <div className="flex min-h-svh bg-bg">
       <Sidebar profile={profile} />
       <main className="min-w-0 flex-1">{children}</main>
     </div>
