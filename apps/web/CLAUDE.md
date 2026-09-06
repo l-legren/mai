@@ -51,6 +51,10 @@ Runner: **Vitest**. Default environment is `node` — most of what's worth testi
 - `app/actions/sign-out.ts` has no branches worth protecting (three sequential calls, no conditionals) — deliberately left untested; don't add a test that would just restate it.
 - **A component with real logic** (not pure styling/props passthrough — e.g. `Input.tsx`'s label/id-association behavior) opts into `jsdom` per-file via a `// @vitest-environment jsdom` comment at the top of that test file, and renders with `@testing-library/react` (`render`/`screen`, `afterEach(cleanup)` — no auto-cleanup entry point in this version). `Input.test.tsx` is the reference pattern. Don't flip the whole suite to `jsdom` for this — keep it scoped to the files that actually render something.
 
+## CI coverage gate
+
+`.github/workflows/pr-checks.yml`'s `web-coverage` job runs `turbo run test --filter=web -- --coverage` and fails the PR if statements/branches/functions/lines drop below 85% (`coverage.thresholds` in `vitest.config.mts`). This is web-only — the generic `test` job explicitly excludes web (`--filter='!web'`) so its tests don't run twice. Don't lower the threshold to force a merge; if a change genuinely can't reach 85% test-worthy coverage, that's a signal to look at what's untested, not to move the bar.
+
 # Internationalisation
 
 See root `CLAUDE.md`'s "Internationalisation" section for the general rules (every string via `t()`, interpolation syntax, etc.) — this section only covers this app's paths and initialisation.
