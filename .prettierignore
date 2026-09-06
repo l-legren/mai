@@ -12,3 +12,7 @@ supabase/.temp
 # formatted, so listing it here also blocked Format Document inside agent/.)
 apps
 packages
+
+# reference-only design export (see design-system/CLAUDE.md) — not first-party source we
+# maintain, and re-exporting it would just overwrite our formatting anyway.
+design-system

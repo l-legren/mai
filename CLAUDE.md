@@ -19,6 +19,9 @@ packages/
 
 agent/        → standalone AI agent package, its own tsconfig/deps
 
+design-system/ → reference-only design export for apps/web UI work — see apps/web/CLAUDE.md's
+                 "Design system" section, not first-party source (excluded from format:check)
+
 `pnpm test` (root) → `turbo run test`, fanning out to each package's own `test` script
                       (apps/mobile, apps/web, packages/api, packages/auth), cached independently per package.
 ```
