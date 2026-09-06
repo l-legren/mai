@@ -16,7 +16,7 @@ const SiteHeader = () => {
       <div className="flex items-center gap-4">
         <Link
           href="/sign-in"
-          className="text-sm font-semibold text-[#F1EFF0] transition-colors hover:text-[#FF4FA3]"
+          className="text-sm font-semibold text-text transition-colors hover:text-accent"
         >
           {t('nav.signIn')}
         </Link>

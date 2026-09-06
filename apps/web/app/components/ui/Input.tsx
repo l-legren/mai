@@ -17,7 +17,7 @@ const Input = ({ label, labelRight, id, className, ref, ...props }: InputProps) 
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex items-center justify-between">
-        <label htmlFor={inputId} className="text-sm font-medium text-[#A9A3A8]">
+        <label htmlFor={inputId} className="text-sm font-medium text-text-2">
           {label}
         </label>
         {labelRight}
@@ -26,7 +26,7 @@ const Input = ({ label, labelRight, id, className, ref, ...props }: InputProps) 
         id={inputId}
         ref={ref}
         className={cn(
-          'h-12 rounded-xl border border-white/15 bg-white/5 px-4 text-[15px] text-[#F1EFF0] outline-none transition-colors placeholder:text-[#6E686E] focus-visible:border-[#FF4FA3]',
+          'h-12 rounded-mq-xl border border-white/15 bg-white/5 px-4 text-[15px] text-text outline-none transition-colors placeholder:text-text-4 focus-visible:border-accent',
           className
         )}
         {...props}

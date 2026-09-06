@@ -54,7 +54,7 @@ const AuthForm = ({ mode }: AuthFormProps) => {
             <button
               type="button"
               onClick={handleForgotPassword}
-              className="text-xs font-semibold text-[#FF4FA3] hover:text-[#FF6BB1]"
+              className="text-xs font-semibold text-accent hover:text-[#FF6BB1]"
             >
               {t('auth.forgotPassword')}
             </button>

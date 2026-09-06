@@ -45,26 +45,21 @@ const SidebarNavItem = ({ item, collapsed }: SidebarNavItemProps) => {
       aria-current={isActive ? 'page' : undefined}
       aria-label={collapsed ? label : undefined}
       className={cn(
-        'group relative flex h-11 items-center gap-3 rounded-[11px] px-3 transition-colors',
+        'group relative flex h-11 items-center gap-3 rounded-mq-sm px-3 transition-colors',
         collapsed && 'w-11 justify-center px-0',
-        isActive ? 'bg-[#FF4FA3]/12 text-[#FF4FA3]' : 'text-[#A9A3A8] hover:bg-white/[0.04]'
+        isActive ? 'bg-accent-tint text-accent' : 'text-text-2 hover:bg-white/[0.04]'
       )}
     >
-      <Icon className={cn('shrink-0', isActive ? 'text-[#FF4FA3]' : 'text-[#8E888E]')} />
+      <Icon className={cn('shrink-0', isActive ? 'text-accent' : 'text-[#8E888E]')} />
       {!collapsed && (
-        <span
-          className={cn(
-            'text-[14.5px] font-medium',
-            isActive ? 'text-[#F1EFF0]' : 'text-[#A9A3A8]'
-          )}
-        >
+        <span className={cn('text-[14.5px] font-medium', isActive ? 'text-text' : 'text-text-2')}>
           {label}
         </span>
       )}
       {collapsed && (
         <span
           role="tooltip"
-          className="pointer-events-none absolute left-[52px] z-10 whitespace-nowrap rounded-lg bg-[#2E282E] px-2.5 py-1.5 text-[12.5px] font-medium text-[#F1EFF0] opacity-0 shadow-[0_8px_22px_rgba(0,0,0,0.4)] transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
+          className="pointer-events-none absolute left-[52px] z-10 whitespace-nowrap rounded-mq-lg bg-hover px-2.5 py-1.5 text-[12.5px] font-medium text-text opacity-0 shadow-mq-tip transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
         >
           {label}
         </span>

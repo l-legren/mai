@@ -12,13 +12,11 @@ const Logo = ({ withWordmark = true }: LogoProps) => {
   return (
     <span className="flex items-center gap-2.5">
       {/* TODO: replace with the real logo mark once we have one */}
-      <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#FF4FA3] text-sm font-extrabold text-[#2A0A19]">
+      <span className="flex h-7 w-7 items-center justify-center rounded-mq-lg bg-accent text-sm font-extrabold text-accent-ink">
         M
       </span>
       {withWordmark && (
-        <span className="text-lg font-bold tracking-tight text-[#F1EFF0]">
-          {t('common.appName')}
-        </span>
+        <span className="text-lg font-bold tracking-tight text-text">{t('common.appName')}</span>
       )}
     </span>
   );

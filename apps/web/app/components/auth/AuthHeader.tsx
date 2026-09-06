@@ -13,10 +13,10 @@ const AuthHeader = ({ mode }: AuthHeaderProps) => {
 
   return (
     <div className="flex flex-col items-center gap-1.5 text-center">
-      <h1 className="text-2xl font-bold tracking-tight text-[#F1EFF0]">
+      <h1 className="text-2xl font-bold tracking-tight text-text">
         {t(isSignUp ? 'auth.signUpHeadline' : 'auth.loginHeadline')}
       </h1>
-      <p className="text-sm text-[#A9A3A8]">
+      <p className="text-sm text-text-2">
         {t(isSignUp ? 'auth.signUpSubline' : 'auth.loginSubline')}
       </p>
     </div>

@@ -1,18 +1,19 @@
 // shadcn/ui button (new-york style) — customized: brand colors/variants swapped for the app's
-// palette; ref-as-prop update below is for React 19, not a shadcn upstream change.
+// palette (now design-system/CLAUDE.md's --mq-* tokens, see app/globals.css); ref-as-prop
+// update below is for React 19, not a shadcn upstream change.
 import { ButtonHTMLAttributes, Ref } from 'react';
 import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4FA3] focus-visible:ring-offset-2 focus-visible:ring-offset-[#171316] disabled:pointer-events-none disabled:opacity-50',
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg disabled:pointer-events-none disabled:opacity-50',
   {
     variants: {
       variant: {
-        solid: 'bg-[#FF4FA3] text-[#2A0A19] hover:bg-[#FF6BB1]',
-        outline: 'border border-white/15 text-[#F1EFF0] hover:bg-white/5',
-        ghost: 'text-[#F1EFF0] hover:text-[#FF4FA3]',
+        solid: 'bg-accent text-accent-ink hover:bg-[#FF6BB1]',
+        outline: 'border border-white/15 text-text hover:bg-white/5',
+        ghost: 'text-text hover:text-accent',
       },
       size: {
         default: 'h-11 px-6 text-sm',

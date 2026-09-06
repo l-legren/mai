@@ -11,18 +11,18 @@ const Hero = () => {
     <section className="flex flex-1 items-center px-6 py-10 sm:px-10 lg:px-14">
       <div className="mx-auto flex w-full max-w-3xl flex-col items-start gap-6 text-left">
         <div className="inline-flex items-center gap-2.5 rounded-full border border-white/15 px-3.5 py-1.5">
-          <span className="h-1.5 w-1.5 rounded-full bg-[#FF4FA3]" aria-hidden="true" />
-          <span className="text-xs font-medium text-[#A9A3A8] sm:text-[12.5px]">
+          <span className="h-1.5 w-1.5 rounded-full bg-accent" aria-hidden="true" />
+          <span className="text-xs font-medium text-text-2 sm:text-[12.5px]">
             {t('landing.badge')}
           </span>
         </div>
 
-        <h1 className="text-[2.375rem] leading-[1.08] font-extrabold tracking-tight text-[#F1EFF0] text-pretty sm:text-5xl md:text-6xl lg:text-[4.75rem] lg:leading-[1.02] lg:tracking-[-0.06em]">
+        <h1 className="text-[2.375rem] leading-[1.08] font-extrabold tracking-tight text-text text-pretty sm:text-5xl md:text-6xl lg:text-[4.75rem] lg:leading-[1.02] lg:tracking-[-0.06em]">
           {t('landing.headline')}{' '}
-          <span className="block text-[#FF4FA3]">{t('landing.headlineAccent')}</span>
+          <span className="block text-accent">{t('landing.headlineAccent')}</span>
         </h1>
 
-        <p className="max-w-lg text-[17px] leading-relaxed text-[#A9A3A8] text-pretty lg:text-[19px]">
+        <p className="max-w-lg text-[17px] leading-relaxed text-text-2 text-pretty lg:text-[19px]">
           {t('landing.subline')}
         </p>
 
