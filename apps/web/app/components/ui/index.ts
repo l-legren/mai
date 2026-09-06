@@ -10,7 +10,7 @@ export { CATEGORY_ICONS, type CategoryIconProps } from './primitives/category-ic
 export { default as Logo, type LogoProps } from './primitives/Logo';
 export { default as PageHeading, type PageHeadingProps } from './primitives/PageHeading';
 export { default as StatCard, type StatCardProps } from './primitives/StatCard';
-export { default as TransactionRow, type TransactionRowProps } from './primitives/TransactionRow';
+export { default as TransactionRow, type TransactionRowProps } from './TransactionRow';
 export {
   HomeIcon,
   RecurringIcon,

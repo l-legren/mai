@@ -2,6 +2,7 @@ import { cache } from 'react';
 import {
   getExpenseRows,
   insertExpenseRow,
+  deleteExpenseRow,
   type ExpenseRow,
   type NewExpenseRow,
   type PaginatedExpenseRows,
@@ -26,4 +27,9 @@ export const getPaginatedExpenses = cache(
 export async function insertExpense(row: NewExpenseRow): Promise<ExpenseRow> {
   const supabase = await createSupabaseServerClient();
   return insertExpenseRow(supabase, row);
+}
+
+export async function deleteExpense(id: string): Promise<void> {
+  const supabase = await createSupabaseServerClient();
+  return deleteExpenseRow(supabase, id);
 }

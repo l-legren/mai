@@ -69,6 +69,7 @@ const HomeView = ({ spentTodayValue, spentThisWeekValue, transactions }: HomeVie
             <TransactionRow
               key={transaction.id}
               name={transaction.note ?? t(`categories.${transaction.categoryId}`)}
+              categoryId={transaction.categoryId}
               meta={transaction.time}
               amount={transaction.amount}
               divider={index > 0}

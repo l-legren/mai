@@ -31,7 +31,11 @@
     "yesterday": "Yesterday",
     "pageOf": "Page {{page}} of {{totalPages}}",
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "deleteLabel": "Delete transaction",
+    "confirmDelete": "Delete {{name}} ({{amount}})? This can't be undone.",
+    "delete": "Delete",
+    "deleting": "Deleting…"
   },
   "addExpense": {
     "title": "Add expense",

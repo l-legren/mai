@@ -1,7 +1,10 @@
 'use client';
 
+import { useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
-import { Card, Pagination, TransactionRow } from '@/app/components/ui';
+import { deleteExpenseAction } from '@/app/actions/delete-expense';
+import { AgentNote, Card, Modal, Pagination, TransactionRow } from '@/app/components/ui';
 import type { Transaction } from '@/lib/utils/format-expense';
 import { formatDayLabel } from '@/lib/utils/format-day-label';
 import { groupTransactionsByDay } from '@/lib/utils/group-transactions-by-day';
@@ -15,8 +18,22 @@ export type TransactionsViewProps = {
 
 const TransactionsView = ({ transactions, currentPage, totalPages }: TransactionsViewProps) => {
   const { t } = useTranslation();
+  const router = useRouter();
   const dayGroups = groupTransactionsByDay(transactions);
   const dayLabels = { today: t('transactions.today'), yesterday: t('transactions.yesterday') };
+  const [pendingDelete, setPendingDelete] = useState<Transaction | null>(null);
+  const [isDeleting, startDeleteTransition] = useTransition();
+
+  const handleConfirmDelete = () => {
+    if (!pendingDelete || isDeleting) return;
+    const id = pendingDelete.id;
+
+    startDeleteTransition(async () => {
+      await deleteExpenseAction(id);
+      setPendingDelete(null);
+      router.refresh();
+    });
+  };
 
   return (
     <div className="flex min-h-svh flex-col">
@@ -47,9 +64,12 @@ const TransactionsView = ({ transactions, currentPage, totalPages }: Transaction
                   <TransactionRow
                     key={transaction.id}
                     name={transaction.note ?? t(`categories.${transaction.categoryId}`)}
+                    categoryId={transaction.categoryId}
                     meta={transaction.time}
                     amount={transaction.amount}
                     divider={index > 0}
+                    onDelete={() => setPendingDelete(transaction)}
+                    deleteLabel={t('transactions.deleteLabel')}
                   />
                 ))}
               </div>
@@ -73,6 +93,26 @@ const TransactionsView = ({ transactions, currentPage, totalPages }: Transaction
           )}
         </div>
       </div>
+
+      <Modal
+        open={pendingDelete !== null}
+        onClose={() => setPendingDelete(null)}
+        ariaLabel={t('transactions.deleteLabel')}
+      >
+        {pendingDelete && (
+          <AgentNote
+            message={t('transactions.confirmDelete', {
+              name: pendingDelete.note ?? t(`categories.${pendingDelete.categoryId}`),
+              amount: pendingDelete.amount,
+            })}
+            primaryLabel={isDeleting ? t('transactions.deleting') : t('transactions.delete')}
+            secondaryLabel={t('common.cancel')}
+            onPrimaryAction={handleConfirmDelete}
+            onSecondaryAction={() => setPendingDelete(null)}
+            showByline={false}
+          />
+        )}
+      </Modal>
     </div>
   );
 };

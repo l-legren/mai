@@ -118,6 +118,27 @@ const OtherIcon = ({ className }: CategoryIconProps) => (
   </svg>
 );
 
+// Fallback for a category id that isn't one of CategoryId's six (e.g. stale/unrecognised data)
+// — see getCategoryIcon.ts. Distinct from OtherIcon, which is the real "other" category's own mark.
+export const QuestionMarkIcon = ({ className }: CategoryIconProps) => (
+  <svg
+    className={className}
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.9"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <circle cx="12" cy="12" r="9" />
+    <path d="M9.5 9.6a2.6 2.6 0 0 1 5 1c0 1.7-2.5 1.9-2.5 3.6" />
+    <circle cx="12" cy="17.2" r="0.9" fill="currentColor" stroke="none" />
+  </svg>
+);
+
 export const CATEGORY_ICONS: Record<CategoryId, (props: CategoryIconProps) => React.JSX.Element> = {
   groceries: GroceriesIcon,
   drinks: DrinksIcon,
