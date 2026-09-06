@@ -1,8 +1,14 @@
 import { cache } from 'react';
-import { getExpenseRows, type ExpenseRow, type PaginatedExpenseRows } from '@moniq/api';
+import {
+  getExpenseRows,
+  insertExpenseRow,
+  type ExpenseRow,
+  type NewExpenseRow,
+  type PaginatedExpenseRows,
+} from '@moniq/api';
 import { createSupabaseServerClient } from '../supabase-server';
 
-export type { ExpenseRow, PaginatedExpenseRows };
+export type { ExpenseRow, NewExpenseRow, PaginatedExpenseRows };
 
 // cache() dedupes this per request. Ordered newest-first (see @moniq/api's getExpenseRows).
 export const getCurrentExpenses = cache(async () => {
@@ -16,3 +22,8 @@ export const getPaginatedExpenses = cache(
     return getExpenseRows(supabase, { page, pageSize });
   }
 );
+
+export async function insertExpense(row: NewExpenseRow): Promise<ExpenseRow> {
+  const supabase = await createSupabaseServerClient();
+  return insertExpenseRow(supabase, row);
+}

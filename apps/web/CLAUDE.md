@@ -26,7 +26,7 @@
 
 ## Index barrels for component folders
 
-Each folder under `app/components/` (`ui/`, `auth/`, `layout/`, `marketing/`) has an `index.ts` barrel re-exporting everything in it — components (default exports re-exported under their component's name) and their prop types. Any import of one of these components **from outside its own folder** goes through the barrel (`import { Button, Input } from '@/app/components/ui'`), never a deep path (`'@/app/components/ui/Button'`).
+Each folder under `app/components/` (`ui/`, `auth/`, `layout/`, `marketing/`, `expenses/`) has an `index.ts` barrel re-exporting everything in it — components (default exports re-exported under their component's name) and their prop types. Any import of one of these components **from outside its own folder** goes through the barrel (`import { Button, Input } from '@/app/components/ui'`), never a deep path (`'@/app/components/ui/Button'`).
 
 - **Within a folder**, siblings import each other directly by relative path (e.g. `Sidebar.tsx` importing `./SidebarAccountMenu`), not through that folder's own barrel — importing your own barrel from inside it risks a circular import.
 - When adding a new component to one of these folders, add its export line to that folder's `index.ts` in the same change.

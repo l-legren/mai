@@ -1,8 +1,10 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { Button, Card, StatCard, TransactionRow } from '@/app/components/ui';
+import { AddExpenseModal } from '@/app/components/expenses';
 import type { Transaction } from '@/lib/utils/format-expense';
 import { cn } from '@/lib/utils';
 
@@ -12,7 +14,11 @@ export type HomeViewProps = {
   transactions: Transaction[];
 };
 
-const HomeHeader = () => {
+type HomeHeaderProps = {
+  onAddExpense: () => void;
+};
+
+const HomeHeader = ({ onAddExpense }: HomeHeaderProps) => {
   const { t, i18n } = useTranslation();
   const today = new Date();
   const date = new Intl.DateTimeFormat(i18n.language, {
@@ -23,7 +29,6 @@ const HomeHeader = () => {
 
   // Not wired to a backend yet — design-only for now.
   const handleFilterByWeek = () => {};
-  const handleAddExpense = () => {};
 
   return (
     <div className="flex flex-none items-end justify-between gap-4 px-9 pt-[30px] pb-5">
@@ -36,7 +41,7 @@ const HomeHeader = () => {
         <Button variant="outline" size="sm" onClick={handleFilterByWeek}>
           {t('home.thisWeek')}
         </Button>
-        <Button variant="outline" size="sm" onClick={handleAddExpense}>
+        <Button variant="outline" size="sm" onClick={onAddExpense}>
           {t('home.addExpense')}
         </Button>
       </div>
@@ -46,10 +51,12 @@ const HomeHeader = () => {
 
 const HomeView = ({ spentTodayValue, spentThisWeekValue, transactions }: HomeViewProps) => {
   const { t } = useTranslation();
+  const [isAddExpenseOpen, setIsAddExpenseOpen] = useState(false);
 
   return (
     <div className="flex min-h-svh flex-col">
-      <HomeHeader />
+      <HomeHeader onAddExpense={() => setIsAddExpenseOpen(true)} />
+      <AddExpenseModal open={isAddExpenseOpen} onClose={() => setIsAddExpenseOpen(false)} />
 
       <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-9 pb-7">
         <div className="grid grid-cols-1 gap-3.5 md:grid-cols-2">

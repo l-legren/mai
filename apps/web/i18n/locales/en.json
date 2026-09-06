@@ -1,7 +1,8 @@
 {
   "common": {
     "appName": "Moniq",
-    "loading": "Loading…"
+    "loading": "Loading…",
+    "cancel": "Cancel"
   },
   "nav": {
     "homeLink": "Moniq home",
@@ -31,6 +32,23 @@
     "pageOf": "Page {{page}} of {{totalPages}}",
     "previous": "Previous",
     "next": "Next"
+  },
+  "addExpense": {
+    "title": "Add expense",
+    "amount": "Amount {{amount}}",
+    "noAmount": "No amount entered yet",
+    "deleteDigit": "Delete last digit",
+    "decimalPoint": "Decimal point",
+    "selectCategory": "Select category {{category}}",
+    "noteLabel": "Label",
+    "notePlaceholder": "What was it?",
+    "confirm": "Add",
+    "confirmPending": "Adding…",
+    "errors": {
+      "invalidAmount": "Enter an amount greater than zero.",
+      "invalidCategory": "Choose a category.",
+      "unknown": "Something went wrong. Please try again."
+    }
   },
   "categories": {
     "groceries": "Groceries",
