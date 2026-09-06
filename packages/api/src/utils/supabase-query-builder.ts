@@ -4,7 +4,11 @@
  * `.single()`) resolves to the configured `{ data, error }` result.
  */
 
-export type QueryResult<T> = { data: T; error: { message: string } | null };
+export type QueryResult<T> = {
+  data: T;
+  error: { message: string } | null;
+  count?: number | null;
+};
 
 export function mockQueryBuilder<T>(result: QueryResult<T>) {
   const builder: Record<string, unknown> = {
@@ -15,6 +19,7 @@ export function mockQueryBuilder<T>(result: QueryResult<T>) {
     delete: jest.fn(() => builder),
     eq: jest.fn(() => builder),
     order: jest.fn(() => builder),
+    range: jest.fn(() => builder),
     single: jest.fn(() => Promise.resolve(result)),
     maybeSingle: jest.fn(() => Promise.resolve(result)),
     then: (onFulfilled: (result: QueryResult<T>) => unknown) =>

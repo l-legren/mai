@@ -16,7 +16,27 @@
     "accountMenu": "Account menu"
   },
   "home": {
-    "title": "Home"
+    "title": "Today's spending",
+    "thisWeek": "This week",
+    "addExpense": "Add expense",
+    "spentToday": "Spent today",
+    "transactions": "Transactions",
+    "showMore": "Show more"
+  },
+  "transactions": {
+    "title": "Transactions",
+    "empty": "No transactions yet.",
+    "pageOf": "Page {{page}} of {{totalPages}}",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "categories": {
+    "groceries": "Groceries",
+    "drinks": "Drinks",
+    "restaurants": "Restaurants",
+    "clothing": "Clothing",
+    "transport": "Transport",
+    "other": "Other"
   },
   "landing": {
     "badge": "Now on the web, not just your phone",
