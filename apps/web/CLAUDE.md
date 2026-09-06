@@ -24,6 +24,15 @@ Each folder under `app/components/` (`ui/`, `auth/`, `layout/`, `marketing/`) ha
 - When adding a new component to one of these folders, add its export line to that folder's `index.ts` in the same change.
 - This convention is scoped to `app/components/*` — it does not apply to `app/actions/`, `lib/`, or `lib/dal/`.
 
+## shadcn-sourced components
+
+Components generated via `npx shadcn add` (see `components.json`) are copied into the repo, not installed as a versioned dependency — there's no version to bump, so nothing signals when upstream ships a fix. Track this manually:
+
+- **Every shadcn-sourced file needs a one-line comment noting where it came from** — e.g. `// shadcn/ui button (new-york style)` — so it's identifiable as generated code at all, and a future diff/update check is possible.
+- **When you customize one beyond generation** (swapping default colors/tokens for the app's own palette, adding a variant, changing markup), add a comment noting what changed and why, next to the change — not just in the PR description. `git blame` tells you _when_, not _why it diverges from upstream_.
+- **New logic** (a computed value, a branch, a business rule — not just styling or prop passthrough) added to a primitive needs a test like any other component with logic (see "Testing" below). Pure styling/variant customization does not.
+- Before assuming a component is stale, check `npx shadcn diff <component>` (or `npx shadcn diff` for all of them) — most useful for components you haven't heavily customized yet, since heavy customization makes the diff noisy.
+
 # Data access
 
 Server Components and Server Actions may call `@moniq/api`/`@moniq/auth` directly (via `lib/dal/*.ts`, e.g. `lib/dal/current-user.ts`, `lib/dal/profile.ts`) — they already run server-side, so there's nothing to route through.

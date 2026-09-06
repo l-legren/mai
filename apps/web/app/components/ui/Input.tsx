@@ -1,3 +1,5 @@
+// shadcn/ui input (new-york style) — customized: brand colors, plus the label/labelRight header
+// and auto-generated id below (shadcn's stock Input has no built-in label).
 import { InputHTMLAttributes, ReactNode, Ref, useId } from 'react';
 import { cn } from '@/lib/utils';
 
