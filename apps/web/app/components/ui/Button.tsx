@@ -1,3 +1,5 @@
+// shadcn/ui button (new-york style) — customized: brand colors/variants swapped for the app's
+// palette; ref-as-prop update below is for React 19, not a shadcn upstream change.
 import { ButtonHTMLAttributes, Ref } from 'react';
 import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';

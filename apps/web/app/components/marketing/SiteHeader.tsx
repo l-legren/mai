@@ -2,15 +2,14 @@
 
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
-import { Button } from '@/app/components/ui/Button';
-import Logo from '@/app/components/ui/Logo';
+import { Button, Logo } from '@/app/components/ui';
 
 const SiteHeader = () => {
   const { t } = useTranslation();
 
   return (
     <header className="flex items-center justify-between px-6 py-6 sm:px-10 lg:px-14">
-      <Link href="/" aria-label={t('nav.homeLink')}>
+      <Link href="/welcome" aria-label={t('nav.homeLink')}>
         <Logo />
       </Link>
 

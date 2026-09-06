@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
-import { Button } from '@/app/components/ui/Button';
+import { Button } from '@/app/components/ui';
 
 const Hero = () => {
   const { t } = useTranslation();
