@@ -2,19 +2,36 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { getAccountDisplayName } from '@/app/actions/get-account-display-name';
 import { signOut } from '@/app/actions/sign-out';
 import { cn } from '@/lib/utils';
 
 export type SidebarAccountMenuProps = {
-  displayName: string | null;
   collapsed: boolean;
 };
 
-const SidebarAccountMenu = ({ displayName, collapsed }: SidebarAccountMenuProps) => {
+type Profile = Awaited<ReturnType<typeof getAccountDisplayName>>;
+
+const SidebarAccountMenu = ({ collapsed }: SidebarAccountMenuProps) => {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
+  const [profile, setProfile] = useState<Profile>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const initial = (displayName ?? '?').charAt(0).toUpperCase();
+  const initial = (profile?.first_name ?? '?').charAt(0).toUpperCase();
+
+  useEffect(() => {
+    let cancelled = false;
+
+    getAccountDisplayName()
+      .then((result) => {
+        if (!cancelled) setProfile(result);
+      })
+      .catch(() => {});
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -77,7 +94,7 @@ const SidebarAccountMenu = ({ displayName, collapsed }: SidebarAccountMenuProps)
         {!collapsed && (
           <>
             <span className="min-w-0 flex-1 truncate text-left text-sm font-medium text-[#F1EFF0]">
-              {displayName}
+              {profile?.first_name}
             </span>
             <span aria-hidden="true" className="text-[13px] text-[#5A545A]">
               •••

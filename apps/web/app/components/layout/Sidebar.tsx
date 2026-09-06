@@ -8,11 +8,7 @@ import { SidebarToggleIcon } from '@/app/components/ui/icons';
 import SidebarAccountMenu from './SidebarAccountMenu';
 import SidebarNavItem, { NAV_ITEMS } from './SidebarNavItem';
 
-export type SidebarProps = {
-  displayName: string | null;
-};
-
-const Sidebar = ({ displayName }: SidebarProps) => {
+const Sidebar = () => {
   const { t } = useTranslation();
   const [collapsed, setCollapsed] = useState(false);
 
@@ -53,7 +49,7 @@ const Sidebar = ({ displayName }: SidebarProps) => {
       </div>
 
       <div className={cn('mt-auto', collapsed && 'w-full')}>
-        <SidebarAccountMenu displayName={displayName} collapsed={collapsed} />
+        <SidebarAccountMenu collapsed={collapsed} />
       </div>
     </nav>
   );

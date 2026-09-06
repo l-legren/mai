@@ -1,6 +1,6 @@
 import { cache } from 'react';
 import { getProfileOnboardingRow, type ProfileOnboardingRow } from '@moniq/api';
-import { createSupabaseServerClient } from './supabase-server';
+import { createSupabaseServerClient } from '../supabase-server';
 
 export type { ProfileOnboardingRow };
 

@@ -1,6 +1,6 @@
 @AGENTS.md
 
-# Accessibility
+# Accessibility — apps/mobile
 
 All interactive and informational UI in the app must be accessible to screen readers (VoiceOver on iOS, TalkBack on Android).
 
@@ -25,6 +25,22 @@ All interactive and informational UI in the app must be accessible to screen rea
 - **Data visualizations need a text alternative (WCAG 1.1.1).** This rule is not limited to `<Image>` — charts, graphs, bars, and sparklines convey meaning visually and are invisible to AT. Build an i18n summary string from the underlying data (e.g. `"Daily spend: Mon €12, Tue €0…"`), put it as the `accessibilityLabel` on an `accessible` wrapper, and let that wrapper collapse the chart's internals.
 - **Colour contrast must meet WCAG AA (1.4.3).** Every text/background pair must reach **4.5:1** (**3:1** for text ≥18px or bold). This is a property of the palette tokens in `src/constants/theme.ts`, not of a component — when you **add or change any `text*` / `bg` / `card` / `accent` colour, verify the resulting text-on-surface ratios** in both `dark` and `light` before shipping. Muted tiers (`text3`) are the usual offenders.
 - **Announce dynamic content (WCAG 4.1.3).** Anything that appears or changes in response to a user action — error/validation messages, async results, live-updating numbers like the keypad total — must be announced, not just rendered. Use `accessibilityLiveRegion` (`"assertive"` for errors, `"polite"` for running values) for Android **and** `AccessibilityInfo.announceForAccessibility` on change for iOS (which ignores live regions). Errors also take `accessibilityRole="alert"`. The shared `FormError` primitive already does this for form errors — reuse it.
+
+# Accessibility — apps/web
+
+`apps/web` is regular DOM/HTML, not React Native — none of the `accessibility*` props above apply here. The rule is **semantic HTML first, ARIA only when there's no element for the job** (WAI-ARIA's "no ARIA is better than bad ARIA").
+
+## Rules
+
+- **Reach for the native element before reaching for a `div`/`span` + `role`/`onClick`.** Landmarks (`<nav>`, `<header>`, `<main>`, `<footer>`, `<section>`), `<button>` for actions, `next/link`'s `<Link>` (renders `<a>`) for navigation, `<label htmlFor>` for form fields, real heading tags for titles. A `div` with an `onClick` gets no keyboard support, no role, and no focus state for free — a `<button>` does. `Sidebar.tsx`, `SiteHeader.tsx`, and `Hero.tsx` already do this (`<nav>`, `<header>`, `<section>`) — match that, don't regress to `div`-soup.
+- `span`/`div` are fine for **non-interactive, non-landmark content** — inline text fragments, layout wrappers, an avatar glyph — the kind already used in `Logo.tsx` and `SidebarAccountMenu.tsx`. They only become a problem when they stand in for something the platform already has a real element for.
+- **One `<h1>` per page**, and no skipped heading levels. `PageHeading`/`AuthHeader` own the `<h1>` — don't add a second one on the same page.
+- **Icon-only buttons/links need an `aria-label`** run through `t()` (see the i18n rules) — e.g. the collapse toggle in `Sidebar.tsx`. If a control has visible text already, don't also add an `aria-label` that duplicates it.
+- **Custom widgets that have no native equivalent** (dropdown menus, comboboxes) need the matching ARIA role/state trio — `SidebarAccountMenu.tsx`'s `role="menu"`/`role="menuitem"` + `aria-haspopup`/`aria-expanded` is the reference pattern; copy it rather than inventing a new shape.
+- **Every interactive element needs a visible keyboard focus state.** Use the existing `focus-visible:ring-2 focus-visible:ring-[#FF4FA3] focus-visible:ring-offset-2` pattern from `Button.tsx` (or `Input.tsx`'s `focus-visible:border-[#FF4FA3]`) on any new `button`/`a`/input-like element — don't ship one without it. `Sidebar.tsx`'s collapse toggle and `SidebarAccountMenu.tsx`'s buttons currently lack this — match the existing pattern rather than copying them.
+- **Decorative content gets `aria-hidden="true"`** (icons, dividers, glyphs like the `•••` in `SidebarAccountMenu.tsx`) — already the convention in `icons.tsx`, keep it there.
+- **Announce dynamic content (WCAG 4.1.3).** Reuse `role="alert" aria-live="assertive"` for errors (`FormError.tsx`) and `role="status" aria-live="polite"` for async success/info (`AuthForm.tsx`) rather than inventing a new pattern.
+- **Colour contrast must meet WCAG AA (1.4.3)** — 4.5:1 (3:1 for text ≥18px/bold). This is a property of the CSS custom properties in `app/globals.css` (`--text`, `--text-2`, `--text-3` against `--bg`/`--card`), not of a component — verify both the `:root` (light) and `prefers-color-scheme: dark` blocks whenever you add or change a token. `--text-2`/`--text-3` are the usual offenders.
 
 # Repository structure
 
@@ -113,6 +129,12 @@ Data flows **app → hooks → services → (`@moniq/api` + `@moniq/auth` + `src
 - Framework-agnostic sign-in/sign-up validation, error-code mapping (`AuthError` / `AuthErrorCode`), session handling, **and** the raw `client.auth.*`/`client.rpc(...)` Supabase calls behind them, all in one file — shared because both `apps/mobile` and `apps/web` implement the same auth feature against the same Supabase project. Same client-as-first-parameter rule as `packages/api`, for the same reason.
 - **Does not depend on `@moniq/api`.** This package does _not_ follow the `packages/api` (raw) → `services/` (business rules) split — unlike `getCurrentUserId` (which stays in `@moniq/api` because six unrelated resources call it directly), nothing outside this package ever calls `signInWithPassword`/`signUpWithPassword`/etc., so there's no cross-package reuse to justify keeping a separate raw layer. Every error this package's public functions can throw is an `AuthError` — never a lower-level `ApiError`.
 - Each app's own auth entry point (`apps/mobile/src/services/auth.service.ts`, `apps/web/lib/auth.ts`) binds this app's one Supabase client to `@moniq/auth`'s functions and re-exports the bound versions — kept so callers (mobile's hooks, web's `AuthForm`) never pass a client explicitly and never need to know `@moniq/auth` exists, and so each app's own layering rules (e.g. mobile's hooks only ever importing from `services/`) still hold.
+
+## apps/web — Client Components never call `@moniq/api`/`@moniq/auth` directly
+
+Server Components and Server Actions in `apps/web` may call `@moniq/api`/`@moniq/auth` directly (via `lib/dal/*.ts`, e.g. `lib/dal/current-user.ts`, `lib/dal/profile.ts`) — they already run server-side, so there's nothing to route through.
+
+**A Client Component must never do this.** It can't anyway — these calls depend on `next/headers`'s `cookies()` to build the per-request Supabase client, which only exists in a server context; importing one of these `lib/dal/*.ts` helpers into a `'use client'` file fails at build/runtime. Instead, wrap the call in a Server Action under `app/actions/*.ts` (`'use server'`) and call that from the Client Component like a normal async function — no `fetch`, no manual JSON/status-code handling. `app/actions/sign-in.ts` / `sign-up.ts` / `sign-out.ts` (called from `AuthForm.tsx`) and `app/actions/get-account-display-name.ts` (called from `SidebarAccountMenu.tsx`) are the reference pattern — copy their shape rather than inventing a new one, and rather than reaching for a Route Handler (`app/api/.../route.ts`), which this app doesn't use for this purpose.
 
 ## `src/data/` — local device persistence
 
