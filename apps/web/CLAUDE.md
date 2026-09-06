@@ -1,3 +1,11 @@
+# Design system
+
+`design-system/` (repo root, sibling to `apps/`) is a Claude-generated design export and **the contract for any new or changed UI in this app** — read `design-system/CLAUDE.md` before touching a screen or component, not just this file. It has its own hard rules (one filled accent per view, no invented colors, money writes always confirm first, etc.) that apply on top of everything below, not instead of it.
+
+- **Tokens** (`design-system/styles.css`, `--mq-*` custom properties) are the source of truth for color/radius/shadow/type values going forward. They currently match this app's existing hardcoded hex literals value-for-value (e.g. `--mq-accent: #FF4FA3` is the same pink already hardcoded as `bg-[#FF4FA3]` throughout `app/components/ui`) — nothing has visually drifted, but `styles.css` isn't wired into `app/globals.css` yet and existing components don't reference the custom properties yet. Don't invent a new hex value where a `--mq-*` token already covers it; that's the whole point of the export.
+- **`design-system/types/*.d.ts`** are the prop contracts for the component set (`Button`, `Card`, `NavItem`, `Menu`, `ConfirmCard`, …) — match these signatures when building or changing the matching component in `app/components/ui`.
+- **`design-system/reference/*.jsx` is reference, not production code** — inline styles, no tests, no accessibility wiring, not run through this repo's Prettier (`design-system` is excluded from the root `format:check`, since it's a re-exportable snapshot, not first-party source we maintain). Reimplement the structure/values using this app's own conventions below — index barrels, semantic HTML/ARIA (see Accessibility), i18n via `t()`, real focus states — the reference JSX skips all of that on purpose.
+
 # Accessibility
 
 `apps/web` is regular DOM/HTML, not React Native. The rule is **semantic HTML first, ARIA only when there's no element for the job** (WAI-ARIA's "no ARIA is better than bad ARIA").
