@@ -2,9 +2,7 @@
 
 import { useActionState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button } from '@/app/components/ui/Button';
-import FormError from '@/app/components/ui/FormError';
-import { Input } from '@/app/components/ui/Input';
+import { Button, FormError, Input } from '@/app/components/ui';
 import { initialAuthFormState } from '@/app/actions/auth-form-state';
 import { signInAction } from '@/app/actions/sign-in';
 import { signUpAction } from '@/app/actions/sign-up';

@@ -1,7 +1,5 @@
-import AuthForm from '@/app/components/auth/AuthForm';
-import AuthHeader from '@/app/components/auth/AuthHeader';
-import ModeSwitch from '@/app/components/auth/ModeSwitch';
-import Logo from '@/app/components/ui/Logo';
+import { AuthForm, AuthHeader, ModeSwitch } from '@/app/components/auth';
+import { Logo } from '@/app/components/ui';
 
 const SignInPage = () => {
   return (

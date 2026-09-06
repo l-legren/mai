@@ -2,13 +2,17 @@
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import Logo from '@/app/components/ui/Logo';
+import { Logo, SidebarToggleIcon } from '@/app/components/ui';
 import { cn } from '@/lib/utils';
-import { SidebarToggleIcon } from '@/app/components/ui/icons';
+import type { ProfileOnboardingRow } from '@/lib/dal/profile';
 import SidebarAccountMenu from './SidebarAccountMenu';
 import SidebarNavItem, { NAV_ITEMS } from './SidebarNavItem';
 
-const Sidebar = () => {
+export type SidebarProps = {
+  profile: ProfileOnboardingRow | null;
+};
+
+const Sidebar = ({ profile }: SidebarProps) => {
   const { t } = useTranslation();
   const [collapsed, setCollapsed] = useState(false);
 
@@ -49,7 +53,7 @@ const Sidebar = () => {
       </div>
 
       <div className={cn('mt-auto', collapsed && 'w-full')}>
-        <SidebarAccountMenu collapsed={collapsed} />
+        <SidebarAccountMenu profile={profile} collapsed={collapsed} />
       </div>
     </nav>
   );

@@ -1,4 +1,4 @@
-import PageHeading from '@/app/components/ui/PageHeading';
+import { PageHeading } from '@/app/components/ui';
 
 const RecurringPage = () => {
   return (

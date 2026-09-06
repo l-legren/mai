@@ -2,8 +2,7 @@
 
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
-import { Button } from '@/app/components/ui/Button';
-import Logo from '@/app/components/ui/Logo';
+import { Button, Logo } from '@/app/components/ui';
 
 const SiteHeader = () => {
   const { t } = useTranslation();

@@ -2,36 +2,43 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { getAccountDisplayName } from '@/app/actions/get-account-display-name';
 import { signOut } from '@/app/actions/sign-out';
 import { cn } from '@/lib/utils';
+import type { ProfileOnboardingRow } from '@/lib/dal/profile';
 
 export type SidebarAccountMenuProps = {
+  profile: ProfileOnboardingRow | null;
   collapsed: boolean;
 };
 
-type Profile = Awaited<ReturnType<typeof getAccountDisplayName>>;
+// More options land here alongside sign-out.
+const SidebarAccountMenuDropdown = () => {
+  const { t } = useTranslation();
 
-const SidebarAccountMenu = ({ collapsed }: SidebarAccountMenuProps) => {
+  return (
+    <div
+      role="menu"
+      aria-label={t('nav.accountMenu')}
+      className="absolute bottom-[calc(100%+6px)] left-0 right-0 flex flex-col gap-0.5 rounded-xl bg-[#2E282E] p-1.5 shadow-[0_14px_34px_rgba(0,0,0,0.5)]"
+    >
+      <form action={signOut}>
+        <button
+          type="submit"
+          role="menuitem"
+          className="flex h-[38px] w-full items-center gap-2.5 rounded-lg px-2.5 text-left text-[13.5px] font-medium text-[#F1EFF0] hover:bg-white/[0.06]"
+        >
+          {t('auth.signOut')}
+        </button>
+      </form>
+    </div>
+  );
+};
+
+const SidebarAccountMenu = ({ profile, collapsed }: SidebarAccountMenuProps) => {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
-  const [profile, setProfile] = useState<Profile>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const initial = (profile?.first_name ?? '?').charAt(0).toUpperCase();
-
-  useEffect(() => {
-    let cancelled = false;
-
-    getAccountDisplayName()
-      .then((result) => {
-        if (!cancelled) setProfile(result);
-      })
-      .catch(() => {});
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -56,23 +63,7 @@ const SidebarAccountMenu = ({ collapsed }: SidebarAccountMenuProps) => {
 
   return (
     <div ref={containerRef} className="relative">
-      {isOpen && (
-        <div
-          role="menu"
-          aria-label={t('nav.accountMenu')}
-          className="absolute bottom-[calc(100%+6px)] left-0 right-0 flex flex-col gap-0.5 rounded-xl bg-[#2E282E] p-1.5 shadow-[0_14px_34px_rgba(0,0,0,0.5)]"
-        >
-          <form action={signOut}>
-            <button
-              type="submit"
-              role="menuitem"
-              className="flex h-[38px] w-full items-center gap-2.5 rounded-lg px-2.5 text-left text-[13.5px] font-medium text-[#F1EFF0] hover:bg-white/[0.06]"
-            >
-              {t('auth.signOut')}
-            </button>
-          </form>
-        </div>
-      )}
+      {isOpen && <SidebarAccountMenuDropdown />}
 
       <button
         type="button"

@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslation } from 'react-i18next';
-import type { NavTitleKey } from '@/app/components/layout/SidebarNavItem';
+import type { NavTitleKey } from '@/app/components/layout';
 
 export type PageHeadingProps = {
   titleKey: NavTitleKey;

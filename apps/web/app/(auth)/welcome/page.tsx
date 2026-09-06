@@ -1,5 +1,4 @@
-import SiteHeader from '@/app/components/marketing/SiteHeader';
-import Hero from '@/app/components/marketing/Hero';
+import { Hero, SiteHeader } from '@/app/components/marketing';
 
 const LandingPage = () => {
   return (

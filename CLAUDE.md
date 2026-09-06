@@ -95,6 +95,14 @@ The compiler auto-memoizes components, values, and functions. **Do not hand-writ
 - **Type props and parameters precisely.** Define a domain union (e.g. `AmountKey`) in the layer that owns it (usually a service) and use it, rather than `string`/`any`.
 - **No nested or chained ternary operators.** A single `a ? b : c` is fine, but never chain them (`a ? b : c ? d : e`). Use early returns, a small resolver function, or a lookup map keyed by the discriminant instead.
 
+## apps/web — index barrels for component folders
+
+Each folder under `app/components/` (`ui/`, `auth/`, `layout/`, `marketing/`) has an `index.ts` barrel re-exporting everything in it — components (default exports re-exported under their component's name) and their prop types. Any import of one of these components **from outside its own folder** goes through the barrel (`import { Button, Input } from '@/app/components/ui'`), never a deep path (`'@/app/components/ui/Button'`).
+
+- **Within a folder**, siblings import each other directly by relative path (e.g. `Sidebar.tsx` importing `./SidebarAccountMenu`), not through that folder's own barrel — importing your own barrel from inside it risks a circular import.
+- When adding a new component to one of these folders, add its export line to that folder's `index.ts` in the same change.
+- This convention is scoped to `app/components/*` — it does not apply to `app/actions/`, `lib/`, or `lib/dal/`.
+
 # Comments
 
 Keep comments to **1–2 lines**. Extend only for genuinely complex logic that needs it — not by default.

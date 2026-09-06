@@ -9,7 +9,7 @@ import {
   InsightsIcon,
   RecurringIcon,
   type NavIconProps,
-} from '@/app/components/ui/icons';
+} from '@/app/components/ui';
 import { cn } from '@/lib/utils';
 
 export type NavTitleKey = 'home.title' | 'nav.recurring' | 'nav.insights' | 'nav.askMoniq';
