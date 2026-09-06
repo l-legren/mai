@@ -25,6 +25,7 @@
     "web:dev": "pnpm --dir apps/web dev",
     "web:build": "pnpm --dir apps/web build",
     "web:start": "pnpm --dir apps/web start",
+    "web:test": "pnpm --dir apps/web test",
     "start": "pnpm --dir apps/mobile start",
     "android": "pnpm --dir apps/mobile android",
     "ios": "pnpm --dir apps/mobile ios",

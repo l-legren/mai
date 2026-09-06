@@ -20,7 +20,7 @@ packages/
 agent/        → standalone AI agent package, its own tsconfig/deps
 
 `pnpm test` (root) → `turbo run test`, fanning out to each package's own `test` script
-                      (apps/mobile, packages/api, packages/auth), cached independently per package.
+                      (apps/mobile, apps/web, packages/api, packages/auth), cached independently per package.
 ```
 
 # Shared packages
@@ -57,7 +57,7 @@ Keep comments to **1–2 lines**. Extend only for genuinely complex logic that n
 
 # Testing
 
-Every new piece of functionality or logic ships with a test that would **fail if the behaviour broke** — and nothing more. Tests exist to protect behaviour worth protecting, not to inflate coverage. Runner and per-package paths live in each package's own `CLAUDE.md` (currently: `apps/mobile/CLAUDE.md`).
+Every new piece of functionality or logic ships with a test that would **fail if the behaviour broke** — and nothing more. Tests exist to protect behaviour worth protecting, not to inflate coverage. Runner and per-package paths live in each package's own `CLAUDE.md` (`apps/mobile/CLAUDE.md`, `apps/web/CLAUDE.md`).
 
 ## What to test
 

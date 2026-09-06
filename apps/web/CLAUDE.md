@@ -30,6 +30,15 @@ Server Components and Server Actions may call `@moniq/api`/`@moniq/auth` directl
 
 **A Client Component must never do this.** It can't anyway — these calls depend on `next/headers`'s `cookies()` to build the per-request Supabase client, which only exists in a server context; importing one of these `lib/dal/*.ts` helpers into a `'use client'` file fails at build/runtime. Instead, wrap the call in a Server Action under `app/actions/*.ts` (`'use server'`) and call that from the Client Component like a normal async function — no `fetch`, no manual JSON/status-code handling. `app/actions/sign-in.ts` / `sign-up.ts` / `sign-out.ts` (called from `AuthForm.tsx`) are the reference pattern — copy their shape rather than inventing a new one, and rather than reaching for a Route Handler (`app/api/.../route.ts`), which this app doesn't use for this purpose.
 
+# Testing
+
+Runner: **Vitest**, environment `node` (no `jsdom` — we're not rendering components, see below). Test files live next to the code as `<name>.test.ts`. Run with `pnpm web:test` (root) or `pnpm test` inside `apps/web`. See root `CLAUDE.md`'s "Testing" section for the general what-to-test/what-not-to-test philosophy — this section only covers what's specific to this app.
+
+**Integration tests are the priority here**, the same way the Supabase smoke test is the highest-value test on `apps/mobile`: exercise the real wiring across layers — a Server Action calling straight through to the real `@moniq/auth`/`@moniq/api` logic — with only the Supabase client itself faked (a plain mock object, same pattern `packages/api`/`packages/auth` already use), rather than mocking our own functions. `app/actions/sign-in.test.ts` and `sign-up.test.ts` are the reference pattern: mock `@/lib/supabase-server`'s `createSupabaseServerClient` and `next/navigation`'s `redirect`, then call the real action and assert on the returned `AuthFormState` / whether `redirect` fired.
+
+- Don't test thin pass-through wrappers with no branching (e.g. `lib/dal/current-user.ts`, `lib/dal/profile.ts` — they're one-line delegations, and the logic they delegate to is already tested in `packages/api`/`packages/auth`). Test the layer where the branching actually happens.
+- `app/actions/sign-out.ts` has no branches worth protecting (three sequential calls, no conditionals) — deliberately left untested; don't add a test that would just restate it.
+
 # Internationalisation
 
 See root `CLAUDE.md`'s "Internationalisation" section for the general rules (every string via `t()`, interpolation syntax, etc.) — this section only covers this app's paths and initialisation.
