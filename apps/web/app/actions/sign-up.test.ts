@@ -1,16 +1,13 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 vi.mock('next/navigation', () => ({ redirect: vi.fn() }));
 vi.mock('@/lib/supabase-server', () => ({ createSupabaseServerClient: vi.fn() }));
 
 import { redirect } from 'next/navigation';
 import { createSupabaseServerClient } from '@/lib/supabase-server';
+import { createMockClient } from '../../vitest.setup';
 import { initialAuthFormState } from './auth-form-state';
 import { signUpAction } from './sign-up';
-
-function createMockClient() {
-  return { auth: { signUp: vi.fn() } };
-}
 
 function formDataFor(name: string, email: string, password: string) {
   const formData = new FormData();
@@ -19,10 +16,6 @@ function formDataFor(name: string, email: string, password: string) {
   formData.set('password', password);
   return formData;
 }
-
-beforeEach(() => {
-  vi.clearAllMocks();
-});
 
 describe('signUpAction', () => {
   it('returns invalidInput without reaching Supabase when a field is empty', async () => {
@@ -37,6 +30,18 @@ describe('signUpAction', () => {
     expect(state).toEqual({ errorCode: 'invalidInput', confirmationPending: false });
     expect(client.auth.signUp).not.toHaveBeenCalled();
     expect(redirect).not.toHaveBeenCalled();
+  });
+
+  it('returns invalidInput when a field is missing entirely, not just empty', async () => {
+    // formData.get() returns null for a missing field — String(null) is the non-empty string
+    // "null", which would slip past @moniq/auth's validation without the `?? ''` fallback.
+    const client = createMockClient();
+    vi.mocked(createSupabaseServerClient).mockResolvedValue(client as never);
+
+    const state = await signUpAction(initialAuthFormState, new FormData());
+
+    expect(state).toEqual({ errorCode: 'invalidInput', confirmationPending: false });
+    expect(client.auth.signUp).not.toHaveBeenCalled();
   });
 
   it('returns emailInUse when Supabase reports a duplicate account', async () => {

@@ -41,12 +41,15 @@ Server Components and Server Actions may call `@moniq/api`/`@moniq/auth` directl
 
 # Testing
 
-Runner: **Vitest**, environment `node` (no `jsdom` — we're not rendering components, see below). Test files live next to the code as `<name>.test.ts`. Run with `pnpm web:test` (root) or `pnpm test` inside `apps/web`. See root `CLAUDE.md`'s "Testing" section for the general what-to-test/what-not-to-test philosophy — this section only covers what's specific to this app.
+Runner: **Vitest**. Default environment is `node` — most of what's worth testing here (Server Actions, DAL wiring) has no DOM to render. Test files live next to the code as `<name>.test.ts` (or `.test.tsx` for component tests). Run with `pnpm web:test` (root) or `pnpm test` inside `apps/web`. See root `CLAUDE.md`'s "Testing" section for the general what-to-test/what-not-to-test philosophy — this section only covers what's specific to this app.
+
+`vitest.setup.ts` (wired via `test.setupFiles`) runs before every test file: it calls `vi.clearAllMocks()` in a global `beforeEach`, and exports `createMockClient()` — a shared fake Supabase client with every auth method any test stubs out (`signInWithPassword`, `signUp`, …). Import it rather than redefining a local mock client or a local `beforeEach(vi.clearAllMocks)` in a new test file; add a new method to it (not a second factory) if a test needs a Supabase method it doesn't yet stub.
 
 **Integration tests are the priority here**, the same way the Supabase smoke test is the highest-value test on `apps/mobile`: exercise the real wiring across layers — a Server Action calling straight through to the real `@moniq/auth`/`@moniq/api` logic — with only the Supabase client itself faked (a plain mock object, same pattern `packages/api`/`packages/auth` already use), rather than mocking our own functions. `app/actions/sign-in.test.ts` and `sign-up.test.ts` are the reference pattern: mock `@/lib/supabase-server`'s `createSupabaseServerClient` and `next/navigation`'s `redirect`, then call the real action and assert on the returned `AuthFormState` / whether `redirect` fired.
 
 - Don't test thin pass-through wrappers with no branching (e.g. `lib/dal/current-user.ts`, `lib/dal/profile.ts` — they're one-line delegations, and the logic they delegate to is already tested in `packages/api`/`packages/auth`). Test the layer where the branching actually happens.
 - `app/actions/sign-out.ts` has no branches worth protecting (three sequential calls, no conditionals) — deliberately left untested; don't add a test that would just restate it.
+- **A component with real logic** (not pure styling/props passthrough — e.g. `Input.tsx`'s label/id-association behavior) opts into `jsdom` per-file via a `// @vitest-environment jsdom` comment at the top of that test file, and renders with `@testing-library/react` (`render`/`screen`, `afterEach(cleanup)` — no auto-cleanup entry point in this version). `Input.test.tsx` is the reference pattern. Don't flip the whole suite to `jsdom` for this — keep it scoped to the files that actually render something.
 
 # Internationalisation
 
