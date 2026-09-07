@@ -4,7 +4,7 @@ import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { deleteExpenseAction } from '@/app/actions/delete-expense';
-import { AgentNote, Card, Modal, Pagination, TransactionRow } from '@/app/components/ui';
+import { Card, ConfirmPrompt, Modal, Pagination, TransactionRow } from '@/app/components/ui';
 import type { Transaction } from '@/lib/utils/format-expense';
 import { formatDayLabel } from '@/lib/utils/format-day-label';
 import { groupTransactionsByDay } from '@/lib/utils/group-transactions-by-day';
@@ -100,7 +100,7 @@ const TransactionsView = ({ transactions, currentPage, totalPages }: Transaction
         ariaLabel={t('transactions.deleteLabel')}
       >
         {pendingDelete && (
-          <AgentNote
+          <ConfirmPrompt
             message={t('transactions.confirmDelete', {
               name: pendingDelete.note ?? t(`categories.${pendingDelete.categoryId}`),
               amount: pendingDelete.amount,
@@ -109,7 +109,6 @@ const TransactionsView = ({ transactions, currentPage, totalPages }: Transaction
             secondaryLabel={t('common.cancel')}
             onPrimaryAction={handleConfirmDelete}
             onSecondaryAction={() => setPendingDelete(null)}
-            showByline={false}
           />
         )}
       </Modal>

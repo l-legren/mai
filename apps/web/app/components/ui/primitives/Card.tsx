@@ -38,7 +38,9 @@ const Card = ({ title, action, onAction, accent = false, flush = false, children
           )}
         </div>
       )}
-      <div className={cn(!flush && (title ? 'px-6 pb-5' : 'p-[22px]'))}>{children}</div>
+      <div className={cn(flush ? 'flex flex-1 flex-col' : title ? 'px-6 pb-5' : 'p-[22px]')}>
+        {children}
+      </div>
     </div>
   );
 };

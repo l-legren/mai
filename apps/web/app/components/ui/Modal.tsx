@@ -1,15 +1,23 @@
 'use client';
 
 import { useEffect, type ReactNode } from 'react';
+import { cn } from '@/lib/utils';
 
 export type ModalProps = {
   open: boolean;
   onClose: () => void;
   ariaLabel: string;
   children: ReactNode;
+  /** 'sm' (default) fits a single-column form; 'lg' fits a form with side-by-side field rows. */
+  size?: 'sm' | 'lg';
 };
 
-const Modal = ({ open, onClose, ariaLabel, children }: ModalProps) => {
+const SIZE_CLASSES = {
+  sm: 'max-w-sm',
+  lg: 'max-w-xl',
+};
+
+const Modal = ({ open, onClose, ariaLabel, children, size = 'sm' }: ModalProps) => {
   useEffect(() => {
     if (!open) return;
 
@@ -29,7 +37,10 @@ const Modal = ({ open, onClose, ariaLabel, children }: ModalProps) => {
         role="dialog"
         aria-modal="true"
         aria-label={ariaLabel}
-        className="relative w-full max-w-sm rounded-mq-lg border border-border bg-surface-raised p-6 shadow-mq-window"
+        className={cn(
+          'relative w-full rounded-mq-lg border border-border bg-surface-raised p-6 shadow-mq-window',
+          SIZE_CLASSES[size]
+        )}
       >
         {children}
       </div>
