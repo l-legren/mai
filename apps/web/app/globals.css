@@ -20,6 +20,10 @@
   --mq-accent-tint-strong: rgba(255, 79, 163, 0.16);
   --mq-accent-border: rgba(255, 79, 163, 0.14);
   --mq-over: #d2596c;
+  --mq-good: #56c79e;
+  --mq-good-tint: rgba(86, 199, 158, 0.14);
+  --mq-good-border: rgba(86, 199, 158, 0.4);
+  --mq-savings: #8e7bc4;
 
   --mq-text: #f1eff0;
   --mq-text-2: #a9a3a8;
@@ -64,6 +68,10 @@
   --color-accent-tint-strong: var(--mq-accent-tint-strong);
   --color-accent-border: var(--mq-accent-border);
   --color-over: var(--mq-over);
+  --color-good: var(--mq-good);
+  --color-good-tint: var(--mq-good-tint);
+  --color-good-border: var(--mq-good-border);
+  --color-savings: var(--mq-savings);
 
   --color-text: var(--mq-text);
   --color-text-2: var(--mq-text-2);

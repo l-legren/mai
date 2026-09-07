@@ -16,7 +16,9 @@ Anything you build for Moniq's web app follows this file. It is the contract, no
 
 `design-system/styles.css` is the source of truth. Import it once at the app root. Use the custom properties directly (`var(--mq-surface-raised)`) — do not duplicate the values into a JS theme object, a Tailwind config, or a second stylesheet.
 
-Groups: surfaces (`--mq-bg`, `--mq-surface`, `--mq-surface-raised`, `--mq-field`, `--mq-field-focus`, `--mq-surface-accent`, `--mq-hover`, `--mq-bubble`), accent (`--mq-accent`, `--mq-accent-ink`, `--mq-accent-tint`, `--mq-accent-border`), signal (`--mq-over`), ink ramp (`--mq-text` → `--mq-text-6`), lines (`--mq-border`, `--mq-border-2`, `--mq-border-3`, `--mq-fill`, `--mq-track`), radii (`--mq-r-xs` → `--mq-r-xl`, `--mq-r-pill`), shadows, type scale.
+Groups: surfaces (`--mq-bg`, `--mq-surface`, `--mq-surface-raised`, `--mq-field`, `--mq-field-focus`, `--mq-surface-accent`, `--mq-hover`, `--mq-bubble`), accent (`--mq-accent`, `--mq-accent-ink`, `--mq-accent-tint`, `--mq-accent-border`), signal (`--mq-over` over budget/breakeven, `--mq-good`/`--mq-good-tint`/`--mq-good-border` money in or under budget, `--mq-savings` the savings slice of the income breakdown), ink ramp (`--mq-text` → `--mq-text-6`), lines (`--mq-border`, `--mq-border-2`, `--mq-border-3`, `--mq-fill`, `--mq-track`), radii (`--mq-r-xs` → `--mq-r-xl`, `--mq-r-pill`), shadows, type scale.
+
+`--mq-good`/`--mq-savings` are status colors for the Recurring page's income/spend breakdown (data-viz slices, not interactive affordances) — they don't count against rule 2's "one filled accent" any more than `--mq-over` does on `BudgetBar`.
 
 ## Components
 
