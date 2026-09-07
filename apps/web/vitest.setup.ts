@@ -21,6 +21,7 @@ export function createMockClient() {
     auth: {
       signInWithPassword: vi.fn(),
       signUp: vi.fn(),
+      getSession: vi.fn(),
     },
   };
 }

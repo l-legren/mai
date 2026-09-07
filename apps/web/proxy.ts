@@ -6,7 +6,7 @@
 
 import { NextResponse, type NextRequest } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
-import { getSupabaseEnv } from './lib/supabase-env';
+import { getSupabaseEnv } from './lib/env';
 
 export async function proxy(request: NextRequest) {
   const { supabaseUrl, supabaseAnonKey } = getSupabaseEnv();

@@ -14,7 +14,7 @@
 
 import { cookies } from 'next/headers';
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
-import { getSupabaseEnv } from './supabase-env';
+import { getSupabaseEnv } from './env';
 
 export async function createSupabaseServerClient() {
   const { supabaseUrl, supabaseAnonKey } = getSupabaseEnv();
