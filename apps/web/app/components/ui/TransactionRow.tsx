@@ -29,7 +29,7 @@ const TransactionRow = ({
 }: TransactionRowProps) => {
   // Calling the resolved icon directly (not as a `<Tag />`) so eslint's react-hooks rule doesn't
   // mistake a lookup-table selection for a component defined inline during render.
-  const categoryIcon = getCategoryIcon(categoryId)({});
+  const categoryIcon = getCategoryIcon('expense', categoryId)({});
 
   return (
     <div

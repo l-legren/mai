@@ -78,7 +78,7 @@ const ClothingIcon = ({ className }: CategoryIconProps) => (
   </svg>
 );
 
-const TransportIcon = ({ className }: CategoryIconProps) => (
+export const TransportIcon = ({ className }: CategoryIconProps) => (
   <svg
     className={className}
     width="20"
@@ -98,7 +98,7 @@ const TransportIcon = ({ className }: CategoryIconProps) => (
   </svg>
 );
 
-const OtherIcon = ({ className }: CategoryIconProps) => (
+export const OtherIcon = ({ className }: CategoryIconProps) => (
   <svg
     className={className}
     width="20"

@@ -17,6 +17,10 @@
 --mq-accent-tint-strong:rgba(255,79,163,0.16);
 --mq-accent-border:rgba(255,79,163,0.14);
 --mq-over:#D2596C;
+--mq-good:#56C79E;
+--mq-good-tint:rgba(86,199,158,0.14);
+--mq-good-border:rgba(86,199,158,0.4);
+--mq-savings:#8E7BC4;
 
 --mq-text:#F1EFF0;
 --mq-text-2:#A9A3A8;
