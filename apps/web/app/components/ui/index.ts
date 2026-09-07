@@ -7,6 +7,7 @@ export { default as FormError, type FormErrorProps } from './FormError';
 export { Input, type InputProps } from './Input';
 export { default as Modal, type ModalProps } from './Modal';
 export { default as Pagination, type PaginationProps } from './Pagination';
+export { Slider, type SliderProps } from './Slider';
 export { CATEGORY_ICONS, type CategoryIconProps } from './primitives/category-icons';
 export { getCategoryIcon, type CategoryIconComponent, type CategoryKind } from './getCategoryIcon';
 export { default as Logo, type LogoProps } from './primitives/Logo';
