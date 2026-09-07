@@ -139,6 +139,43 @@
       "unknown": "Something went wrong. Please try again."
     }
   },
+  "insights": {
+    "title": "Insights",
+    "subtitle": "How the money moved.",
+    "period": {
+      "threeMonths": "3 months",
+      "twelveMonths": "12 months",
+      "all": "All"
+    },
+    "spendingVsIncome": {
+      "title": "Spending vs income",
+      "note": "Average gap of {{amount}} a month over this period.",
+      "spent": "Spent",
+      "income": "Income"
+    },
+    "budgetVsActual": {
+      "title": "Budget vs actual",
+      "summary": "{{overCount}} over, {{underCount}} with room. {{month}}.",
+      "marker": "Budget",
+      "over": "{{amount}} over",
+      "left": "{{amount}} left",
+      "empty": "No spending logged yet this month."
+    },
+    "whereItWent": {
+      "title": "Where it went",
+      "note": "{{amount}} across {{count}} categories. {{month}}.",
+      "bars": "Bars",
+      "donut": "Donut",
+      "everythingElse": "Everything else",
+      "spentIn": "spent in {{month}}",
+      "empty": "No spending logged yet this month."
+    },
+    "netBalance": {
+      "title": "Net balance",
+      "thisMonth": "this month",
+      "note": "Cumulative income minus spending since {{month}}."
+    }
+  },
   "landing": {
     "badge": "Now on the web, not just your phone",
     "headline": "Know where your money went.",

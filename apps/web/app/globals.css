@@ -25,6 +25,18 @@
   --mq-good-border: rgba(86, 199, 158, 0.4);
   --mq-savings: #8e7bc4;
 
+  /* Insights "Where it went" — fixed per-category identity colors (dataviz skill's validated
+     categorical palette, dark-mode steps), assigned by category id so a category's color never
+     shifts with its monthly rank. Validated (adjacent-pair CVD + contrast) against this app's own
+     --mq-surface-raised card surface, not the skill's generic default. */
+  --mq-category-groceries: #3987e5;
+  --mq-category-drinks: #d95926;
+  --mq-category-restaurants: #199e70;
+  --mq-category-clothing: #c98500;
+  --mq-category-transport: #d55181;
+  --mq-category-other: #008300;
+  --mq-category-everything-else: #5a545a;
+
   --mq-text: #f1eff0;
   --mq-text-2: #a9a3a8;
   --mq-text-3: #7c767c;
