@@ -14,6 +14,9 @@ const buttonVariants = cva(
         solid: 'bg-accent text-accent-ink hover:bg-[#FF6BB1]',
         outline: 'border border-white/15 text-text hover:bg-white/5',
         ghost: 'text-text hover:text-accent',
+        // design-system/CLAUDE.md's Button contract calls this "quiet" — a filled but
+        // borderless secondary action (e.g. AgentNote's "Talk about it").
+        quiet: 'bg-fill text-text-2 hover:bg-white/[0.08]',
       },
       size: {
         default: 'h-11 px-6 text-sm',

@@ -17,6 +17,8 @@ export {
   deleteExpenseRow,
   type ExpenseRow,
   type NewExpenseRow,
+  type ExpensePagination,
+  type PaginatedExpenseRows,
 } from './expenses.data';
 
 export {

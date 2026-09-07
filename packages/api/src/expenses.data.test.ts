@@ -45,4 +45,22 @@ describe('expenses.data', () => {
 
     await expect(deleteExpenseRow(client as never, 'missing-id')).rejects.toBeInstanceOf(ApiError);
   });
+
+  it('ranges into the requested page and returns the total count when paginated', async () => {
+    const row = {
+      id: '1',
+      category: 'groceries',
+      amount: 12.5,
+      spent_on: '2026-07-09',
+      spent_at: '2026-07-09T14:30:00.000Z',
+      note: null,
+    };
+    const builder = mockQueryBuilder({ data: [row], error: null, count: 42 });
+    mockFrom.mockReturnValue(builder as never);
+
+    const result = await getExpenseRows(client as never, { page: 2, pageSize: 20 });
+
+    expect(result).toEqual({ rows: [row], total: 42 });
+    expect(builder.range).toHaveBeenCalledWith(20, 39);
+  });
 });

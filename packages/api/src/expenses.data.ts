@@ -12,15 +12,34 @@ export type { ExpenseRow };
 
 const COLUMNS = 'id, category, amount, spent_on, spent_at, note';
 
-export async function getExpenseRows(client: SupabaseClient): Promise<ExpenseRow[]> {
+export type ExpensePagination = { page: number; pageSize: number };
+export type PaginatedExpenseRows = { rows: ExpenseRow[]; total: number };
+
+export async function getExpenseRows(client: SupabaseClient): Promise<ExpenseRow[]>;
+export async function getExpenseRows(
+  client: SupabaseClient,
+  pagination: ExpensePagination
+): Promise<PaginatedExpenseRows>;
+export async function getExpenseRows(
+  client: SupabaseClient,
+  pagination?: ExpensePagination
+): Promise<ExpenseRow[] | PaginatedExpenseRows> {
   const userId = await getCurrentUserId(client);
-  const { data, error } = await client
+  let query = client
     .from('expenses')
-    .select(COLUMNS)
+    .select(COLUMNS, pagination ? { count: 'exact' } : undefined)
     .eq('user_id', userId)
     .order('spent_at', { ascending: false });
+
+  if (pagination) {
+    const from = (pagination.page - 1) * pagination.pageSize;
+    query = query.range(from, from + pagination.pageSize - 1);
+  }
+
+  const { data, error, count } = await query;
   if (error) throw new ApiError(error.message, error);
-  return ExpenseRowSchema.array().parse(data);
+  const rows = ExpenseRowSchema.array().parse(data);
+  return pagination ? { rows, total: count ?? 0 } : rows;
 }
 
 export type NewExpenseRow = {
