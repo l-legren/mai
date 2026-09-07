@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Logo, SidebarToggleIcon } from '@/app/components/ui';
 import { cn } from '@/lib/utils';
@@ -12,9 +12,23 @@ export type SidebarProps = {
   profile: ProfileOnboardingRow | null;
 };
 
+// Matches Tailwind's `lg` breakpoint (1024px), same as other pages' two-column grids.
+const AUTO_COLLAPSE_QUERY = '(max-width: 1023px)';
+
 const Sidebar = ({ profile }: SidebarProps) => {
   const { t } = useTranslation();
   const [collapsed, setCollapsed] = useState(false);
+
+  // Syncs on mount and whenever the viewport crosses the breakpoint.
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(AUTO_COLLAPSE_QUERY);
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- SSR has no window; must sync post-mount.
+    setCollapsed(mediaQuery.matches);
+
+    const handleChange = (event: MediaQueryListEvent) => setCollapsed(event.matches);
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
 
   const toggleCollapsed = () => setCollapsed((prev) => !prev);
 
