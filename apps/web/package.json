@@ -14,6 +14,7 @@
   "dependencies": {
     "@moniq/api": "workspace:*",
     "@moniq/auth": "workspace:*",
+    "@radix-ui/react-slider": "^1.4.7",
     "@radix-ui/react-slot": "^1.2.3",
     "@supabase/ssr": "^0.12.5",
     "@supabase/supabase-js": "^2.112.3",
@@ -25,6 +26,7 @@
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "react-i18next": "^17.0.11",
+    "recharts": "^3.10.1",
     "tailwind-merge": "^3.3.1"
   },
   "devDependencies": {

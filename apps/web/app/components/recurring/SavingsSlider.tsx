@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { setSavingsGoalAction } from '@/app/actions/set-savings-goal';
+import { Slider } from '@/app/components/ui';
 import { formatCurrency } from '@/lib/utils/format-expense';
 import { cn } from '@/lib/utils';
 
@@ -31,7 +32,6 @@ const SavingsSlider = ({ value, breakEven }: SavingsSliderProps) => {
   }
 
   const isOverBudget = draft > breakEven;
-  const trackPct = Math.min(100, ((draft - MIN) / (MAX - MIN)) * 100);
   const breakEvenPct = Math.min(100, Math.max(0, ((breakEven - MIN) / (MAX - MIN)) * 100));
 
   const commit = (next: number) => {
@@ -64,33 +64,24 @@ const SavingsSlider = ({ value, breakEven }: SavingsSliderProps) => {
         </div>
       </div>
 
-      <div className="relative mt-4 flex h-[22px] items-center">
-        <div className="absolute inset-x-0 h-[6px] rounded-[3px] bg-track" aria-hidden="true" />
-        <div
-          style={{ width: `${trackPct}%` }}
-          className={cn('absolute h-[6px] rounded-[3px]', isOverBudget ? 'bg-over' : 'bg-savings')}
-          aria-hidden="true"
-        />
+      <div className="relative mt-4 h-[22px]">
         {breakEven <= MAX && (
           <div
             style={{ left: `${breakEvenPct}%` }}
-            className="absolute top-0 h-full w-px bg-over/60"
+            className="pointer-events-none absolute top-0 z-10 h-full w-px bg-over/60"
             aria-hidden="true"
           />
         )}
-        <input
-          type="range"
+        <Slider
           min={MIN}
           max={MAX}
           step={STEP}
-          value={draft}
-          onChange={(event) => setDraft(Number(event.target.value))}
-          onMouseUp={(event) => commit(Number(event.currentTarget.value))}
-          onTouchEnd={(event) => commit(Number(event.currentTarget.value))}
-          onKeyUp={(event) => commit(Number(event.currentTarget.value))}
+          value={[draft]}
+          onValueChange={([next]) => setDraft(next)}
+          onValueCommit={([next]) => commit(next)}
+          rangeClassName={isOverBudget ? 'bg-over' : 'bg-savings'}
           aria-label={t('recurring.savingsTarget')}
           aria-valuetext={formatCurrency(draft)}
-          className="relative h-[22px] w-full cursor-pointer appearance-none bg-transparent [&::-webkit-slider-thumb]:h-[22px] [&::-webkit-slider-thumb]:w-[22px] [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-0 [&::-webkit-slider-thumb]:bg-text [&::-webkit-slider-thumb]:shadow-mq-tip [&::-moz-range-thumb]:h-[22px] [&::-moz-range-thumb]:w-[22px] [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-text"
         />
       </div>
 
