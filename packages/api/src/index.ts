@@ -49,4 +49,9 @@ export {
 
 export { getSavingsGoalValue, saveSavingsGoalValue } from './savings.data';
 
-export { streamAskMoniqReply, type AskMessageRow, type AskStreamEvent } from './ask.data';
+export {
+  streamAskMoniqReply,
+  consumeAskMoniqStream,
+  type AskMessageRow,
+  type AskStreamEvent,
+} from './ask.data';

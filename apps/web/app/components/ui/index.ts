@@ -1,6 +1,7 @@
 export { Button, buttonVariants, type ButtonProps } from './Button';
 export { default as AgentNote, type AgentNoteProps } from './AgentNote';
 export { default as BudgetBar, type BudgetBarProps } from './BudgetBar';
+export { default as ChatBubble, type ChatBubbleProps } from './ChatBubble';
 export { default as Card, type CardProps } from './primitives/Card';
 export { default as ConfirmPrompt, type ConfirmPromptProps } from './primitives/ConfirmPrompt';
 export { default as FormError, type FormErrorProps } from './FormError';
@@ -19,6 +20,7 @@ export {
   RecurringIcon,
   InsightsIcon,
   AskMoniqIcon,
+  SendIcon,
   SidebarToggleIcon,
   TrashIcon,
   type NavIconProps,

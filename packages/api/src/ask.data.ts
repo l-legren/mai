@@ -54,6 +54,20 @@ export async function streamAskMoniqReply(
     signal,
   });
 
+  return consumeAskMoniqStream(response, onEvent);
+}
+
+/**
+ * Reads an `ask-moniq` NDJSON response body, invoking `onEvent` for each text chunk / tool call.
+ * Split out from `streamAskMoniqReply` so a caller that already has its own authenticated
+ * `Response` (e.g. apps/web's same-origin proxy Route Handler, which forwards the Supabase session
+ * server-side instead of exposing it to the browser) can reuse the same parsing/error handling
+ * without going through this package's own `fetch` + `client.auth.getSession()` call.
+ */
+export async function consumeAskMoniqStream(
+  response: Response,
+  onEvent: (event: AskStreamEvent) => void
+): Promise<void> {
   if (!response.ok || !response.body) {
     throw new ApiError(`ask-moniq request failed (${response.status})`);
   }

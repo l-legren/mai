@@ -176,6 +176,31 @@
       "note": "Cumulative income minus spending since {{month}}."
     }
   },
+  "ask": {
+    "title": "Ask Moniq",
+    "nothingYet": "Nothing yet",
+    "endChat": "End chat",
+    "endChatA11y": "End chat, clear the conversation",
+    "inputPlaceholder": "Ask about your money…",
+    "workingPlaceholder": "Working…",
+    "send": "Send message",
+    "sendUnavailable": "Send message, not available yet",
+    "stop": "Stop",
+    "userMessageA11y": "You said: {{message}}",
+    "greetingTitle": "Ask me anything about your money.",
+    "greetingSubtitle": "I can look up your recent spending and answer questions about it.",
+    "thinking": "Thinking…",
+    "error": "Something went wrong. Please try again.",
+    "statusLine": {
+      "recentSpending": "Looked at your recent spending"
+    },
+    "starterPrompts": {
+      "spentThisWeek": "How much have I spent this week?",
+      "spentOnThisWeek": "What did I spend money on this week?",
+      "spentLast14Days": "How much have I spent in the last 14 days?",
+      "biggestCategoryThisWeek": "What's my biggest spending category this week?"
+    }
+  },
   "landing": {
     "badge": "Now on the web, not just your phone",
     "headline": "Know where your money went.",
