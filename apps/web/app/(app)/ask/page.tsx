@@ -1,11 +1,7 @@
-import { PageHeading } from '@/app/components/ui';
+import AskChatView from './AskChatView';
 
 const AskMoniqPage = () => {
-  return (
-    <div className="flex min-h-svh flex-col items-center justify-center">
-      <PageHeading titleKey="nav.askMoniq" />
-    </div>
-  );
+  return <AskChatView />;
 };
 
 export default AskMoniqPage;
