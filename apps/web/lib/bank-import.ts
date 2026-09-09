@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import Papa from 'papaparse';
 import type { NewBankImportRow } from '@mai/api';
+import type { CategoryId } from './categories';
 
 // Column positions in the target bank's CSV export (semicolon-delimited, header row first):
 // Buchung;Wertstellungsdatum;Auftraggeber/Empfänger;Buchungstext;Verwendungszweck;Saldo;Währung;Betrag;Währung
@@ -36,10 +37,61 @@ function buildImportHash(spentOn: string, amount: number, note: string): string 
   return createHash('sha256').update(`${spentOn}|${amount}|${note}`).digest('hex');
 }
 
+// Only the categories with an unambiguous merchant-name signal get a guess — order matters where a
+// name could plausibly match more than one (checked top to bottom, first match wins).
+const CATEGORY_KEYWORDS: [CategoryId, string[]][] = [
+  ['groceries', ['REWE', 'EDEKA', 'ALDI', 'LIDL', 'KAUFLAND', 'NETTO', 'PENNY']],
+  [
+    'restaurants',
+    [
+      'MCDONALD',
+      'BURGER KING',
+      'VAPIANO',
+      'DOMINOS',
+      'PIZZA',
+      'CURRY',
+      'KFC',
+      'SUBWAY',
+      'LIEFERANDO',
+    ],
+  ],
+  ['drinks', ['STARBUCKS', 'SPAETI', 'SPÄTI', 'CAFE', 'COFFEE']],
+  [
+    'transport',
+    [
+      'BVG',
+      'DB VERTRIEB',
+      'DEUTSCHE BAHN',
+      'UBER',
+      'FLIXBUS',
+      'TANKSTELLE',
+      'SHELL',
+      'ARAL',
+      'ESSO',
+    ],
+  ],
+  ['clothing', ['ZALANDO', 'H AND M', 'H&M', 'ZARA', 'C AND A', 'PRIMARK']],
+];
+
 /**
- * Maps this bank's semicolon-delimited CSV export to expense rows ready to insert. Rows with the
- * wrong column count, an unparseable date/amount, or a non-EUR amount are dropped and counted in
- * `skippedCount` rather than failing the whole import.
+ * Best-effort category guess from the bank's merchant name, falling back to 'other' — matching only
+ * the categories above with a strong, unambiguous merchant-name signal. Everything else
+ * (subscriptions, rent, salary, ...) has no better home in the fixed category set, so it stays
+ * 'other' exactly as it always did before this guess existed.
+ */
+export function categorizeBankPayee(payee: string): CategoryId {
+  const normalized = payee.toUpperCase();
+  const match = CATEGORY_KEYWORDS.find(([, keywords]) =>
+    keywords.some((keyword) => normalized.includes(keyword))
+  );
+  return match ? match[0] : 'other';
+}
+
+/**
+ * Maps this bank's semicolon-delimited CSV export to expense rows ready to insert, guessing a
+ * category from the merchant name (see `categorizeBankPayee`) instead of always defaulting to
+ * 'other'. Rows with the wrong column count, an unparseable date/amount, or a non-EUR amount are
+ * dropped and counted in `skippedCount` rather than failing the whole import.
  */
 export function parseBankCsv(csvText: string): BankImportParseResult {
   const { data } = Papa.parse<string[]>(csvText.trim(), { delimiter: ';', skipEmptyLines: true });
@@ -68,7 +120,7 @@ export function parseBankCsv(csvText: string): BankImportParseResult {
     const note = purpose ? `${payee}: ${purpose}` : payee;
 
     rows.push({
-      category: 'other',
+      category: categorizeBankPayee(payee),
       amount,
       spent_on: spentOn,
       spent_at: `${spentOn}T00:00:00.000Z`,

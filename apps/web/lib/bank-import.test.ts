@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { parseBankCsv } from './bank-import';
+import { categorizeBankPayee, parseBankCsv } from './bank-import';
 
 const HEADER =
   'Buchung;Wertstellungsdatum;Auftraggeber/Empfänger;Buchungstext;Verwendungszweck;Saldo;Währung;Betrag;Währung';
 
 describe('parseBankCsv', () => {
-  it('maps a debit row to an expense with a negative signed amount and a payee: purpose note', () => {
+  it('maps a debit row to an expense with a negative signed amount, a payee: purpose note, and a guessed category', () => {
     const csv = [
       HEADER,
       '08.09.2026;08.09.2026;VISA REWE MARTIN NOTHEL;Lastschrift;NR XXXX 5010 BERLIN DE KAUFUMSATZ 05.09 16.85 121223 ARN74830726248311533467761 Apple Pay;8.285,57;EUR;-16,85;EUR',
@@ -16,7 +16,7 @@ describe('parseBankCsv', () => {
     expect(skippedCount).toBe(0);
     expect(rows).toEqual([
       {
-        category: 'other',
+        category: 'groceries',
         amount: -16.85,
         spent_on: '2026-09-08',
         spent_at: '2026-09-08T00:00:00.000Z',
@@ -98,5 +98,29 @@ describe('parseBankCsv', () => {
 
     expect(rows).toEqual([]);
     expect(skippedCount).toBe(1);
+  });
+});
+
+describe('categorizeBankPayee', () => {
+  it.each([
+    ['VISA REWE MARTIN NOTHEL', 'groceries'],
+    ['VISA EDEKA SUPERMARKT', 'groceries'],
+    ['VISA STARBUCKS COFFEE', 'drinks'],
+    ['VISA MCDONALDS 4521', 'restaurants'],
+    ['VISA DOMINOS PIZZA', 'restaurants'],
+    ['BVG BERLIN', 'transport'],
+    ['VISA UBER TRIP', 'transport'],
+    ['VISA ZALANDO SE', 'clothing'],
+  ] as const)('categorizes "%s" as %s', (payee, expected) => {
+    expect(categorizeBankPayee(payee)).toBe(expected);
+  });
+
+  it('is case-insensitive', () => {
+    expect(categorizeBankPayee('visa rewe martin nothel')).toBe('groceries');
+  });
+
+  it('falls back to other for a merchant with no matching keyword', () => {
+    expect(categorizeBankPayee('ANTHROPIC* CLAUDE SUB')).toBe('other');
+    expect(categorizeBankPayee('ARBEITGEBER GMBH')).toBe('other');
   });
 });
