@@ -7,7 +7,7 @@ const SAVINGS_TARGETS_TOOL_DESCRIPTION =
   "Get the user's active savings targets with progress (saved vs goal amount, target date).";
 
 /**
- * Minimal deterministic multi-turn dataset for the Ask Moniq agent loop (LEG-129). Every case
+ * Minimal deterministic multi-turn dataset for the Ask Mai agent loop (LEG-129). Every case
  * uses fixture tools (see `buildMockTools` in executors.ts) so no real DB/model-selected `days`
  * value is needed — the point is grading the model's *use* of a tool result, not the tool itself.
  *

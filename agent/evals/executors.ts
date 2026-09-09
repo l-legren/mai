@@ -1,7 +1,7 @@
 import { generateText, stepCountIs, tool, type ModelMessage, type ToolSet } from 'ai';
 import { anthropic } from '@ai-sdk/anthropic';
 import { z } from 'zod';
-import { createMoniqTools } from '../src/tools.ts';
+import { createMaiTools } from '../src/tools.ts';
 import type {
   EvalData,
   SingleTurnResult,
@@ -37,7 +37,7 @@ function buildMockTools(mockTools: Record<string, MockToolConfig>): ToolSet {
 }
 
 // Fixture user id/date for tool-selection evals only — stopWhen(1) means no tool's `execute` body
-// ever actually runs here, so what `createMoniqTools` closes over doesn't matter.
+// ever actually runs here, so what `createMaiTools` closes over doesn't matter.
 const EVAL_FIXTURE_USER_ID = 'eval-fixture-user';
 const EVAL_FIXTURE_TODAY = '2026-01-01';
 
@@ -48,7 +48,7 @@ export const singleTurnExecutor = async (data: EvalData): Promise<SingleTurnResu
   // No execute here even though getRecentSpending has a real execute body — stopWhen(1) means
   // the model gets exactly one turn to pick a tool, it's never actually invoked. That's the
   // point: this tests tool *selection*, not task completion.
-  const allTools = createMoniqTools(EVAL_FIXTURE_USER_ID, EVAL_FIXTURE_TODAY);
+  const allTools = createMaiTools(EVAL_FIXTURE_USER_ID, EVAL_FIXTURE_TODAY);
   const tools: ToolSet = {};
   for (const toolName of data.tools) {
     const def = allTools[toolName];

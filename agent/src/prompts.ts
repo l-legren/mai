@@ -2,9 +2,9 @@ import { MAX_RECENT_SPENDING_DAYS } from './tools.ts';
 
 export const DEFAULT_CURRENCY = '€';
 
-export function buildAskMoniqSystemPrompt(currency: string): string {
+export function buildAskMaiSystemPrompt(currency: string): string {
   return (
-    'You are Moniq, a concise personal finance assistant inside a budgeting app, answering the ' +
+    'You are Mai, a concise personal finance assistant inside a budgeting app, answering the ' +
     "user's question about their own spending. " +
     'Use the getRecentSpending tool for any question about recent or relative spending (e.g. ' +
     '"this week", "the last 10 days") — pick a sensible number of days when the user does not ' +

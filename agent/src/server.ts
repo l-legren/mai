@@ -3,12 +3,12 @@ import { Hono } from 'hono';
 import { stream } from 'hono/streaming';
 import { serve } from '@hono/node-server';
 import { supabase } from './data/supabase.ts';
-import { AskMoniqRequestSchema } from './types.ts';
-import { runAskMoniq } from './run.ts';
+import { AskMaiRequestSchema } from './types.ts';
+import { runAskMai } from './run.ts';
 
 const app = new Hono();
 
-app.post('/ask-moniq', async (ctx) => {
+app.post('/ask-mai', async (ctx) => {
   const authHeader = ctx.req.header('Authorization');
   if (!authHeader) return ctx.json({ error: 'Missing authentication' }, 401);
 
@@ -22,10 +22,10 @@ app.post('/ask-moniq', async (ctx) => {
     return ctx.json({ error: 'Invalid JSON body' }, 400);
   }
 
-  const validationResult = AskMoniqRequestSchema.safeParse(jsonBody);
+  const validationResult = AskMaiRequestSchema.safeParse(jsonBody);
   if (!validationResult.success) return ctx.json({ message: 'Invalid shape of the payload' }, 400);
 
-  const result = runAskMoniq(
+  const result = runAskMai(
     data.user.id,
     validationResult.data.messages,
     validationResult.data.today
