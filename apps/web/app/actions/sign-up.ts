@@ -12,13 +12,14 @@ export async function signUpAction(
   const name = String(formData.get('name') ?? '');
   const email = String(formData.get('email') ?? '');
   const password = String(formData.get('password') ?? '');
+  const captchaToken = String(formData.get('cf-turnstile-response') ?? '');
 
   const client = await createSupabaseServerClient();
 
   let user;
   try {
     // `null` means the account needs email confirmation before it can sign in — not an error.
-    user = await signUp(client, name, email, password);
+    user = await signUp(client, name, email, password, captchaToken);
   } catch (err) {
     return {
       errorCode: err instanceof AuthError ? err.code : 'unknown',

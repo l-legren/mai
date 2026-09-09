@@ -21,6 +21,19 @@ export function getSupabaseEnv(): { supabaseUrl: string; supabaseAnonKey: string
   return { supabaseUrl, supabaseAnonKey };
 }
 
+/** The Cloudflare Turnstile site key rendered on the sign-in/sign-up forms — public by design
+ * (`NEXT_PUBLIC_`), unlike the project's Turnstile secret key, which lives only in Supabase's own
+ * dashboard config and never touches this codebase. */
+export function getTurnstileSiteKey(): string {
+  const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+  if (!siteKey) {
+    throw new Error(
+      'Missing NEXT_PUBLIC_TURNSTILE_SITE_KEY. Copy .env.example to .env.local and fill it in.'
+    );
+  }
+  return siteKey;
+}
+
 /**
  * Server-only — read inside the `ask-mai` Route Handler, never sent to the browser. Unlike
  * `getSupabaseEnv`'s `NEXT_PUBLIC_*` vars, this one has no `NEXT_PUBLIC_` prefix: the browser only
