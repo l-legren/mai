@@ -73,3 +73,14 @@ export type ProfileOnboardingRow = z.infer<typeof ProfileOnboardingRowSchema>;
 export const SavingsGoalRowSchema = z.object({
   savings_goal: z.number().nullable(),
 });
+
+/** Persisted profile row (`public.profiles`) fields needed for the approval gate. `approved` defaults
+ * false until approved via the Supabase dashboard. */
+export const ProfileApprovalRowSchema = z.object({
+  id: z.string(),
+  email: z.string().nullable(),
+  display_name: z.string().nullable(),
+  approved: z.boolean(),
+});
+
+export type ProfileApprovalRow = z.infer<typeof ProfileApprovalRowSchema>;
