@@ -8,7 +8,7 @@ import {
   insertExpenseRow,
   type ExpenseRow,
   type NewExpenseRow,
-} from '@moniq/api';
+} from '@mai/api';
 
 import { CATEGORY_IDS, type CategoryId } from '@/constants/categories';
 import { supabase } from '@/data/supabase';

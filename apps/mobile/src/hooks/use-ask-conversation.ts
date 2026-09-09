@@ -25,7 +25,7 @@ function linesFrom(text: string): string[] {
 }
 
 /**
- * Owns the Ask Moniq transcript. The agent loop itself is stateless per request (see
+ * Owns the Ask Mai transcript. The agent loop itself is stateless per request (see
  * agent/src/run.ts), so this hook is the one place the running conversation lives — every send
  * replays the full transcript so far, nothing is persisted server-side.
  *

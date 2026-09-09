@@ -29,7 +29,7 @@ function AskTurnItem({ turn }: { turn: AskDisplayTurn }) {
 }
 
 /**
- * Ask Moniq: a stateless-per-request tool-calling agent loop (see agent/src/run.ts) behind a
+ * Ask Mai: a stateless-per-request tool-calling agent loop (see agent/src/run.ts) behind a
  * plain-text chat UI, per LEG-129. The screen holds only the input's draft text; the running
  * transcript itself lives in `useAskConversation`.
  */

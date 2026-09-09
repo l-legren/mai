@@ -43,7 +43,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-const DEV_EMAIL = 'dev@moniq.app';
+const DEV_EMAIL = 'dev@mai.app';
 const DEV_PASSWORD = 'password123';
 
 function fail(step, error) {

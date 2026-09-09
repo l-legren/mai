@@ -2,7 +2,7 @@
  * Business layer — monthly savings goal.
  */
 
-import { getSavingsGoalValue, saveSavingsGoalValue } from '@moniq/api';
+import { getSavingsGoalValue, saveSavingsGoalValue } from '@mai/api';
 
 import { supabase } from '@/data/supabase';
 

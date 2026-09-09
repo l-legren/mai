@@ -1,5 +1,5 @@
 /**
- * Design tokens for moniq — the pink-accented palette + gradient/card tokens + type scale
+ * Design tokens for mai — the pink-accented palette + gradient/card tokens + type scale
  * (`Palettes`, `GradientGlow`, `CardShadow`, `Typography`, `FontFamily`).
  */
 

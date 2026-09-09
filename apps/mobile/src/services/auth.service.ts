@@ -1,7 +1,7 @@
 /**
  * Business layer — auth. Binds this app's one Supabase client (`src/data/supabase.ts`) to
- * `@moniq/auth`'s framework-agnostic sign-in/sign-up logic — shared with the web app, which binds
- * its own client the same way. Kept here (rather than every hook calling `@moniq/auth` directly)
+ * `@mai/auth`'s framework-agnostic sign-in/sign-up logic — shared with the web app, which binds
+ * its own client the same way. Kept here (rather than every hook calling `@mai/auth` directly)
  * so the hooks layer still only ever imports from `services/`, per CLAUDE.md's data architecture.
  */
 
@@ -16,7 +16,7 @@ import {
   subscribeToAuthChanges as subscribeToAuthChangesWith,
   type AuthErrorCode,
   type AuthUser,
-} from '@moniq/auth';
+} from '@mai/auth';
 
 export { AuthServiceError, mapSessionToUser, type AuthUser, type AuthErrorCode };
 

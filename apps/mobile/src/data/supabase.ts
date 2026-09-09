@@ -1,8 +1,8 @@
 /**
- * Builds the app's one Supabase client — `@moniq/api` has no React Native dependency, so this is
+ * Builds the app's one Supabase client — `@mai/api` has no React Native dependency, so this is
  * the one place AsyncStorage (the auth token store) and the Android-emulator URL rewrite live.
  * Imported once for its side effect at app boot (`src/app/_layout.tsx`); the `services/` layer
- * imports `supabase` from here directly and passes it into each `@moniq/api`/`@moniq/auth` call.
+ * imports `supabase` from here directly and passes it into each `@mai/api`/`@mai/auth` call.
  */
 
 import 'react-native-url-polyfill/auto';

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * One-time (idempotent, safe to re-run) setup of the dev@moniq.app test user against whichever
+ * One-time (idempotent, safe to re-run) setup of the dev@mai.app test user against whichever
  * Supabase backend EXPO_PUBLIC_SUPABASE_URL/ANON_KEY point to (local or hosted, via .env) — mirrors
  * `supabase/seed.sql`'s user + recurring rows, which only ever runs locally on `supabase db reset`
  * and has no hosted equivalent. This only creates the account and its recurring income/costs once.
@@ -42,7 +42,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-const DEV_EMAIL = 'dev@moniq.app';
+const DEV_EMAIL = 'dev@mai.app';
 const DEV_PASSWORD = 'password123';
 
 // Mirrors supabase/seed.sql exactly.

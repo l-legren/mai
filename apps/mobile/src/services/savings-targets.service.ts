@@ -9,7 +9,7 @@ import {
   updateSavedAmountRow,
   type NewSavingsTargetRow,
   type SavingsTargetRow,
-} from '@moniq/api';
+} from '@mai/api';
 
 import { SAVINGS_TARGET_CATEGORY_IDS, type SavingsTargetCategoryId } from '@/constants/categories';
 import { supabase } from '@/data/supabase';

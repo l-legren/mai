@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "moniq",
+    "appName": "mai",
     "back": "Back",
     "confirm": "Confirm",
     "cancel": "Cancel",
@@ -261,7 +261,7 @@
     "help": "Help"
   },
   "ask": {
-    "title": "Ask Moniq",
+    "title": "Ask Mai",
     "endChat": "End chat",
     "endChatA11y": "End chat, clear the conversation",
     "inputPlaceholder": "Message…",

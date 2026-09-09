@@ -14,7 +14,7 @@ jest.mock('expo-crypto', () => {
 // values still stub the individual jest.fn()s (e.g. `supabase.auth.signInWithPassword`), or
 // reconfigure `supabase.from` with mockQueryBuilder (see packages/api/src/utils). A single stable
 // object, not a fresh one per call — every service imports this same `supabase` const and passes
-// it into `@moniq/api`/`@moniq/auth` calls, so a test's own `import { supabase } from
+// it into `@mai/api`/`@mai/auth` calls, so a test's own `import { supabase } from
 // '@/data/supabase'` must resolve to the exact same mock instance for mockFrom.mockReturnValue(...)
 // etc. to actually take effect. src/data/supabase.test.ts (which tests the real module) opts out
 // of this via jest.unmock.

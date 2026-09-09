@@ -1,11 +1,11 @@
 /**
- * Business layer — Ask Moniq conversation. Composes the `ask-moniq` Edge Function (via
- * `@moniq/api`) into the app's message shape. The agent loop is stateless per request — this
+ * Business layer — Ask Mai conversation. Composes the `ask-mai` Edge Function (via
+ * `@mai/api`) into the app's message shape. The agent loop is stateless per request — this
  * module sends the running transcript on every call; nothing is persisted server-side, so the
  * hook layer owns holding the transcript across turns.
  */
 
-import { streamAskMoniqReply, type AskMessageRow, type AskStreamEvent } from '@moniq/api';
+import { streamAskMaiReply, type AskMessageRow, type AskStreamEvent } from '@mai/api';
 import { supabase } from '@/data/supabase';
 import { todayISO } from '@/utils/date';
 
@@ -23,7 +23,7 @@ export async function sendAskMessage(
   onEvent: (event: AskEvent) => void,
   signal?: AbortSignal
 ): Promise<void> {
-  return streamAskMoniqReply(
+  return streamAskMaiReply(
     supabase,
     todayISO(),
     messages,
