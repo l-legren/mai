@@ -14,6 +14,9 @@ export type ImportCsvModalProps = {
   onClose: () => void;
 };
 
+// Served from apps/web/public — lets a demo user try the feature without a real bank export.
+const SAMPLE_CSV_URL = '/sample-bank-statement.csv';
+
 type Preview = {
   rows: NewBankImportRow[];
   skippedCount: number;
@@ -27,11 +30,13 @@ const ImportCsvModal = ({ open, onClose }: ImportCsvModalProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<Preview | null>(null);
   const [errorCode, setErrorCode] = useState<string | null>(null);
+  const [pendingSource, setPendingSource] = useState<'file' | 'sample' | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const reset = () => {
     setPreview(null);
     setErrorCode(null);
+    setPendingSource(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
@@ -40,25 +45,43 @@ const ImportCsvModal = ({ open, onClose }: ImportCsvModalProps) => {
     onClose();
   };
 
+  const runPreview = async (file: File) => {
+    const formData = new FormData();
+    formData.set('file', file);
+
+    const result = await previewBankCsvAction(formData);
+    if (result.success) {
+      setPreview({
+        rows: result.rows,
+        skippedCount: result.skippedCount,
+        overCapCount: result.overCapCount,
+        currentCount: result.currentCount,
+      });
+    } else {
+      setErrorCode(result.errorCode);
+    }
+  };
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
     setErrorCode(null);
-    const formData = new FormData();
-    formData.set('file', file);
+    setPendingSource('file');
+    startTransition(() => runPreview(file));
+  };
 
+  const handleUseSampleData = () => {
+    setErrorCode(null);
+    setPendingSource('sample');
     startTransition(async () => {
-      const result = await previewBankCsvAction(formData);
-      if (result.success) {
-        setPreview({
-          rows: result.rows,
-          skippedCount: result.skippedCount,
-          overCapCount: result.overCapCount,
-          currentCount: result.currentCount,
-        });
-      } else {
-        setErrorCode(result.errorCode);
+      try {
+        const response = await fetch(SAMPLE_CSV_URL);
+        if (!response.ok) throw new Error(`sample fetch failed: ${response.status}`);
+        const blob = await response.blob();
+        await runPreview(new File([blob], 'sample-bank-statement.csv', { type: 'text/csv' }));
+      } catch {
+        setErrorCode('unknown');
       }
     });
   };
@@ -124,7 +147,14 @@ const ImportCsvModal = ({ open, onClose }: ImportCsvModalProps) => {
               disabled={isPending}
               onClick={() => fileInputRef.current?.click()}
             >
-              {isPending ? t('importCsv.reading') : t('importCsv.chooseFile')}
+              {isPending && pendingSource === 'file'
+                ? t('importCsv.reading')
+                : t('importCsv.chooseFile')}
+            </Button>
+            <Button variant="quiet" disabled={isPending} onClick={handleUseSampleData}>
+              {isPending && pendingSource === 'sample'
+                ? t('importCsv.loadingSample')
+                : t('importCsv.useSampleData')}
             </Button>
             <Button variant="quiet" onClick={handleClose}>
               {t('common.cancel')}

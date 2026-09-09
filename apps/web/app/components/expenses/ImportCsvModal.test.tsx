@@ -30,6 +30,9 @@ function selectFile(container: HTMLElement) {
   fireEvent.change(input, { target: { files: [csvFile] } });
 }
 
+const fetchMock = vi.fn();
+vi.stubGlobal('fetch', fetchMock);
+
 describe('ImportCsvModal', () => {
   it('shows a preview with the transaction count once parsing succeeds', async () => {
     vi.mocked(previewBankCsvAction).mockResolvedValue({
@@ -80,6 +83,35 @@ describe('ImportCsvModal', () => {
     await screen.findByText(
       'You have 99/100 transactions saved this week. Only 1 of the 5 found will be imported (0 unreadable, 4 over the limit).'
     );
+  });
+
+  it('fetches the sample CSV and previews it when "Try with sample data" is clicked', async () => {
+    fetchMock.mockResolvedValue({ ok: true, blob: () => Promise.resolve(new Blob(['csv'])) });
+    vi.mocked(previewBankCsvAction).mockResolvedValue({
+      success: true,
+      rows: [parsedRow],
+      skippedCount: 0,
+      overCapCount: 0,
+      currentCount: 0,
+    });
+    render(<ImportCsvModal open onClose={vi.fn()} />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Try with sample data' }));
+
+    await screen.findByText('Found 1 transaction to import (0 skipped).');
+    expect(fetchMock).toHaveBeenCalledWith('/sample-bank-statement.csv');
+    const formData = vi.mocked(previewBankCsvAction).mock.calls[0][0];
+    expect((formData.get('file') as File).name).toBe('sample-bank-statement.csv');
+  });
+
+  it('shows unknown instead of throwing when fetching the sample CSV fails', async () => {
+    fetchMock.mockResolvedValue({ ok: false, status: 404 });
+    render(<ImportCsvModal open onClose={vi.fn()} />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Try with sample data' }));
+
+    await screen.findByText('Something went wrong. Please try again.');
+    expect(previewBankCsvAction).not.toHaveBeenCalled();
   });
 
   it('imports the previewed rows, then resets, closes and refreshes on confirm', async () => {

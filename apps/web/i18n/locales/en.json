@@ -59,6 +59,8 @@
   "importCsv": {
     "title": "Import bank CSV",
     "chooseFile": "Choose file",
+    "useSampleData": "Try with sample data",
+    "loadingSample": "Loading sample…",
     "reading": "Reading file…",
     "previewMessage_one": "Found {{count}} transaction to import ({{skipped}} skipped).",
     "previewMessage_other": "Found {{count}} transactions to import ({{skipped}} skipped).",
