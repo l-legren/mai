@@ -5,12 +5,12 @@ import {
   deleteRecurringRow,
   type RecurringRow,
   type NewRecurringRow,
-} from '@moniq/api';
+} from '@mai/api';
 import { createSupabaseServerClient } from '../supabase-server';
 
 export type { RecurringRow, NewRecurringRow };
 
-// cache() dedupes this per request. Ordered newest-first (see @moniq/api's getRecurringRows).
+// cache() dedupes this per request. Ordered newest-first (see @mai/api's getRecurringRows).
 export const getCurrentRecurring = cache(async () => {
   const supabase = await createSupabaseServerClient();
   return getRecurringRows(supabase);

@@ -1,17 +1,17 @@
 {
   "common": {
-    "appName": "Moniq",
+    "appName": "Mai",
     "loading": "Loading…",
     "cancel": "Cancel"
   },
   "nav": {
-    "homeLink": "Moniq home",
+    "homeLink": "Mai home",
     "signIn": "Sign in",
     "signUp": "Sign up",
     "primary": "Main navigation",
     "recurring": "Recurring",
     "insights": "Insights",
-    "askMoniq": "Ask Moniq",
+    "askMai": "Ask Mai",
     "collapseSidebar": "Collapse sidebar",
     "expandSidebar": "Expand sidebar",
     "accountMenu": "Account menu"
@@ -177,7 +177,7 @@
     }
   },
   "ask": {
-    "title": "Ask Moniq",
+    "title": "Ask Mai",
     "nothingYet": "Nothing yet",
     "endChat": "End chat",
     "endChatA11y": "End chat, clear the conversation",
@@ -205,7 +205,7 @@
     "badge": "Now on the web, not just your phone",
     "headline": "Know where your money went.",
     "headlineAccent": "Before it goes.",
-    "subline": "Moniq sorts every transaction, watches your budgets and tells you plainly how the month is going — so you find out on the 9th, not on the 30th.",
+    "subline": "Mai sorts every transaction, watches your budgets and tells you plainly how the month is going — so you find out on the 9th, not on the 30th.",
     "getStarted": "Get started free"
   },
   "auth": {

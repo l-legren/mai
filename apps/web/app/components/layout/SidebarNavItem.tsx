@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import {
-  AskMoniqIcon,
+  AskMaiIcon,
   HomeIcon,
   InsightsIcon,
   RecurringIcon,
@@ -12,7 +12,7 @@ import {
 } from '@/app/components/ui';
 import { cn } from '@/lib/utils';
 
-export type NavTitleKey = 'home.title' | 'nav.recurring' | 'nav.insights' | 'nav.askMoniq';
+export type NavTitleKey = 'home.title' | 'nav.recurring' | 'nav.insights' | 'nav.askMai';
 
 export type NavItem = {
   href: '/' | '/recurring' | '/insights' | '/ask';
@@ -24,7 +24,7 @@ export const NAV_ITEMS: NavItem[] = [
   { href: '/', titleKey: 'home.title', icon: HomeIcon },
   { href: '/recurring', titleKey: 'nav.recurring', icon: RecurringIcon },
   { href: '/insights', titleKey: 'nav.insights', icon: InsightsIcon },
-  { href: '/ask', titleKey: 'nav.askMoniq', icon: AskMoniqIcon },
+  { href: '/ask', titleKey: 'nav.askMai', icon: AskMaiIcon },
 ];
 
 export type SidebarNavItemProps = {

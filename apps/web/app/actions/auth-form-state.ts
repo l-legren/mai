@@ -1,4 +1,4 @@
-import type { AuthErrorCode } from '@moniq/auth';
+import type { AuthErrorCode } from '@mai/auth';
 
 export type AuthFormState = {
   errorCode: AuthErrorCode | null;

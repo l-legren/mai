@@ -24,7 +24,7 @@ function statusLineFor(toolsUsed: string[], t: (key: string) => string): string 
 }
 
 /**
- * Owns the Ask Moniq transcript client-side. The agent loop is stateless per request (see
+ * Owns the Ask Mai transcript client-side. The agent loop is stateless per request (see
  * agent/src/run.ts), so this hook is the one place the running conversation lives — every send
  * replays the full transcript so far, nothing is persisted server-side.
  *

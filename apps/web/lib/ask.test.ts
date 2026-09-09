@@ -37,7 +37,7 @@ describe('sendAskMessage', () => {
     await sendAskMessage(messages, today, (event) => events.push(event));
 
     expect(globalThis.fetch).toHaveBeenCalledWith(
-      '/api/ask-moniq',
+      '/api/ask-mai',
       expect.objectContaining({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

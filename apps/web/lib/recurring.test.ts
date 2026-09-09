@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { RecurringRow } from '@moniq/api';
+import type { RecurringRow } from '@mai/api';
 import {
   costsTotal,
   frequencyLabelFor,

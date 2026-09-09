@@ -35,7 +35,7 @@ describe('AgentNote', () => {
   it('hides the byline when there is no bylineLabel even though showByline is true', () => {
     render(<AgentNote message="Note" primaryLabel="Do it" secondaryLabel="Talk about it" />);
 
-    expect(screen.queryByText('Moniq')).toBeNull();
+    expect(screen.queryByText('Mai')).toBeNull();
   });
 
   it('shows the byline when a bylineLabel is given', () => {
@@ -44,11 +44,11 @@ describe('AgentNote', () => {
         message="Note"
         primaryLabel="Do it"
         secondaryLabel="Talk about it"
-        bylineLabel="Moniq"
+        bylineLabel="Mai"
       />
     );
 
-    expect(screen.getByText('Moniq')).not.toBeNull();
+    expect(screen.getByText('Mai')).not.toBeNull();
   });
 
   it('hides the byline when showByline is false, even with a bylineLabel', () => {
@@ -57,11 +57,11 @@ describe('AgentNote', () => {
         message="Note"
         primaryLabel="Do it"
         secondaryLabel="Talk about it"
-        bylineLabel="Moniq"
+        bylineLabel="Mai"
         showByline={false}
       />
     );
 
-    expect(screen.queryByText('Moniq')).toBeNull();
+    expect(screen.queryByText('Mai')).toBeNull();
   });
 });

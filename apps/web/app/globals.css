@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 
 :root {
-  /* moniq design tokens — from design-system/styles.css (Claude design export). Single dark
+  /* mai design tokens — from design-system/styles.css (Claude design export). Single dark
      theme only: every component here is already dark-only, there's no light variant to preserve. */
   --mq-font: var(--font-plus-jakarta-sans), system-ui, sans-serif;
 

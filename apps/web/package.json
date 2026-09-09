@@ -12,8 +12,8 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@moniq/api": "workspace:*",
-    "@moniq/auth": "workspace:*",
+    "@mai/api": "workspace:*",
+    "@mai/auth": "workspace:*",
     "@radix-ui/react-slider": "^1.4.7",
     "@radix-ui/react-slot": "^1.2.3",
     "@supabase/ssr": "^0.12.5",

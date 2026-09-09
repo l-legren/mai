@@ -4,7 +4,7 @@
  * never cache or share the result across requests. A Node server handles many concurrent users
  * through one process, so a client built for one request must never leak into another's; see
  * CLAUDE.md's "packages/api" section for the fuller version of this — this is the same reasoning
- * applied to which client apps/web itself hands to `@moniq/auth`.
+ * applied to which client apps/web itself hands to `@mai/auth`.
  *
  * `setAll` is wrapped in try/catch because Server Components can only *read* cookies, not write
  * them — calling this from one throws. That's fine here: `proxy.ts` is what actually keeps the

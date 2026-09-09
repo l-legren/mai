@@ -57,7 +57,7 @@ export const InsightsIcon = ({ className }: NavIconProps) => (
   </svg>
 );
 
-export const AskMoniqIcon = ({ className }: NavIconProps) => (
+export const AskMaiIcon = ({ className }: NavIconProps) => (
   <svg
     className={className}
     width="19"
