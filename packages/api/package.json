@@ -1,5 +1,5 @@
 {
-  "name": "@moniq/api",
+  "name": "@mai/api",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -15,12 +15,12 @@
     "test": "jest"
   },
   "dependencies": {
-    "@moniq/schemas": "workspace:*",
+    "@mai/schemas": "workspace:*",
     "@supabase/supabase-js": "^2.112.3",
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@moniq/config": "workspace:*",
+    "@mai/config": "workspace:*",
     "@types/jest": "29.5.14",
     "eslint": "^9.39.5",
     "jest": "~29.7.0",

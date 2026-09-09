@@ -4,7 +4,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { RecurringRowSchema, type RecurringRow } from '@moniq/schemas';
+import { RecurringRowSchema, type RecurringRow } from '@mai/schemas';
 
 import { ApiError } from './api-error';
 import { getCurrentUserId } from './auth.data';

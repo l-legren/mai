@@ -1,5 +1,5 @@
 /**
- * Data layer — Ask Moniq replies, streamed from the `ask-moniq` Supabase Edge Function. Uses a
+ * Data layer — Ask Mai replies, streamed from the `ask-mai` Supabase Edge Function. Uses a
  * raw authenticated fetch rather than `functions.invoke()`, which buffers the whole response body
  * before resolving — reading `response.body` directly is what lets the reply render as it's
  * generated instead of only once the full (possibly tool-calling) turn finishes.
@@ -24,14 +24,14 @@ const AskStreamLineSchema = z.discriminatedUnion('type', [
 ]);
 
 /**
- * Streams an Ask Moniq reply, invoking `onEvent` for each text chunk / tool call as it arrives.
+ * Streams an Ask Mai reply, invoking `onEvent` for each text chunk / tool call as it arrives.
  * Resolves once the stream ends; throws `ApiError` on an auth/network failure or a mid-stream
  * error reported by the Edge Function.
  *
  * `signal`, if given, aborts the underlying fetch (and stops the read loop) — e.g. so ending a
  * chat mid-reply doesn't keep streaming a response nothing will render.
  */
-export async function streamAskMoniqReply(
+export async function streamAskMaiReply(
   client: SupabaseClient,
   today: string,
   messages: AskMessageRow[],
@@ -44,7 +44,7 @@ export async function streamAskMoniqReply(
   } = await client.auth.getSession();
   if (!session) throw new ApiError('Not signed in');
 
-  const response = await fetch(`${agentServiceUrl ?? 'localhost:3060'}/ask-moniq`, {
+  const response = await fetch(`${agentServiceUrl ?? 'localhost:3060'}/ask-mai`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -54,22 +54,22 @@ export async function streamAskMoniqReply(
     signal,
   });
 
-  return consumeAskMoniqStream(response, onEvent);
+  return consumeAskMaiStream(response, onEvent);
 }
 
 /**
- * Reads an `ask-moniq` NDJSON response body, invoking `onEvent` for each text chunk / tool call.
- * Split out from `streamAskMoniqReply` so a caller that already has its own authenticated
+ * Reads an `ask-mai` NDJSON response body, invoking `onEvent` for each text chunk / tool call.
+ * Split out from `streamAskMaiReply` so a caller that already has its own authenticated
  * `Response` (e.g. apps/web's same-origin proxy Route Handler, which forwards the Supabase session
  * server-side instead of exposing it to the browser) can reuse the same parsing/error handling
  * without going through this package's own `fetch` + `client.auth.getSession()` call.
  */
-export async function consumeAskMoniqStream(
+export async function consumeAskMaiStream(
   response: Response,
   onEvent: (event: AskStreamEvent) => void
 ): Promise<void> {
   if (!response.ok || !response.body) {
-    throw new ApiError(`ask-moniq request failed (${response.status})`);
+    throw new ApiError(`ask-mai request failed (${response.status})`);
   }
 
   const reader = response.body.getReader();
@@ -87,7 +87,7 @@ export async function consumeAskMoniqStream(
       buffer = buffer.slice(newlineIndex + 1);
       if (line) {
         const parsed = AskStreamLineSchema.parse(JSON.parse(line));
-        if (parsed.type === 'error') throw new ApiError('ask-moniq stream reported an error');
+        if (parsed.type === 'error') throw new ApiError('ask-mai stream reported an error');
         onEvent(parsed);
       }
       newlineIndex = buffer.indexOf('\n');

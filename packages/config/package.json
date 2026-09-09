@@ -1,5 +1,5 @@
 {
-  "name": "@moniq/config",
+  "name": "@mai/config",
   "version": "0.1.0",
   "private": true,
   "description": "Shared tooling bases (prettier, tsconfig, eslint) for the monorepo's packages.",

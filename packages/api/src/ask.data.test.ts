@@ -1,6 +1,6 @@
 import { ApiError } from './api-error';
 import { createMockSupabaseClient } from './test-helpers';
-import { streamAskMoniqReply } from './ask.data';
+import { streamAskMaiReply } from './ask.data';
 
 const client = createMockSupabaseClient();
 const mockGetSession = client.auth.getSession as jest.MockedFunction<typeof client.auth.getSession>;
@@ -47,7 +47,7 @@ describe('ask.data', () => {
     ) as never;
 
     const events: unknown[] = [];
-    await streamAskMoniqReply(client as never, today, messages, (event) => events.push(event));
+    await streamAskMaiReply(client as never, today, messages, (event) => events.push(event));
 
     expect(events).toEqual([
       { type: 'tool', toolName: 'getRecentSpending' },
@@ -61,7 +61,7 @@ describe('ask.data', () => {
     globalThis.fetch = jest.fn() as never;
 
     await expect(
-      streamAskMoniqReply(client as never, today, messages, jest.fn())
+      streamAskMaiReply(client as never, today, messages, jest.fn())
     ).rejects.toBeInstanceOf(ApiError);
   });
 
@@ -71,7 +71,7 @@ describe('ask.data', () => {
       .mockResolvedValue(fakeStreamResponse([], { ok: false, status: 502 })) as never;
 
     await expect(
-      streamAskMoniqReply(client as never, today, messages, jest.fn())
+      streamAskMaiReply(client as never, today, messages, jest.fn())
     ).rejects.toBeInstanceOf(ApiError);
   });
 
@@ -85,7 +85,7 @@ describe('ask.data', () => {
 
     const events: unknown[] = [];
     await expect(
-      streamAskMoniqReply(client as never, today, messages, (event) => events.push(event))
+      streamAskMaiReply(client as never, today, messages, (event) => events.push(event))
     ).rejects.toBeInstanceOf(ApiError);
     expect(events).toEqual([{ type: 'text', text: 'partial' }]);
   });
