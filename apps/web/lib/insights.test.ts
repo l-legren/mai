@@ -47,7 +47,7 @@ describe('fullMonthRange', () => {
 
 describe('spendingVsIncomeSeries', () => {
   it('fills months with no expenses as 0 and pairs every month with the flat monthly income', () => {
-    const expenses = [makeExpense({ spent_on: '2026-08-01', amount: 100 })];
+    const expenses = [makeExpense({ spent_on: '2026-08-01', amount: -100 })];
     const series = spendingVsIncomeSeries(expenses, 2000, ['2026-07', '2026-08']);
     expect(series).toEqual([
       { monthKey: '2026-07', spent: 0, income: 2000 },
@@ -57,19 +57,28 @@ describe('spendingVsIncomeSeries', () => {
 
   it('sums multiple expenses in the same month', () => {
     const expenses = [
-      makeExpense({ spent_on: '2026-08-01', amount: 100 }),
-      makeExpense({ spent_on: '2026-08-20', amount: 30 }),
+      makeExpense({ spent_on: '2026-08-01', amount: -100 }),
+      makeExpense({ spent_on: '2026-08-20', amount: -30 }),
     ];
     const series = spendingVsIncomeSeries(expenses, 0, ['2026-08']);
     expect(series[0].spent).toBe(130);
+  });
+
+  it('excludes positive amounts (a bank-imported credit) from spend instead of netting them in', () => {
+    const expenses = [
+      makeExpense({ spent_on: '2026-08-01', amount: -100 }),
+      makeExpense({ spent_on: '2026-08-05', amount: 2500 }), // salary deposit
+    ];
+    const series = spendingVsIncomeSeries(expenses, 0, ['2026-08']);
+    expect(series[0].spent).toBe(100);
   });
 });
 
 describe('categoryBreakdown', () => {
   it('drops zero-amount categories and sorts by amount descending', () => {
     const expenses = [
-      makeExpense({ category: 'groceries', amount: 40, spent_on: '2026-08-01' }),
-      makeExpense({ category: 'transport', amount: 90, spent_on: '2026-08-02' }),
+      makeExpense({ category: 'groceries', amount: -40, spent_on: '2026-08-01' }),
+      makeExpense({ category: 'transport', amount: -90, spent_on: '2026-08-02' }),
     ];
     expect(categoryBreakdown(expenses, '2026-08')).toEqual([
       { category: 'transport', amount: 90 },
@@ -78,16 +87,24 @@ describe('categoryBreakdown', () => {
   });
 
   it('ignores expenses outside the requested month', () => {
-    const expenses = [makeExpense({ spent_on: '2026-07-01' })];
+    const expenses = [makeExpense({ spent_on: '2026-07-01', amount: -50 })];
     expect(categoryBreakdown(expenses, '2026-08')).toEqual([]);
+  });
+
+  it('excludes a positive amount (income/credit) from its category total', () => {
+    const expenses = [
+      makeExpense({ category: 'groceries', amount: -40, spent_on: '2026-08-01' }),
+      makeExpense({ category: 'groceries', amount: 500, spent_on: '2026-08-02' }),
+    ];
+    expect(categoryBreakdown(expenses, '2026-08')).toEqual([{ category: 'groceries', amount: 40 }]);
   });
 });
 
 describe('budgetVsActual', () => {
   it('ranks categories by how far over budget they are, most over first', () => {
     const expenses = [
-      makeExpense({ category: 'groceries', amount: 300, spent_on: '2026-08-01' }), // 75% of 400
-      makeExpense({ category: 'transport', amount: 165, spent_on: '2026-08-01' }), // 110% of 150
+      makeExpense({ category: 'groceries', amount: -300, spent_on: '2026-08-01' }), // 75% of 400
+      makeExpense({ category: 'transport', amount: -165, spent_on: '2026-08-01' }), // 110% of 150
     ];
     const rows = budgetVsActual(expenses, '2026-08', { groceries: 400, transport: 150 } as never);
     expect(rows.map((row) => row.category)).toEqual(['transport', 'groceries']);

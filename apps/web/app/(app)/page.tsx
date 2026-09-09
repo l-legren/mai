@@ -1,6 +1,7 @@
 import { getDay, subDays } from 'date-fns';
 import { getCurrentExpenses } from '@/lib/dal/expenses';
 import { formatCurrency, toTransaction } from '@/lib/utils/format-expense';
+import { sumSpent } from '@/lib/utils/spend';
 import HomeView from './HomeView';
 
 const RECENT_TRANSACTIONS_LIMIT = 3;
@@ -21,12 +22,10 @@ const HomePage = async () => {
   const todayIso = today.toISOString().slice(0, 10);
   const weekStartIso = startOfWeekIso(today);
 
-  const spentToday = expenses
-    .filter((expense) => expense.spent_on === todayIso)
-    .reduce((total, expense) => total + expense.amount, 0);
-  const spentThisWeek = expenses
-    .filter((expense) => expense.spent_on >= weekStartIso && expense.spent_on <= todayIso)
-    .reduce((total, expense) => total + expense.amount, 0);
+  const spentToday = sumSpent(expenses.filter((expense) => expense.spent_on === todayIso));
+  const spentThisWeek = sumSpent(
+    expenses.filter((expense) => expense.spent_on >= weekStartIso && expense.spent_on <= todayIso)
+  );
 
   const transactions = expenses.slice(0, RECENT_TRANSACTIONS_LIMIT).map(toTransaction);
 

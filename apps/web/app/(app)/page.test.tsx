@@ -26,14 +26,25 @@ function expenseRow(overrides: {
 describe('HomePage', () => {
   it('sums only today\'s expenses for the "spent today" figure', async () => {
     vi.mocked(getCurrentExpenses).mockResolvedValue([
-      expenseRow({ id: '1', category: 'groceries', amount: 22.4, spent_on: TODAY }),
-      expenseRow({ id: '2', category: 'transport', amount: 3.2, spent_on: TODAY }),
-      expenseRow({ id: '3', category: 'restaurants', amount: 50, spent_on: YESTERDAY }),
+      expenseRow({ id: '1', category: 'groceries', amount: -22.4, spent_on: TODAY }),
+      expenseRow({ id: '2', category: 'transport', amount: -3.2, spent_on: TODAY }),
+      expenseRow({ id: '3', category: 'restaurants', amount: -50, spent_on: YESTERDAY }),
     ]);
 
     const element = (await HomePage()) as React.ReactElement<HomeViewProps>;
 
     expect(element.props.spentTodayValue).toBe('€25.60');
+  });
+
+  it('excludes a positive amount (income/credit) from "spent today"', async () => {
+    vi.mocked(getCurrentExpenses).mockResolvedValue([
+      expenseRow({ id: '1', category: 'groceries', amount: -22.4, spent_on: TODAY }),
+      expenseRow({ id: '2', category: 'other', amount: 2500, spent_on: TODAY }), // salary deposit
+    ]);
+
+    const element = (await HomePage()) as React.ReactElement<HomeViewProps>;
+
+    expect(element.props.spentTodayValue).toBe('€22.40');
   });
 
   it('maps expense rows to transactions, preferring note over the category label', async () => {
@@ -70,9 +81,9 @@ describe('HomePage', () => {
     vi.setSystemTime(new Date('2026-09-09T12:00:00.000Z')); // Wednesday
 
     vi.mocked(getCurrentExpenses).mockResolvedValue([
-      expenseRow({ id: '1', category: 'groceries', amount: 10, spent_on: '2026-09-07' }), // Monday, this week
-      expenseRow({ id: '2', category: 'groceries', amount: 20, spent_on: '2026-09-09' }), // today
-      expenseRow({ id: '3', category: 'groceries', amount: 999, spent_on: '2026-09-06' }), // Sunday, last week
+      expenseRow({ id: '1', category: 'groceries', amount: -10, spent_on: '2026-09-07' }), // Monday, this week
+      expenseRow({ id: '2', category: 'groceries', amount: -20, spent_on: '2026-09-09' }), // today
+      expenseRow({ id: '3', category: 'groceries', amount: -999, spent_on: '2026-09-06' }), // Sunday, last week
     ]);
 
     const element = (await HomePage()) as React.ReactElement<HomeViewProps>;

@@ -5,7 +5,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { ExpenseRowSchema, type ExpenseRow } from '@mai/schemas';
 
-import { ApiError } from './api-error';
+import { ApiError, throwApiError } from './api-error';
 import { getCurrentUserId } from './auth.data';
 
 export type { ExpenseRow };
@@ -42,6 +42,23 @@ export async function getExpenseRows(
   return pagination ? { rows, total: count ?? 0 } : rows;
 }
 
+/** Count only — used to check remaining capacity against the per-user row cap before a bulk write,
+ * without paying for fetching/parsing the rows themselves. `sinceIso` filters by `created_at` (real
+ * insertion time), not `spent_on`/`spent_at` — the caller decides the window (e.g. rolling 7 days). */
+export async function getExpenseRowCount(
+  client: SupabaseClient,
+  sinceIso: string
+): Promise<number> {
+  const userId = await getCurrentUserId(client);
+  const { count, error } = await client
+    .from('expenses')
+    .select('id', { count: 'exact', head: true })
+    .eq('user_id', userId)
+    .gte('created_at', sinceIso);
+  if (error) throw new ApiError(error.message, error);
+  return count ?? 0;
+}
+
 export type NewExpenseRow = {
   category: string;
   amount: number;
@@ -59,7 +76,7 @@ export async function insertExpenseRow(
     .insert({ ...row, note: row.note ?? null })
     .select(COLUMNS)
     .single();
-  if (error) throw new ApiError(error.message, error);
+  if (error) throwApiError(error);
   return ExpenseRowSchema.parse(data);
 }
 

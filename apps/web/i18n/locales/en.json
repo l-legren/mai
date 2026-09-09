@@ -20,6 +20,7 @@
     "title": "Today's spending",
     "thisWeek": "This week",
     "addExpense": "Add expense",
+    "importCsv": "Import CSV",
     "spentToday": "Spent today",
     "transactions": "Transactions",
     "showMore": "Show more"
@@ -51,6 +52,24 @@
     "errors": {
       "invalidAmount": "Enter an amount greater than zero.",
       "invalidCategory": "Choose a category.",
+      "rowLimitExceeded": "You've reached this demo's weekly transaction limit.",
+      "unknown": "Something went wrong. Please try again."
+    }
+  },
+  "importCsv": {
+    "title": "Import bank CSV",
+    "chooseFile": "Choose file",
+    "reading": "Reading file…",
+    "previewMessage_one": "Found {{count}} transaction to import ({{skipped}} skipped).",
+    "previewMessage_other": "Found {{count}} transactions to import ({{skipped}} skipped).",
+    "previewMessageCapped": "You have {{currentCount}}/{{cap}} transactions saved this week. Only {{importable}} of the {{count}} found will be imported ({{skipped}} unreadable, {{overCap}} over the limit).",
+    "confirm": "Import",
+    "confirmPending": "Importing…",
+    "errors": {
+      "invalidFile": "Choose a CSV file exported from your bank.",
+      "empty": "No transactions could be read from this file.",
+      "capReached": "This demo allows up to {{cap}} saved transactions per week.",
+      "rowLimitExceeded": "This import would exceed this week's transaction limit — none of it was imported.",
       "unknown": "Something went wrong. Please try again."
     }
   },

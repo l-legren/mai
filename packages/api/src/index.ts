@@ -5,14 +5,17 @@
  * package now implements.
  */
 
-export { ApiError } from './api-error';
+export { ApiError, RowLimitExceededError } from './api-error';
 
 export { getCurrentUserId } from './auth.data';
 
 export { uploadAvatarFile, getAvatarSignedUrl } from './avatar.data';
 
+export { insertBankImportRows, type NewBankImportRow } from './bank-import.data';
+
 export {
   getExpenseRows,
+  getExpenseRowCount,
   insertExpenseRow,
   deleteExpenseRow,
   type ExpenseRow,
