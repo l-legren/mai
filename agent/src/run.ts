@@ -1,9 +1,20 @@
-import { anthropic } from '@ai-sdk/anthropic';
+import { createAnthropic } from '@ai-sdk/anthropic';
 import { stepCountIs, streamText } from 'ai';
 
 import { DEFAULT_CURRENCY, buildAskMaiSystemPrompt } from './prompts.ts';
 import { createMaiTools } from './tools.ts';
 import type { AskMaiMessage } from './types.ts';
+
+const anthropicWorkspaceId = process.env.ANTHROPIC_WORKSPACE_ID;
+if (!anthropicWorkspaceId) {
+  throw new Error('Missing ANTHROPIC_WORKSPACE_ID. Copy .env.example to .env and fill it in.');
+}
+
+// The API key is org-scoped, not workspace-scoped, so every request must carry this header or
+// Anthropic rejects it outright (`This API key is not scoped to a workspace...`).
+const anthropic = createAnthropic({
+  headers: { 'anthropic-workspace-id': anthropicWorkspaceId },
+});
 
 const MODEL_ID = 'claude-haiku-4-5';
 // Bounded step count for the Ask Mai tool loop: room for one tool call, its result, and a final
