@@ -12,7 +12,7 @@ export function AgentNote({ message, primaryLabel = 'Do it', secondaryLabel = 'T
       {showByline && (
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ color: 'var(--mq-accent)', display: 'flex' }}><Spark /></span>
-          <span style={{ font: '600 12.5px var(--mq-font)', color: 'var(--mq-text-2)' }}>Moniq</span>
+          <span style={{ font: '600 12.5px var(--mq-font)', color: 'var(--mq-text-2)' }}>Mai</span>
         </div>
       )}
       <div style={{ font: '400 14.5px/1.5 var(--mq-font)', color: 'var(--mq-text)', textWrap: 'pretty' }}>{message}</div>

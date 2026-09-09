@@ -1,6 +1,6 @@
-# Moniq design system — rules for generated UI
+# Mai design system — rules for generated UI
 
-Anything you build for Moniq's web app follows this file. It is the contract, not a suggestion.
+Anything you build for Mai's web app follows this file. It is the contract, not a suggestion.
 
 ## Hard rules
 
@@ -34,7 +34,7 @@ Groups: surfaces (`--mq-bg`, `--mq-surface`, `--mq-surface-raised`, `--mq-field`
 | `StatCard` | One figure + one plain-English consequence. |
 | `TransactionRow` | Merchant, "Category · time", amount. `past` dims earlier days. |
 | `BudgetBar` | Spent vs limit; switches to `--mq-over` when over. |
-| `NavItem` | Sidebar row and `collapsed` 68px rail. The accent dot is reserved for Ask Moniq. |
+| `NavItem` | Sidebar row and `collapsed` 68px rail. The accent dot is reserved for Ask Mai. |
 | `AgentNote` | In-page agent suggestion with its confirm gate. |
 | `ChatBubble` | `user` gets a container; `agent` talks bare with an optional status line. |
 | `ConfirmCard` | Before → after for any write. |
