@@ -1,5 +1,6 @@
 import { cache } from 'react';
 import {
+  getExpenseRowCount,
   getExpenseRows,
   insertExpenseRow,
   deleteExpenseRow,
@@ -23,6 +24,11 @@ export const getPaginatedExpenses = cache(
     return getExpenseRows(supabase, { page, pageSize });
   }
 );
+
+export async function getCurrentExpenseRowCount(sinceIso: string): Promise<number> {
+  const supabase = await createSupabaseServerClient();
+  return getExpenseRowCount(supabase, sinceIso);
+}
 
 export async function insertExpense(row: NewExpenseRow): Promise<ExpenseRow> {
   const supabase = await createSupabaseServerClient();

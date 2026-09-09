@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { Button, Card, StatCard, TransactionRow } from '@/app/components/ui';
-import { AddExpenseModal } from '@/app/components/expenses';
+import { AddExpenseModal, ImportCsvModal } from '@/app/components/expenses';
 import type { Transaction } from '@/lib/utils/format-expense';
 import { cn } from '@/lib/utils';
 
@@ -16,9 +16,10 @@ export type HomeViewProps = {
 
 type HomeHeaderProps = {
   onAddExpense: () => void;
+  onImportCsv: () => void;
 };
 
-const HomeHeader = ({ onAddExpense }: HomeHeaderProps) => {
+const HomeHeader = ({ onAddExpense, onImportCsv }: HomeHeaderProps) => {
   const { t, i18n } = useTranslation();
   const today = new Date();
   const date = new Intl.DateTimeFormat(i18n.language, {
@@ -44,6 +45,9 @@ const HomeHeader = ({ onAddExpense }: HomeHeaderProps) => {
         <Button variant="outline" size="sm" onClick={onAddExpense}>
           {t('home.addExpense')}
         </Button>
+        <Button variant="outline" size="sm" onClick={onImportCsv}>
+          {t('home.importCsv')}
+        </Button>
       </div>
     </div>
   );
@@ -52,11 +56,16 @@ const HomeHeader = ({ onAddExpense }: HomeHeaderProps) => {
 const HomeView = ({ spentTodayValue, spentThisWeekValue, transactions }: HomeViewProps) => {
   const { t } = useTranslation();
   const [isAddExpenseOpen, setIsAddExpenseOpen] = useState(false);
+  const [isImportCsvOpen, setIsImportCsvOpen] = useState(false);
 
   return (
     <div className="flex min-h-svh flex-col">
-      <HomeHeader onAddExpense={() => setIsAddExpenseOpen(true)} />
+      <HomeHeader
+        onAddExpense={() => setIsAddExpenseOpen(true)}
+        onImportCsv={() => setIsImportCsvOpen(true)}
+      />
       <AddExpenseModal open={isAddExpenseOpen} onClose={() => setIsAddExpenseOpen(false)} />
+      <ImportCsvModal open={isImportCsvOpen} onClose={() => setIsImportCsvOpen(false)} />
 
       <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-9 pb-7">
         <div className="grid grid-cols-1 gap-3.5 md:grid-cols-2">

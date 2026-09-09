@@ -6,7 +6,7 @@
 
 export type QueryResult<T> = {
   data: T;
-  error: { message: string } | null;
+  error: { message: string; code?: string } | null;
   count?: number | null;
 };
 
@@ -18,6 +18,7 @@ export function mockQueryBuilder<T>(result: QueryResult<T>) {
     update: jest.fn(() => builder),
     delete: jest.fn(() => builder),
     eq: jest.fn(() => builder),
+    gte: jest.fn(() => builder),
     order: jest.fn(() => builder),
     range: jest.fn(() => builder),
     single: jest.fn(() => Promise.resolve(result)),

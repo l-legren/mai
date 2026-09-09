@@ -86,8 +86,9 @@ export function spendingVsIncomeSeries(
 ): MonthlyTotal[] {
   const spentByMonth = new Map<string, number>();
   for (const expense of expenses) {
+    if (expense.amount >= 0) continue; // positive amounts are income/credits, not spend
     const key = monthKeyOf(expense.spent_on);
-    spentByMonth.set(key, (spentByMonth.get(key) ?? 0) + expense.amount);
+    spentByMonth.set(key, (spentByMonth.get(key) ?? 0) - expense.amount);
   }
 
   return monthKeys.map((monthKey) => ({
@@ -102,7 +103,8 @@ export function categoryBreakdown(expenses: ExpenseRow[], monthKey: string): Cat
   const totals = new Map<CategoryId, number>();
   for (const expense of expenses) {
     if (monthKeyOf(expense.spent_on) !== monthKey || !isCategoryId(expense.category)) continue;
-    totals.set(expense.category, (totals.get(expense.category) ?? 0) + expense.amount);
+    if (expense.amount >= 0) continue; // positive amounts are income/credits, not spend
+    totals.set(expense.category, (totals.get(expense.category) ?? 0) - expense.amount);
   }
 
   return CATEGORY_IDS.map((category) => ({ category, amount: totals.get(category) ?? 0 }))
