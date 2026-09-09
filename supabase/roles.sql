@@ -11,3 +11,12 @@ begin
   end if;
 end
 $$;
+
+-- LEG-141: write counterpart to mcp_readonly, for tools that need to write (e.g. rememberFact).
+do $$
+begin
+  if not exists (select from pg_catalog.pg_roles where rolname = 'mcp_write') then
+    create role mcp_write login password 'mcp_write_local_dev_only';
+  end if;
+end
+$$;

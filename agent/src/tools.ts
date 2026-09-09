@@ -1,10 +1,13 @@
 import { tool, type ToolSet } from 'ai';
 import { z } from 'zod';
 
-import { withScopedRead } from './db.ts';
+import { withScopedRead, withScopedWrite } from './db.ts';
 
 /** Hard ceiling on how far back `getRecentSpending` can look — enforced before any DB call. */
 export const MAX_RECENT_SPENDING_DAYS = 30;
+
+/** Caps memory size since all memories get joined into every system prompt; also enforced in the DB. */
+export const MAX_MEMORY_CONTENT_LENGTH = 140;
 
 type CategoryTotal = { category: string; amount: number };
 
@@ -86,5 +89,39 @@ export function createMaiTools(userId: string, today: string): ToolSet {
         });
       },
     }),
+
+    rememberFact: tool({
+      description:
+        'Save a durable fact about the user for future conversations — a stated preference, a ' +
+        'goal, or a recurring detail they share (e.g. "saving for a house down payment", ' +
+        '"categorizes coffee as dining out"). Do not use for one-off details only relevant to the ' +
+        `current message. Write it as concisely as possible — max ${MAX_MEMORY_CONTENT_LENGTH} ` +
+        'characters, one fact per call.',
+      inputSchema: z.object({
+        content: z
+          .string()
+          .min(1)
+          .max(MAX_MEMORY_CONTENT_LENGTH)
+          .describe(
+            `The fact to remember, written as concise plain prose. Max ${MAX_MEMORY_CONTENT_LENGTH} characters.`
+          ),
+      }),
+      execute: async ({ content }): Promise<{ saved: true }> => {
+        await withScopedWrite(userId, async (tx) => {
+          await tx`insert into public.mai_memories (user_id, content) values (${userId}, ${content})`;
+        });
+        return { saved: true };
+      },
+    }),
   };
+}
+
+/** Not a tool — called directly in runAskMai so memories are already in the prompt every turn. */
+export async function getUserMemories(userId: string): Promise<string[]> {
+  return withScopedRead(userId, async (tx) => {
+    const rows = await tx<{ content: string }[]>`
+      select content from public.mai_memories where user_id = ${userId} order by created_at
+    `;
+    return rows.map((row) => row.content);
+  });
 }

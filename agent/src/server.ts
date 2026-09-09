@@ -25,7 +25,7 @@ app.post('/ask-mai', async (ctx) => {
   const validationResult = AskMaiRequestSchema.safeParse(jsonBody);
   if (!validationResult.success) return ctx.json({ message: 'Invalid shape of the payload' }, 400);
 
-  const result = runAskMai(
+  const result = await runAskMai(
     data.user.id,
     validationResult.data.messages,
     validationResult.data.today
