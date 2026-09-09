@@ -2,7 +2,7 @@ import { createAnthropic } from '@ai-sdk/anthropic';
 import { stepCountIs, streamText } from 'ai';
 
 import { DEFAULT_CURRENCY, buildAskMaiSystemPrompt } from './prompts.ts';
-import { createMaiTools } from './tools.ts';
+import { createMaiTools, getUserMemories } from './tools.ts';
 import type { AskMaiMessage } from './types.ts';
 
 const anthropicWorkspaceId = process.env.ANTHROPIC_WORKSPACE_ID;
@@ -28,20 +28,20 @@ const ASK_MAX_STEPS = 4;
  * Tools are scoped to `userId` via `createMaiTools`, so the model can only ever read that one
  * user's data.
  *
- * Returns the `streamText` result directly (not awaited) — the Edge Function adapter is
- * responsible for turning `result.fullStream` into an HTTP response the client can read
- * incrementally, so the reply renders token-by-token instead of the app waiting for the whole
- * turn (including any tool round trip) to finish.
+ * Awaits fetching saved memories first, then returns the `streamText` result unawaited (still
+ * streams token-by-token).
  */
-export function runAskMai(
+export async function runAskMai(
   userId: string,
   messages: AskMaiMessage[],
   today: string,
   currency: string = DEFAULT_CURRENCY
 ) {
+  const memories = await getUserMemories(userId);
+
   return streamText({
     model: anthropic(MODEL_ID),
-    system: buildAskMaiSystemPrompt(currency),
+    system: buildAskMaiSystemPrompt(currency, memories),
     messages,
     tools: createMaiTools(userId, today),
     stopWhen: stepCountIs(ASK_MAX_STEPS),
