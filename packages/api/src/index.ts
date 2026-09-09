@@ -33,6 +33,8 @@ export {
   type ProfileOnboardingRowUpdate,
 } from './profile.data';
 
+export { getCurrentProfileApproval, type ProfileApprovalRow } from './profile-approval.data';
+
 export {
   getRecurringRows,
   insertRecurringRow,
