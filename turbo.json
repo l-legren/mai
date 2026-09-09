@@ -1,0 +1,29 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "tasks": {
+    "format:check": {
+      "outputs": []
+    },
+    "//#format:check": {
+      "outputs": []
+    },
+    "typecheck": {
+      "outputs": [],
+      "dependsOn": ["format:check"]
+    },
+    "lint": {
+      "outputs": [],
+      "dependsOn": ["typecheck"]
+    },
+    "test": {
+      "outputs": [],
+      "dependsOn": ["typecheck", "lint", "format:check"]
+    },
+    "eval": {
+      "outputs": [],
+      "dependsOn": ["typecheck"],
+      "cache": false,
+      "env": ["ANTHROPIC_API_KEY", "LMNR_PROJECT_API_KEY"]
+    }
+  }
+}

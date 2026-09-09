@@ -1,5 +1,15 @@
+packages:
+  - 'agent'
+  - 'apps/*'
+  - 'packages/*'
 allowBuilds:
+  esbuild: true
+  protobufjs: true
   unrs-resolver: true
+# Delay installing any package version until it's been published this long (in minutes),
+# to dodge just-published supply-chain attacks (compromised maintainer / typosquat).
+# 1440 = 1 day. Pins listed below are exempt (already vetted, needed immediately).
+minimumReleaseAge: 1440
 minimumReleaseAgeExclude:
   - '@expo/cli@57.0.3'
   - '@expo/fingerprint@0.20.1'
@@ -18,3 +28,7 @@ minimumReleaseAgeExclude:
   - expo-router@57.0.2
   - expo-splash-screen@57.0.1
   - expo@57.0.1
+  - '@ai-sdk/anthropic@4.0.30'
+  - '@ai-sdk/gateway@4.0.41'
+  - '@ai-sdk/provider-utils@5.0.21'
+  - ai@7.0.52

@@ -1,2 +1,3 @@
+node scripts/check-branch-name.mjs
 pnpm exec lint-staged
 pnpm test

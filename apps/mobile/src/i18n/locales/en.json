@@ -1,0 +1,304 @@
+{
+  "common": {
+    "appName": "mai",
+    "back": "Back",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "close": "Close",
+    "save": "Save",
+    "seeMore": "See more",
+    "seeMoreOf": "See all {{section}}",
+    "delete": "Delete",
+    "deleteItem": "Delete {{item}}",
+    "deleteConfirmTitle": "Delete {{item}}?"
+  },
+  "tabs": {
+    "today": "Today",
+    "recurring": "Recurring",
+    "insights": "Insights",
+    "ask": "Ask"
+  },
+  "categories": {
+    "groceries": "Groceries",
+    "drinks": "Drinks",
+    "restaurants": "Restaurants",
+    "clothing": "Clothing",
+    "transport": "Transport",
+    "other": "Other",
+    "income": {
+      "salary": "Salary",
+      "freelance": "Freelance",
+      "sideBusiness": "Side business",
+      "rental": "Rental",
+      "investments": "Investments",
+      "gifts": "Gifts"
+    },
+    "recurringExpense": {
+      "subscriptions": "Subscriptions",
+      "fitness": "Fitness",
+      "rent": "Rent",
+      "car": "Car",
+      "installments": "Installments"
+    },
+    "savingsTarget": {
+      "travel": "Travel",
+      "electronics": "Electronics",
+      "home": "Home",
+      "car": "Car",
+      "education": "Education",
+      "emergencyFund": "Emergency fund"
+    }
+  },
+  "today": {
+    "addExpense": "Add expense",
+    "add": "Add",
+    "chooseCategory": "Choose a category",
+    "category": "Category",
+    "greetingMorning": "Good morning, {{name}}",
+    "greetingAfternoon": "Good afternoon, {{name}}",
+    "greetingEvening": "Good evening, {{name}}",
+    "openSettings": "Open settings",
+    "amount": "Amount {{amount}}",
+    "noAmount": "No amount entered yet",
+    "deleteDigit": "Delete last digit",
+    "decimalPoint": "Decimal point",
+    "scrollForBalance": "Scroll for balance",
+    "showBalance": "Show remaining balance",
+    "leftToday": "Left today",
+    "overBy": "Over by",
+    "ofBudgetToday": "of {{budget}} today",
+    "activity": "Today's activity",
+    "noActivity": "No expenses logged yet today",
+    "selectCategory": "Select category {{category}}",
+    "expenseRow": "{{category}}, {{time}}, {{amount}}",
+    "noteLabel": "Label",
+    "notePlaceholder": "What was it?"
+  },
+  "recurring": {
+    "title": "Recurring",
+    "addItem": "Add recurring item",
+    "income": "Income",
+    "fixedCosts": "Fixed costs",
+    "savingsGoal": "Savings goal",
+    "dailyAllowance": "Daily allowance",
+    "perDays": "÷ {{days}} days",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "until": "Until {{month}}",
+    "emptyIncome": "No income added yet",
+    "emptyCosts": "No fixed costs added yet",
+    "itemRow": "{{name}}, {{subtitle}}, {{amount}}",
+    "sectionSummary": "{{section}}: {{amount}}",
+    "sheetTitle": "Add recurring",
+    "close": "Close",
+    "typeExpense": "Expense",
+    "typeIncome": "Income",
+    "name": "Name",
+    "namePlaceholder": "e.g. Rent",
+    "amount": "Amount",
+    "cadence": "Repeats",
+    "frequency": "Frequency",
+    "frequencyPerpetual": "Perpetual",
+    "frequencyFixed": "Fixed term",
+    "lastPayment": "Last payment",
+    "previousYear": "Previous year",
+    "nextYear": "Next year",
+    "monthsShortcut": "{{count}} months",
+    "selectMonth": "Select {{month}} {{year}}",
+    "savingsTarget": "Monthly savings target",
+    "previewLabel": "Daily allowance — with this change applied",
+    "addIncome": "Add income",
+    "addExpense": "Add expense"
+  },
+  "insights": {
+    "title": "Insights",
+    "weekly": "Weekly",
+    "monthly": "Monthly",
+    "prevPeriod": "Previous period",
+    "nextPeriod": "Next period",
+    "thisWeek": "This week",
+    "lastWeek": "Last week",
+    "weeksAgo": "{{count}} weeks ago",
+    "savedThisMonth": "Saved this month",
+    "savedThisWeek": "Saved this week",
+    "goalAmount": "Goal {{amount}}",
+    "savedSummary": "{{caption}}: {{amount}}, goal {{goal}}",
+    "onTrack": "On track with your goal",
+    "behind": "Behind your goal",
+    "weeklySpend": "Weekly spend",
+    "dailySpend": "Daily spend",
+    "monthlyGoal": "Monthly goal {{amount}}",
+    "dailyBudget": "Budget {{amount}} / day",
+    "whereItGoes": "Where it goes",
+    "noData": "No spending logged for this period",
+    "chartSummary": "{{title}}: {{values}}",
+    "barValue": "{{label}} {{amount}}"
+  },
+  "savingsTargets": {
+    "title": "Savings targets",
+    "addTarget": "Add savings target",
+    "empty": "No savings targets yet",
+    "savedOfGoal": "{{saved}} saved of {{goal}}",
+    "categoryAndDate": "{{category}} · By {{date}}",
+    "rowLabel": "{{name}}, {{category}}, {{saved}} saved of {{goal}}, by {{date}}, {{priority}}",
+    "priority": {
+      "high": "High priority",
+      "medium": "Medium priority",
+      "low": "Low priority"
+    }
+  },
+  "addSavingsTarget": {
+    "promptTitle": "What are you saving for?",
+    "promptLabel": "Goal",
+    "promptPlaceholder": "e.g. New laptop, Japan trip",
+    "amountLabel": "Approximate amount",
+    "continue": "Continue",
+    "reviewTitle": "Review your target",
+    "verdictLabel": "AI suggestion",
+    "verdictAnnouncement": "Draft ready: {{verdict}}",
+    "nameLabel": "Name",
+    "categoryLabel": "Category",
+    "goalAmountLabel": "Goal amount",
+    "targetDateLabel": "Target date",
+    "priorityLabel": "Priority"
+  },
+  "onboarding": {
+    "stepStatus": "Step {{step}} of {{total}}",
+    "welcome": {
+      "headline": "Track your money\nin minutes.",
+      "subline": "See exactly what's left to spend today — no spreadsheets, no guesswork.",
+      "cta": "Get started"
+    },
+    "city": {
+      "title": "Where are you based?",
+      "subline": "We use this to show your budget in the right currency.",
+      "label": "City",
+      "placeholder": "e.g. Berlin",
+      "useLocation": "Use current location",
+      "locationError": "Couldn't determine your location. You can still type your city manually.",
+      "cityUnresolved": "We couldn't confirm this city — currency will default to EUR.",
+      "currencyPreview": "We'll show your budget in {{currency}}",
+      "continue": "Continue"
+    },
+    "name": {
+      "title": "What should we call you?",
+      "subline": "Surname is optional.",
+      "firstNameLabel": "First name",
+      "firstNamePlaceholder": "Your first name",
+      "surnameLabel": "Surname",
+      "surnameOptional": "(optional)",
+      "surnamePlaceholder": "Your surname",
+      "continue": "Continue"
+    },
+    "avatar": {
+      "title": "Add a photo",
+      "subline": "Helps you recognize your account at a glance. Totally optional.",
+      "photoAdded": "Photo added",
+      "permissionDenied": "Photo access denied. You can enable it later.",
+      "openSettings": "Open Settings",
+      "choosePhoto": "Choose photo",
+      "continue": "Continue",
+      "skip": "Skip",
+      "tooLarge": "That photo is larger than 5MB — please choose a smaller one.",
+      "unsupportedType": "That file type isn't supported — please choose a PNG, JPEG, or WebP image.",
+      "uploadError": "Couldn't upload your photo. Please try again."
+    },
+    "notifications": {
+      "title": "Stay on top of it weekly",
+      "subline": "Get a short AI digest of how your spending's tracking against your goals — once a week, nothing else.",
+      "enable": "Enable notifications",
+      "notNow": "Not now",
+      "finishError": "Couldn't finish setting up your account. Please try again."
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "editLink": "Edit",
+    "profile": {
+      "yourPhoto": "Your photo",
+      "changePhoto": "Change",
+      "uploadError": "Couldn't upload your photo. Please try again."
+    },
+    "personal": {
+      "label": "Personal",
+      "cityCurrency": "{{city}} · {{currency}}",
+      "name": "Name",
+      "city": "City",
+      "currency": "Currency",
+      "currencyHint": "from city"
+    },
+    "nameSheet": {
+      "title": "Name",
+      "firstNameLabel": "First name",
+      "firstNamePlaceholder": "Your first name",
+      "surnameLabel": "Surname",
+      "surnameOptional": "Optional",
+      "surnamePlaceholder": "Your surname",
+      "saveError": "Couldn't save your changes. Please try again."
+    },
+    "citySheet": {
+      "title": "City",
+      "cityLabel": "City",
+      "cityPlaceholder": "Your city",
+      "saveError": "Couldn't save your changes. Please try again."
+    },
+    "preferences": {
+      "label": "Preferences",
+      "darkMode": "Dark mode",
+      "weeklyDigest": "Weekly digest",
+      "weeklyDigestDescription": "A short recap every Monday",
+      "permissionDenied": "Notifications are turned off in system settings.",
+      "openSettings": "Open settings"
+    },
+    "account": {
+      "label": "Account",
+      "logOut": "Log out",
+      "deleteAccount": "Delete account",
+      "deleteAccountConfirmTitle": "Delete account?",
+      "deleteAccountConfirmMessage": "This permanently deletes your account and all your data. This can't be undone.",
+      "deleteAccountError": "Couldn't delete your account. Please try again."
+    },
+    "help": "Help"
+  },
+  "ask": {
+    "title": "Ask Mai",
+    "endChat": "End chat",
+    "endChatA11y": "End chat, clear the conversation",
+    "inputPlaceholder": "Message…",
+    "send": "Send message",
+    "sendUnavailable": "Send message, not available yet",
+    "userMessageA11y": "You said: {{message}}",
+    "greeting": "Ask me anything about your spending — try \"how much have I spent this week?\"",
+    "loading": "Thinking…",
+    "error": "Something went wrong. Please try again.",
+    "statusLine": {
+      "recentSpending": "Reviewed your recent spending"
+    }
+  },
+  "auth": {
+    "loginHeadline": "Welcome back",
+    "loginSubline": "Sign in to keep tracking.",
+    "signUpHeadline": "Create your account",
+    "signUpSubline": "Track your money in minutes.",
+    "name": "Name",
+    "namePlaceholder": "Your name",
+    "email": "Email",
+    "emailPlaceholder": "you@email.com",
+    "password": "Password",
+    "forgotPassword": "Forgot?",
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "pleaseWait": "Please wait…",
+    "toggleLoginLead": "Don't have an account?",
+    "toggleLoginAction": "Sign up",
+    "toggleSignupLead": "Already have an account?",
+    "toggleSignupAction": "Log in",
+    "signUpConfirmationSent": "Check your email to confirm your account before signing in.",
+    "errors": {
+      "invalidInput": "Enter your name, email and password.",
+      "invalidCredentials": "Incorrect email or password.",
+      "emailInUse": "An account with this email already exists.",
+      "unknown": "Something went wrong. Please try again."
+    }
+  }
+}

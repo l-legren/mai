@@ -1,0 +1,134 @@
+@import 'tailwindcss';
+
+:root {
+  /* mai design tokens — from design-system/styles.css (Claude design export). Single dark
+     theme only: every component here is already dark-only, there's no light variant to preserve. */
+  --mq-font: var(--font-plus-jakarta-sans), system-ui, sans-serif;
+
+  --mq-bg: #171316;
+  --mq-surface: #1c171c;
+  --mq-surface-raised: #1e191e;
+  --mq-field: #221d22;
+  --mq-field-focus: #262026;
+  --mq-surface-accent: #241e24;
+  --mq-hover: #2e282e;
+  --mq-bubble: #2b2229;
+
+  --mq-accent: #ff4fa3;
+  --mq-accent-ink: #2a0a19;
+  --mq-accent-tint: rgba(255, 79, 163, 0.12);
+  --mq-accent-tint-strong: rgba(255, 79, 163, 0.16);
+  --mq-accent-border: rgba(255, 79, 163, 0.14);
+  --mq-over: #d2596c;
+  --mq-good: #56c79e;
+  --mq-good-tint: rgba(86, 199, 158, 0.14);
+  --mq-good-border: rgba(86, 199, 158, 0.4);
+  --mq-savings: #8e7bc4;
+
+  /* Insights "Where it went" — fixed per-category identity colors (dataviz skill's validated
+     categorical palette, dark-mode steps), assigned by category id so a category's color never
+     shifts with its monthly rank. Validated (adjacent-pair CVD + contrast) against this app's own
+     --mq-surface-raised card surface, not the skill's generic default. */
+  --mq-category-groceries: #3987e5;
+  --mq-category-drinks: #d95926;
+  --mq-category-restaurants: #199e70;
+  --mq-category-clothing: #c98500;
+  --mq-category-transport: #d55181;
+  --mq-category-other: #008300;
+  --mq-category-everything-else: #5a545a;
+
+  --mq-text: #f1eff0;
+  --mq-text-2: #a9a3a8;
+  --mq-text-3: #7c767c;
+  --mq-text-4: #6e686e;
+  --mq-text-5: #5a545a;
+  --mq-text-6: #4a454a;
+
+  --mq-border: rgba(240, 225, 235, 0.07);
+  --mq-border-2: rgba(240, 225, 235, 0.12);
+  --mq-border-3: rgba(240, 225, 235, 0.16);
+  --mq-fill: rgba(240, 225, 235, 0.06);
+  --mq-track: rgba(240, 225, 235, 0.08);
+
+  --mq-r-xs: 8px;
+  --mq-r-sm: 11px;
+  --mq-r-md: 13px;
+  --mq-r-lg: 16px;
+  --mq-r-xl: 20px;
+  --mq-r-pill: 999px;
+
+  --mq-shadow-window: 0 24px 70px rgba(0, 0, 0, 0.22);
+  --mq-shadow-pop: 0 14px 34px rgba(0, 0, 0, 0.5);
+  --mq-shadow-tip: 0 8px 22px rgba(0, 0, 0, 0.4);
+}
+
+@theme inline {
+  --font-sans: var(--mq-font);
+
+  --color-bg: var(--mq-bg);
+  --color-surface: var(--mq-surface);
+  --color-surface-raised: var(--mq-surface-raised);
+  --color-field: var(--mq-field);
+  --color-field-focus: var(--mq-field-focus);
+  --color-surface-accent: var(--mq-surface-accent);
+  --color-hover: var(--mq-hover);
+  --color-bubble: var(--mq-bubble);
+
+  --color-accent: var(--mq-accent);
+  --color-accent-ink: var(--mq-accent-ink);
+  --color-accent-tint: var(--mq-accent-tint);
+  --color-accent-tint-strong: var(--mq-accent-tint-strong);
+  --color-accent-border: var(--mq-accent-border);
+  --color-over: var(--mq-over);
+  --color-good: var(--mq-good);
+  --color-good-tint: var(--mq-good-tint);
+  --color-good-border: var(--mq-good-border);
+  --color-savings: var(--mq-savings);
+
+  --color-text: var(--mq-text);
+  --color-text-2: var(--mq-text-2);
+  --color-text-3: var(--mq-text-3);
+  --color-text-4: var(--mq-text-4);
+  --color-text-5: var(--mq-text-5);
+  --color-text-6: var(--mq-text-6);
+
+  --color-border: var(--mq-border);
+  --color-border-2: var(--mq-border-2);
+  --color-border-3: var(--mq-border-3);
+  --color-fill: var(--mq-fill);
+  --color-track: var(--mq-track);
+
+  /* Prefixed (mq-) rather than Tailwind's own radius/shadow keys (--radius-lg, --shadow-lg, …)
+     so this doesn't silently redefine what bare rounded-lg/shadow-lg mean elsewhere. */
+  --radius-mq-xs: var(--mq-r-xs);
+  --radius-mq-sm: var(--mq-r-sm);
+  --radius-mq-md: var(--mq-r-md);
+  --radius-mq-lg: var(--mq-r-lg);
+  --radius-mq-xl: var(--mq-r-xl);
+  --radius-mq-pill: var(--mq-r-pill);
+
+  --shadow-mq-window: var(--mq-shadow-window);
+  --shadow-mq-pop: var(--mq-shadow-pop);
+  --shadow-mq-tip: var(--mq-shadow-tip);
+}
+
+body {
+  background: var(--mq-bg);
+  color: var(--mq-text);
+  font-family: var(--mq-font);
+  margin: 0;
+}
+
+/* @layer base, not a bare rule: Tailwind v4 wraps its utilities in `@layer utilities`, and an
+   unlayered rule always wins over a layered one regardless of specificity — a bare `a { color }`
+   here would silently beat any `text-*` utility applied directly to a Link/anchor. */
+@layer base {
+  a {
+    color: var(--mq-accent);
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: #ff7bbb;
+  }
+}

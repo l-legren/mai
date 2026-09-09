@@ -1,57 +1,51 @@
-@AGENTS.md
-
-# Accessibility
-
-All interactive and informational UI in the app must be accessible to screen readers (VoiceOver on iOS, TalkBack on Android).
-
-## Rules
-
-- Every `Pressable` must have `accessibilityRole` (`"button"` or `"link"`) and a meaningful `accessibilityLabel` that describes the action, not just the visual content.
-- Stateful controls (toggles, checkboxes, segmented filters) must use `accessibilityState` — e.g. `{{ selected: true }}`.
-- Decorative views (glow bars, dividers, corner marks, icon arrows) must be hidden from AT with both:
-  - `importantForAccessibility="no-hide-descendants"` (Android)
-  - `accessibilityElementsHidden={true}` (iOS)
-  - Use `"no"` instead of `"no-hide-descendants"` for leaf nodes with no children.
-- Avoid Unicode symbols (▲ ▶ ◀ ● ○) as the sole content of an element — screen readers read them as their Unicode name. Hide the Text with `importantForAccessibility="no"` / `accessibilityElementsHidden` and put the label on the parent container.
-- Stat/data boxes should use `accessible={true}` + `accessibilityLabel` on the container (e.g. `"Daily allowance: €40"`) and hide child Text nodes individually so VoiceOver reads the group as one unit.
-- Images that convey meaning need `accessibilityLabel`; purely decorative images use `accessibilityElementsHidden={true}`.
-- Custom gesture interactions that aren't screen-reader friendly (e.g. the resisted-scroll balance reveal) must provide an AT-only fallback action.
-- **Semantic structure:** every screen/section/sheet title Text must set `accessibilityRole="header"` so the rotor/heading navigation can jump between sections. Roles beyond `"button"`/`"link"` matter — use them.
-- **Adjustable controls** (sliders, steppers) must set `accessibilityValue={{ min, max, now, text }}`, where `text` is the human-readable value (e.g. the formatted `€` amount) — a bare number is not enough.
-- **Minimum touch target 44×44 (WCAG 2.5.5):** any interactive element whose visual box is smaller (icon buttons, chevrons, trailing actions) must grow its touch area with `hitSlop` to reach 44px. Compute it from the icon size (`(44 - iconSize) / 2`) rather than guessing.
-- **Manage visibility of inactive content:** content that is mounted but off-screen or behind another page (paged/animated reveals, collapsed panels that stay mounted) must toggle `accessibilityElementsHidden` / `importantForAccessibility` in step with its visible state, so AT can't wander into hidden UI. This is distinct from decorative hiding above — it's a real, focusable region that is temporarily inactive.
-- **No double announcement:** never set an `accessibilityLabel` that duplicates a visible label already in the AT tree (e.g. a `TextField`'s visible label + the input's own label). Keep one side accessible and hide the other with `importantForAccessibility="no"` / `accessibilityElementsHidden`.
-- **Never let a placeholder/sentinel glyph reach a screen reader.** Empty-state or fallback values (`—`, `•`, `--`) that stand in for "no value" must resolve to a worded label ("No amount entered yet"), not be interpolated into an `accessibilityLabel` where they'd be read as the glyph's Unicode name.
-- **Data visualizations need a text alternative (WCAG 1.1.1).** This rule is not limited to `<Image>` — charts, graphs, bars, and sparklines convey meaning visually and are invisible to AT. Build an i18n summary string from the underlying data (e.g. `"Daily spend: Mon €12, Tue €0…"`), put it as the `accessibilityLabel` on an `accessible` wrapper, and let that wrapper collapse the chart's internals.
-- **Colour contrast must meet WCAG AA (1.4.3).** Every text/background pair must reach **4.5:1** (**3:1** for text ≥18px or bold). This is a property of the palette tokens in `src/constants/theme.ts`, not of a component — when you **add or change any `text*` / `bg` / `card` / `accent` colour, verify the resulting text-on-surface ratios** in both `dark` and `light` before shipping. Muted tiers (`text3`) are the usual offenders.
-- **Announce dynamic content (WCAG 4.1.3).** Anything that appears or changes in response to a user action — error/validation messages, async results, live-updating numbers like the keypad total — must be announced, not just rendered. Use `accessibilityLiveRegion` (`"assertive"` for errors, `"polite"` for running values) for Android **and** `AccessibilityInfo.announceForAccessibility` on change for iOS (which ignores live regions). Errors also take `accessibilityRole="alert"`. The shared `FormError` primitive already does this for form errors — reuse it.
-
 # Repository structure
 
-Single Expo React Native app (Expo Router), organised into strict layers under `src/`:
+pnpm workspace monorepo. `apps/mobile/` is the Expo React Native app. `apps/web/` is a Next.js
+App Router app (landing + auth so far). A growing set of `packages/*` holds pieces shared between
+them — no longer just things carved out of mobile. Each app has its own `CLAUDE.md`
+(`apps/mobile/CLAUDE.md`, `apps/web/CLAUDE.md`) for rules scoped to that app only; this file is for
+rules that apply repo-wide or to the shared `packages/*`.
 
 ```
-src/
-  app/        → Expo Router screens (UI layer)
-  hooks/      → React Query cache/state layer
-  services/   → business logic + domain models
-  data/       → data layer (on-device persistence via AsyncStorage)
-  components/  → shared + screen-specific UI (components/ui = design primitives)
-  constants/   → theme tokens, categories
-  i18n/        → i18next setup + locale files
-assets/       → fonts, images, icons
+apps/
+  mobile/     → see apps/mobile/CLAUDE.md
+  web/        → see apps/web/CLAUDE.md
+
+packages/
+  config/     → shared tsconfig/eslint/prettier bases
+  schemas/    → framework-agnostic zod row schemas (@mai/schemas)
+  api/        → the Supabase-backed data layer (@mai/api) — see "Shared packages" below
+  auth/       → shared auth business logic (@mai/auth) — see "Shared packages" below
+
+agent/        → standalone AI agent package, its own tsconfig/deps
+
+design-system/ → reference-only design export for apps/web UI work — see apps/web/CLAUDE.md's
+                 "Design system" section, not first-party source (excluded from format:check)
+
+`pnpm test` (root) → `turbo run test`, fanning out to each package's own `test` script
+                      (apps/mobile, apps/web, packages/api, packages/auth), cached independently per package.
 ```
 
-# React Compiler
+# Shared packages
 
-The **React Compiler is enabled** and stable (`babel-plugin-react-compiler@1.x`), via `"reactCompiler": true` in `app.json`.
+`@mai/api` and `@mai/auth` are consumed by both `apps/mobile` and `apps/web` — rules here apply
+regardless of which app you're working in.
 
-The compiler auto-memoizes components, values, and functions. **Do not hand-write memoization:**
+## `packages/api` (`@mai/api`) — the actual data layer
 
-- No `useMemo`, no `useCallback`, no `React.memo` / `memo()` for performance.
-- Write plain functions and object literals in component bodies; the compiler keeps their references stable (so context values and props passed down stay stable without manual wrapping).
-- Only reach for `useMemo` if a value is expensive to compute _and_ the compiler provably can't memoize it (rare) — and leave a comment saying why.
-- `useRef`, `useState`, `useEffect` are unaffected — keep using them normally.
+- Talks to Supabase (Postgres + Storage + Edge Functions + Auth). Returns raw persisted row/value shapes.
+- Framework-agnostic — no React/React Native imports, and **no client singleton**. Every exported function takes the Supabase client as its **first parameter** (e.g. `getExpenseRows(client, ...)`) instead of reaching for one internally. This is what lets the package be shared safely by both `apps/mobile` (one client for the whole app lifetime, built once in `src/data/supabase.ts` — AsyncStorage-backed, imported directly by mobile's `services/` layer) and `apps/web`'s server-rendered code (a fresh client per request, built via `@supabase/ssr` inside whichever Server Action/Server Component needs it). A module-level singleton — the package's original design — can't serve both: a Node server handles many concurrent users through one process, so a shared mutable "current client" variable would race across requests. Each app owns building its own client; this package only ever receives one as an argument.
+- Functions that need the signed-in user's id (`getCurrentUserId`) are themselves called internally by several other data functions (expenses, avatar, profile, recurring, savings, savings-targets) — thread `client` into those internal cross-file calls too, not just each function's own exported signature. The compiler will catch anything missed once a signature changes.
+- File naming: `<resource>.data.ts` (e.g. `savings.data.ts`), exported through the package's single `index.ts` barrel — callers import everything from `'@mai/api'`, never a submodule path.
+- Raw stored types (`ExpenseRow`, `RecurringRow`, …) live in `@mai/schemas` (the zod schema + its inferred type) and are re-exported from each `<resource>.data.ts` / the barrel. Write-shape types (`New<Resource>Row`, `<Resource>RowUpdate`) — what a caller sends, not what the DB returns — stay defined in the data file itself, not in `@mai/schemas`.
+- **Types that come from the database must be runtime-typed with `zod`**, not just asserted via TypeScript — define the schema in `packages/schemas` and derive the type with `z.infer<>` rather than hand-writing a `type`/`interface`. A compile-time type is not a guarantee about what Supabase actually returns.
+- Tests build a plain mock client object and pass it directly into the function under test — no client-seam module to mock.
+
+## `packages/auth` (`@mai/auth`) — shared auth, business logic and raw calls together
+
+- Framework-agnostic sign-in/sign-up validation, error-code mapping (`AuthError` / `AuthErrorCode`), session handling, **and** the raw `client.auth.*`/`client.rpc(...)` Supabase calls behind them, all in one file — shared because both `apps/mobile` and `apps/web` implement the same auth feature against the same Supabase project. Same client-as-first-parameter rule as `packages/api`, for the same reason.
+- **Does not depend on `@mai/api`.** This package does _not_ follow the `packages/api` (raw) → `services/` (business rules) split — unlike `getCurrentUserId` (which stays in `@mai/api` because six unrelated resources call it directly), nothing outside this package ever calls `signInWithPassword`/`signUpWithPassword`/etc., so there's no cross-package reuse to justify keeping a separate raw layer. Every error this package's public functions can throw is an `AuthError` — never a lower-level `ApiError`.
+- Each app's own auth entry point (`apps/mobile/src/services/auth.service.ts`, `apps/web/lib/auth.ts`) binds this app's one Supabase client to `@mai/auth`'s functions and re-exports the bound versions — kept so callers (mobile's hooks, web's `AuthForm`) never pass a client explicitly and never need to know `@mai/auth` exists, and so each app's own layering rules still hold.
 
 # Component conventions
 
@@ -60,64 +54,17 @@ The compiler auto-memoizes components, values, and functions. **Do not hand-writ
 - **Type props and parameters precisely.** Define a domain union (e.g. `AmountKey`) in the layer that owns it (usually a service) and use it, rather than `string`/`any`.
 - **No nested or chained ternary operators.** A single `a ? b : c` is fine, but never chain them (`a ? b : c ? d : e`). Use early returns, a small resolver function, or a lookup map keyed by the discriminant instead.
 
-# Data architecture
+# Comments
 
-The codebase uses a strict layer separation. Never collapse layers or skip one.
-
-```
-src/app/        → screens          (call hooks only)
-src/hooks/      → React Query       (import services only)
-src/services/   → business logic    (import data only)
-src/data/       → persistence       (AsyncStorage only)
-```
-
-Data flows **app → hooks → services → data**; imports only ever point one level down.
-
-## `src/data/` — data layer
-
-- Only talks to on-device storage (AsyncStorage). Returns raw persisted row/value shapes.
-- Never imports from `services/` or `hooks/`.
-- File naming: `<resource>.data.ts` (e.g. `savings.data.ts`).
-- Raw stored types (`ExpenseRow`, `RecurringItemRow`, …) are defined and exported from here.
-- **Swap point for a future backend:** if Supabase (or any API) is ever added, only this layer changes — services and screens stay untouched.
-
-## `src/services/` — business layer
-
-- Owns domain models (camelCase, e.g. `Expense`, `Income`, `Cost`), mappers, merges, and business rules (allowance/daily-budget formulas, insights aggregation, money formatting).
-- Composes multiple `data/` calls and applies rules.
-- Never imports from `hooks/`.
-- File naming: `<resource>.service.ts`.
-- Mappers (e.g. `mapRowToExpense`) live here and are exported for unit testing.
-
-## `src/hooks/` — React Query layer
-
-- Imports only from `services/`. Never imports from `data/` directly.
-- Owns React Query `useQuery` / `useMutation` wrappers and optimistic updates.
-- All React Query cache keys must come from `src/hooks/query-keys.ts` — no hardcoded string arrays.
-
-## Adding a new query
-
-1. Add the key to `src/hooks/query-keys.ts` first.
-2. Add the data function to `src/data/<resource>.data.ts`.
-3. Add the service function to `src/services/<resource>.service.ts`.
-4. Add the hook in `src/hooks/`.
-
-## Query keys
-
-`queryKeys` is a typed factory object at `src/hooks/query-keys.ts`.
-
-- When adding a new query, add its key here first.
-- Cross-hook invalidations must reference `queryKeys` — never a raw string.
+Keep comments to **1–2 lines**. Extend only for genuinely complex logic that needs it — not by default.
 
 # Testing
 
-Every new piece of functionality or logic ships with a test that would **fail if the behaviour broke** — and nothing more. Tests exist to protect behaviour worth protecting, not to inflate coverage.
-
-Runner: **Jest** (`jest-expo` preset). Test files live next to the code as `<name>.test.ts`. Run with `pnpm test`.
+Every new piece of functionality or logic ships with a test that would **fail if the behaviour broke** — and nothing more. Tests exist to protect behaviour worth protecting, not to inflate coverage. Runner and per-package paths live in each package's own `CLAUDE.md` (`apps/mobile/CLAUDE.md`, `apps/web/CLAUDE.md`).
 
 ## What to test
 
-- **Business logic first.** The `src/services` layer (formulas, mappers, aggregation, money formatting) and non-trivial `src/data`/`src/hooks` logic are the high-value targets — pure functions with clear inputs/outputs.
+- **Business logic first** — pure functions with clear inputs/outputs (services, mappers, formulas, aggregation) are the highest-value targets.
 - Cover the **happy path, boundaries, and known edge cases** — a few focused cases, not exhaustive permutations of the same branch.
 - A regression that bit you once deserves a test so it can't come back.
 
@@ -129,31 +76,48 @@ Runner: **Jest** (`jest-expo` preset). Test files live next to the code as `<nam
 
 Prefer deleting a low-value test over keeping it. Quality and relevance over quantity.
 
-## Supabase smoke test
+# Branching & commits
 
-Jest mocks `@/data/supabase` (see `jest.setup.js`), so `pnpm test` can't catch a wrong column name, a
-missing RLS policy, or a missing table grant — only a real request to Postgres can. `scripts/smoke-test-supabase.mjs`
-round-trips every Supabase-backed resource (insert/read/update/delete, cleaning up after itself)
-against the local container. It has already caught real bugs mocks missed (a missing `note`/`category`
-column, and `authenticated` role grants that RLS alone doesn't provide).
+`develop` is the integration branch (GitHub default branch) — everything branches from and merges into `develop` via PR. `main` is production/release-only — updated only by merging a release from `develop`, never targeted directly by feature PRs.
 
-Run it with `pnpm smoke` (requires `supabase start` running locally) whenever you change a
-`src/data/*.ts` or `src/services/*.ts` file that touches Supabase — before considering the change
-done, not just before committing.
+## Branch naming
 
-# Git commits
+```
+<type>/<TICKET-ID>-<kebab-case-summary>
+```
 
-Do not add a `Co-Authored-By: Claude` trailer to commit messages in this repo.
+- `type`: `feat` | `fix` | `chore` | `refactor` | `docs` | `test` | `ci`
+- `TICKET-ID`: Linear ID, uppercase (e.g. `LEG-60`) — omit only for no-ticket housekeeping
+- No personal-name prefix (author is already visible via git/PR)
+
+Examples: `feat/LEG-60-savings-targets-add-button`, `chore/upgrade-expo-sdk`
+
+Enforced by a pre-commit hook (`scripts/check-branch-name.mjs`) — `main` and `develop` are always allowed.
+
+## Commit messages
+
+[Conventional Commits](https://www.conventionalcommits.org/), enforced by commitlint (`commitlint.config.js`) via a `commit-msg` hook:
+
+```
+<type>(<scope>): <summary>
+```
+
+- `type`: `feat` | `fix` | `chore` | `refactor` | `docs` | `test` | `ci` | `perf` | `style` | `revert`
+- `scope`: required — the layer or feature touched (`app`, `hooks`, `services`, `data`, `db`, `web`, or a feature name like `savings-targets`)
+- `summary`: imperative, lowercase, no trailing period
+- Reference the Linear ticket in the body (`Refs LEG-60`), not the summary line
+- Do not add a `Co-Authored-By: Claude` trailer
+
+Examples: `feat(savings-targets): add button + prompt + review/confirm flow`, `fix(data): grant table access missing from RLS-only setup`
 
 # Internationalisation
 
-Every string displayed in the app UI must come from i18next — no hardcoded string literals in JSX or `accessibilityLabel` props.
+Every string displayed in the app UI must come from i18next — no hardcoded string literals in JSX or accessibility label props. This section covers what's true for both apps; see each app's own `CLAUDE.md` for its locale file paths and initialisation.
 
 ## Rules
 
 - Use `const { t } = useTranslation()` and call `t('namespace.key')` for every visible string, including accessibility labels and descriptions.
-- Add new keys to `src/i18n/locales/en.json` first. If other locale files exist for the same namespace, add the key there too.
-- Locale files live in `src/i18n/locales/<locale>.json`. English (`en.json`) is the source of truth — keep its keys the master list.
+- Add new keys to the app's locale file first. English (`en.json`) is the source of truth — keep its keys the master list. If other locale files exist for the same namespace, add the key there too.
 - Hardcoded data that is not copy (merchant names, transaction descriptions, category ids, dates, account nicknames, addresses, URLs) does not need to go through i18next. Category **ids** stay in code; their display labels are i18n strings.
 - Interpolated values use the `{{variable}}` syntax in the JSON value, e.g. `"memberSince": "Member since {{year}}"`.
-- Never call `t()` outside a React component or hook — i18next must be initialised first (done via `import '@/i18n'` in `_layout.tsx`).
+- Never call `t()` outside a React component or hook — i18next must be initialised first.

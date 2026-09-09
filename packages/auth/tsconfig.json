@@ -1,0 +1,13 @@
+{
+  // Overrides the base's NodeNext resolution: like packages/api, this package is consumed
+  // in-process by each app's own bundler (no separate build step), so its files get typechecked
+  // under "bundler" resolution — matching that, and (unlike NodeNext) not requiring extensions on
+  // relative imports.
+  "extends": "@mai/config/tsconfig.base.json",
+  "compilerOptions": {
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "types": ["jest"]
+  },
+  "include": ["src"]
+}

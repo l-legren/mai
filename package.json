@@ -1,82 +1,67 @@
 {
-  "name": "moniq",
-  "main": "expo-router/entry",
-  "version": "1.0.0",
-  "dependencies": {
-    "@expo-google-fonts/plus-jakarta-sans": "^0.4.2",
-    "@expo/ui": "~57.0.1",
-    "@expo/vector-icons": "^15.1.1",
-    "@react-native-async-storage/async-storage": "2.2.0",
-    "@react-native-community/slider": "5.2.0",
-    "@react-navigation/bottom-tabs": "^7.18.4",
-    "@supabase/supabase-js": "^2.110.0",
-    "@tanstack/react-query": "^5.101.2",
-    "date-fns": "^4.4.0",
-    "expo": "~57.0.1",
-    "expo-blur": "~57.0.0",
-    "expo-constants": "~57.0.2",
-    "expo-crypto": "~57.0.0",
-    "expo-device": "~57.0.0",
-    "expo-font": "~57.0.0",
-    "expo-glass-effect": "~57.0.0",
-    "expo-image": "~57.0.0",
-    "expo-linear-gradient": "~57.0.0",
-    "expo-linking": "~57.0.1",
-    "expo-router": "~57.0.2",
-    "expo-splash-screen": "~57.0.1",
-    "expo-status-bar": "~57.0.0",
-    "expo-symbols": "~57.0.0",
-    "expo-system-ui": "~57.0.0",
-    "expo-web-browser": "~57.0.0",
-    "i18next": "^26.3.4",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
-    "react-i18next": "^17.0.8",
-    "react-native": "0.86.0",
-    "react-native-gesture-handler": "~2.32.0",
-    "react-native-gifted-charts": "^1.4.77",
-    "react-native-reanimated": "4.5.0",
-    "react-native-safe-area-context": "~5.7.0",
-    "react-native-screens": "4.25.2",
-    "react-native-svg": "15.15.4",
-    "react-native-url-polyfill": "^3.0.0",
-    "react-native-web": "~0.21.0",
-    "react-native-worklets": "0.10.0"
-  },
+  "name": "mai-mono",
+  "packageManager": "pnpm@11.5.1",
+  "prettier": "@mai/config/prettier.json",
+  "private": true,
   "devDependencies": {
-    "@react-native/jest-preset": "0.86.0",
-    "@types/jest": "29.5.14",
-    "@types/react": "~19.2.2",
-    "eslint": "^9.39.4",
-    "eslint-config-expo": "~57.0.0",
+    "@commitlint/cli": "^21.2.1",
+    "@commitlint/config-conventional": "^21.2.2",
+    "@mai/config": "workspace:*",
     "husky": "^9.1.7",
     "jest": "~29.7.0",
-    "jest-expo": "~57.0.0",
-    "lint-staged": "^17.0.8",
-    "prettier": "^3.9.4",
-    "typescript": "~6.0.3"
+    "lint-staged": "^17.2.0",
+    "prettier": "^3.9.6",
+    "turbo": "^2.10.10"
   },
+  "dev": "next dev",
+  "build": "next build",
+  "start": "next start",
   "scripts": {
-    "start": "expo start",
-    "reset-project": "node ./scripts/reset-project.js",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web",
-    "lint": "expo lint",
     "format": "prettier --write .",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "smoke": "node scripts/smoke-test-supabase.mjs",
+    "format:check": "prettier --check .",
+    "typecheck": "turbo run typecheck",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "web:dev": "pnpm --dir apps/web dev",
+    "web:build": "pnpm --dir apps/web build",
+    "web:start": "pnpm --dir apps/web start",
+    "web:test": "pnpm --dir apps/web test",
+    "start": "pnpm --dir apps/mobile start",
+    "android": "pnpm --dir apps/mobile android",
+    "ios": "pnpm --dir apps/mobile ios",
+    "build:android": "pnpm --dir apps/mobile build:android",
+    "build:ios": "pnpm --dir apps/mobile build:ios",
+    "test:watch": "pnpm --dir apps/mobile test:watch",
+    "smoke": "pnpm --dir apps/mobile smoke",
     "prepare": "husky"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
-      "eslint --cache --fix --max-warnings=0",
+    "apps/mobile/**/*.{js,jsx,ts,tsx}": [
+      "pnpm --dir apps/mobile exec eslint --cache --fix --max-warnings=0 --no-warn-ignored",
+      "prettier --write"
+    ],
+    "packages/api/**/*.{js,ts}": [
+      "pnpm --dir packages/api exec eslint --cache --fix --max-warnings=0 --no-warn-ignored",
+      "prettier --write"
+    ],
+    "packages/schemas/**/*.{js,ts}": [
+      "pnpm --dir packages/schemas exec eslint --cache --fix --max-warnings=0 --no-warn-ignored",
+      "prettier --write"
+    ],
+    "packages/config/**/*.mjs": [
+      "pnpm --dir packages/config exec eslint --cache --fix --max-warnings=0 --no-warn-ignored",
+      "prettier --write"
+    ],
+    "agent/**/*.{js,ts}": [
+      "pnpm --dir agent exec eslint --cache --fix --max-warnings=0 --no-warn-ignored",
+      "prettier --write"
+    ],
+    "apps/web/**/*.{js,jsx,ts,tsx}": [
+      "pnpm --dir apps/web exec eslint --cache --fix --max-warnings=0 --no-warn-ignored",
       "prettier --write"
     ],
     "*.{json,md,yml,yaml}": [
       "prettier --write"
     ]
-  },
-  "private": true
+  }
 }

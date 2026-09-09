@@ -2,4 +2,17 @@ node_modules
 .expo
 dist
 pnpm-lock.yaml
-Finance App (Standalone).html
+.claude
+supabase/.temp
+
+# each workspace package format-checks itself; avoid the root's own
+# format:check redundantly re-walking every package's files too. (agent isn't
+# listed here — it has no local .prettierignore of its own, and the VS Code
+# Prettier extension resolves the nearest one walking up from the file being
+# formatted, so listing it here also blocked Format Document inside agent/.)
+apps
+packages
+
+# reference-only design export (see design-system/CLAUDE.md) — not first-party source we
+# maintain, and re-exporting it would just overwrite our formatting anyway.
+design-system

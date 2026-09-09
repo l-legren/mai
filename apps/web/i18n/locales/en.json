@@ -1,0 +1,263 @@
+{
+  "common": {
+    "appName": "Mai",
+    "loading": "Loading…",
+    "cancel": "Cancel"
+  },
+  "nav": {
+    "homeLink": "Mai home",
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "primary": "Main navigation",
+    "recurring": "Recurring",
+    "insights": "Insights",
+    "askMai": "Ask Mai",
+    "collapseSidebar": "Collapse sidebar",
+    "expandSidebar": "Expand sidebar",
+    "accountMenu": "Account menu"
+  },
+  "home": {
+    "title": "Today's spending",
+    "thisWeek": "This week",
+    "addExpense": "Add expense",
+    "importCsv": "Import CSV",
+    "spentToday": "Spent today",
+    "transactions": "Transactions",
+    "showMore": "Show more"
+  },
+  "transactions": {
+    "title": "Transactions",
+    "empty": "No transactions yet.",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "pageOf": "Page {{page}} of {{totalPages}}",
+    "previous": "Previous",
+    "next": "Next",
+    "deleteLabel": "Delete transaction",
+    "confirmDelete": "Delete {{name}} ({{amount}})? This can't be undone.",
+    "delete": "Delete",
+    "deleting": "Deleting…"
+  },
+  "addExpense": {
+    "title": "Add expense",
+    "amount": "Amount {{amount}}",
+    "noAmount": "No amount entered yet",
+    "deleteDigit": "Delete last digit",
+    "decimalPoint": "Decimal point",
+    "selectCategory": "Select category {{category}}",
+    "noteLabel": "Label",
+    "notePlaceholder": "What was it?",
+    "confirm": "Add",
+    "confirmPending": "Adding…",
+    "errors": {
+      "invalidAmount": "Enter an amount greater than zero.",
+      "invalidCategory": "Choose a category.",
+      "rowLimitExceeded": "You've reached this demo's weekly transaction limit.",
+      "unknown": "Something went wrong. Please try again."
+    }
+  },
+  "importCsv": {
+    "title": "Import bank CSV",
+    "chooseFile": "Choose file",
+    "useSampleData": "Try with sample data",
+    "loadingSample": "Loading sample…",
+    "reading": "Reading file…",
+    "previewMessage_one": "Found {{count}} transaction to import ({{skipped}} skipped).",
+    "previewMessage_other": "Found {{count}} transactions to import ({{skipped}} skipped).",
+    "previewMessageCapped": "You have {{currentCount}}/{{cap}} transactions saved this week. Only {{importable}} of the {{count}} found will be imported ({{skipped}} unreadable, {{overCap}} over the limit).",
+    "confirm": "Import",
+    "confirmPending": "Importing…",
+    "errors": {
+      "invalidFile": "Choose a CSV file exported from your bank.",
+      "empty": "No transactions could be read from this file.",
+      "capReached": "This demo allows up to {{cap}} saved transactions per week.",
+      "rowLimitExceeded": "This import would exceed this week's transaction limit — none of it was imported.",
+      "unknown": "Something went wrong. Please try again."
+    }
+  },
+  "categories": {
+    "groceries": "Groceries",
+    "drinks": "Drinks",
+    "restaurants": "Restaurants",
+    "clothing": "Clothing",
+    "transport": "Transport",
+    "other": "Other",
+    "income": {
+      "salary": "Salary",
+      "freelance": "Freelance",
+      "sideBusiness": "Side business",
+      "rental": "Rental",
+      "investments": "Investments"
+    },
+    "recurringExpense": {
+      "subscriptions": "Subscriptions",
+      "fitness": "Fitness",
+      "rent": "Rent",
+      "car": "Car",
+      "installments": "Installments"
+    }
+  },
+  "recurring": {
+    "title": "Recurring",
+    "subtitle": "Your monthly baseline",
+    "addRecurring": "Add recurring",
+    "equationTitle": "Where {{amount}} goes before you spend anything",
+    "incomeMonthly": "Income · monthly",
+    "fixedCosts": "Fixed costs",
+    "savings": "Savings",
+    "leftToSpend": "Left to spend",
+    "commitments_one": "{{count}} commitment · {{percent}}% of income",
+    "commitments_other": "{{count}} commitments · {{percent}}% of income",
+    "yourTargetBelow": "Your target, below",
+    "leftToSpendNote": "Groceries, dining, and everything else",
+    "dailyAllowance": "Daily allowance",
+    "perDays": "÷ {{days}} days",
+    "savingsTarget": "Monthly savings target",
+    "savingsTargetHint": "Drag to trade savings against daily spending",
+    "perMonth": "/ month",
+    "breakEven": "{{amount}} breaks even",
+    "onlyLeftPerMonth": "Only {{amount}} a month left for everything else",
+    "income": "Income",
+    "seeMore": "See more",
+    "emptyIncome": "No income added yet",
+    "emptyCosts": "No fixed costs added yet",
+    "frequencyMonthly": "Monthly",
+    "frequencyYearly": "Yearly",
+    "frequencyUntil": "Until {{month}}",
+    "deleteLabel": "Delete {{name}}",
+    "confirmDelete": "Delete {{name}} ({{amount}})? This can't be undone.",
+    "delete": "Delete",
+    "deleting": "Deleting…"
+  },
+  "addRecurring": {
+    "title": "Add recurring",
+    "typeExpense": "Expense",
+    "typeIncome": "Income",
+    "category": "Category",
+    "selectCategory": "Select category {{category}}",
+    "name": "Name",
+    "namePlaceholder": "e.g. Rent",
+    "amount": "Amount",
+    "cadence": "Repeats",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "frequency": "Frequency",
+    "frequencyPerpetual": "Perpetual",
+    "frequencyFixed": "Fixed term",
+    "lastPayment": "Last payment",
+    "monthsShortcut": "{{count}} months",
+    "previousYear": "Previous year",
+    "nextYear": "Next year",
+    "selectMonth": "Select {{month}} {{year}}",
+    "previewLabel": "Daily allowance — with this change applied",
+    "addIncome": "Add income",
+    "addExpense": "Add expense",
+    "confirmPending": "Adding…",
+    "errors": {
+      "invalidName": "Enter a name.",
+      "invalidAmount": "Enter an amount greater than zero.",
+      "invalidCategory": "Choose a category.",
+      "unknown": "Something went wrong. Please try again."
+    }
+  },
+  "insights": {
+    "title": "Insights",
+    "subtitle": "How the money moved.",
+    "period": {
+      "threeMonths": "3 months",
+      "twelveMonths": "12 months",
+      "all": "All"
+    },
+    "spendingVsIncome": {
+      "title": "Spending vs income",
+      "note": "Average gap of {{amount}} a month over this period.",
+      "spent": "Spent",
+      "income": "Income"
+    },
+    "budgetVsActual": {
+      "title": "Budget vs actual",
+      "summary": "{{overCount}} over, {{underCount}} with room. {{month}}.",
+      "marker": "Budget",
+      "over": "{{amount}} over",
+      "left": "{{amount}} left",
+      "empty": "No spending logged yet this month."
+    },
+    "whereItWent": {
+      "title": "Where it went",
+      "note": "{{amount}} across {{count}} categories. {{month}}.",
+      "bars": "Bars",
+      "donut": "Donut",
+      "everythingElse": "Everything else",
+      "spentIn": "spent in {{month}}",
+      "empty": "No spending logged yet this month."
+    },
+    "netBalance": {
+      "title": "Net balance",
+      "thisMonth": "this month",
+      "note": "Cumulative income minus spending since {{month}}."
+    }
+  },
+  "ask": {
+    "title": "Ask Mai",
+    "nothingYet": "Nothing yet",
+    "endChat": "End chat",
+    "endChatA11y": "End chat, clear the conversation",
+    "inputPlaceholder": "Ask about your money…",
+    "workingPlaceholder": "Working…",
+    "send": "Send message",
+    "sendUnavailable": "Send message, not available yet",
+    "stop": "Stop",
+    "userMessageA11y": "You said: {{message}}",
+    "greetingTitle": "Ask me anything about your money.",
+    "greetingSubtitle": "I can look up your recent spending and answer questions about it.",
+    "thinking": "Thinking…",
+    "error": "Something went wrong. Please try again.",
+    "statusLine": {
+      "recentSpending": "Looked at your recent spending"
+    },
+    "starterPrompts": {
+      "spentThisWeek": "How much have I spent this week?",
+      "spentOnThisWeek": "What did I spend money on this week?",
+      "spentLast14Days": "How much have I spent in the last 14 days?",
+      "biggestCategoryThisWeek": "What's my biggest spending category this week?"
+    }
+  },
+  "landing": {
+    "badge": "Now on the web, not just your phone",
+    "headline": "Know where your money went.",
+    "headlineAccent": "Before it goes.",
+    "subline": "Mai sorts every transaction, watches your budgets and tells you plainly how the month is going — so you find out on the 9th, not on the 30th.",
+    "getStarted": "Get started free"
+  },
+  "auth": {
+    "loginHeadline": "Welcome back",
+    "loginSubline": "Sign in to keep tracking.",
+    "signUpHeadline": "Create your account",
+    "signUpSubline": "Track your money in minutes.",
+    "name": "Name",
+    "namePlaceholder": "Your name",
+    "email": "Email",
+    "emailPlaceholder": "you@email.com",
+    "password": "Password",
+    "forgotPassword": "Forgot?",
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "pleaseWait": "Please wait…",
+    "toggleLoginLead": "Don't have an account?",
+    "toggleLoginAction": "Sign up",
+    "toggleSignupLead": "Already have an account?",
+    "toggleSignupAction": "Sign in",
+    "signUpConfirmationSent": "Check your email to confirm your account before signing in.",
+    "signOut": "Sign out",
+    "errors": {
+      "invalidInput": "Enter your name, email and password.",
+      "invalidCredentials": "Incorrect email or password.",
+      "emailInUse": "An account with this email already exists.",
+      "unknown": "Something went wrong. Please try again."
+    }
+  },
+  "pendingApproval": {
+    "title": "Your account is pending approval",
+    "message": "Thanks for signing up. An admin needs to approve your account before you can start using Mai — check back soon."
+  }
+}
