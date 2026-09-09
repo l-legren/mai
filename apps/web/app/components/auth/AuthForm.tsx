@@ -6,7 +6,9 @@ import { Button, FormError, Input } from '@/app/components/ui';
 import { initialAuthFormState } from '@/app/actions/auth-form-state';
 import { signInAction } from '@/app/actions/sign-in';
 import { signUpAction } from '@/app/actions/sign-up';
+import { getTurnstileSiteKey } from '@/lib/env';
 import type { AuthMode } from './ModeSwitch';
+import TurnstileWidget from './TurnstileWidget';
 
 export type AuthFormProps = {
   mode: AuthMode;
@@ -64,6 +66,8 @@ const AuthForm = ({ mode }: AuthFormProps) => {
         placeholder="••••••••"
         autoComplete={isSignUp ? 'new-password' : 'current-password'}
       />
+
+      <TurnstileWidget siteKey={getTurnstileSiteKey()} />
 
       <FormError message={errorMessage} />
 

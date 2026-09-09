@@ -11,11 +11,12 @@ export async function signInAction(
 ): Promise<AuthFormState> {
   const email = String(formData.get('email') ?? '');
   const password = String(formData.get('password') ?? '');
+  const captchaToken = String(formData.get('cf-turnstile-response') ?? '');
 
   const client = await createSupabaseServerClient();
 
   try {
-    await signIn(client, email, password);
+    await signIn(client, email, password, captchaToken);
   } catch (err) {
     return {
       errorCode: err instanceof AuthError ? err.code : 'unknown',
