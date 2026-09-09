@@ -44,6 +44,20 @@ describe('signIn', () => {
     });
   });
 
+  it('forwards the captcha token to Supabase', async () => {
+    const client = createMockClient();
+    client.auth.signInWithPassword.mockResolvedValue({
+      data: { session: { user: { id: 'user-1', email: 'user@example.com' } } },
+      error: null,
+    });
+
+    await signIn(client as never, 'user@example.com', 'password', 'token-abc');
+
+    expect(client.auth.signInWithPassword).toHaveBeenCalledWith(
+      expect.objectContaining({ options: { captchaToken: 'token-abc' } })
+    );
+  });
+
   it('wraps a backend rejection as an invalidCredentials AuthError', async () => {
     const client = createMockClient();
     client.auth.signInWithPassword.mockResolvedValue({
@@ -86,6 +100,22 @@ describe('signUp', () => {
     await expect(
       signUp(client as never, 'Mara', 'user@example.com', 'password')
     ).resolves.toEqual({ id: 'user-1', email: 'user@example.com' });
+  });
+
+  it('forwards the captcha token to Supabase', async () => {
+    const client = createMockClient();
+    client.auth.signUp.mockResolvedValue({
+      data: { session: { user: { id: 'user-1', email: 'user@example.com' } } },
+      error: null,
+    });
+
+    await signUp(client as never, 'Mara', 'user@example.com', 'password', 'token-abc');
+
+    expect(client.auth.signUp).toHaveBeenCalledWith(
+      expect.objectContaining({
+        options: expect.objectContaining({ captchaToken: 'token-abc' }),
+      })
+    );
   });
 
   it('resolves to null when email confirmation is required', async () => {

@@ -44,7 +44,8 @@ export function subscribeToAuthChanges(
 export async function signIn(
   client: SupabaseClient,
   email: string,
-  password: string
+  password: string,
+  captchaToken?: string
 ): Promise<AuthUser> {
   const trimmedEmail = email.trim();
   if (!trimmedEmail || !password) {
@@ -54,6 +55,7 @@ export async function signIn(
   const { data, error } = await client.auth.signInWithPassword({
     email: trimmedEmail,
     password,
+    options: { captchaToken },
   });
   if (error) throw new AuthError('invalidCredentials');
 
@@ -71,7 +73,8 @@ export async function signUp(
   client: SupabaseClient,
   name: string,
   email: string,
-  password: string
+  password: string,
+  captchaToken?: string
 ): Promise<AuthUser | null> {
   const trimmedName = name.trim();
   const trimmedEmail = email.trim();
@@ -82,7 +85,7 @@ export async function signUp(
   const { data, error } = await client.auth.signUp({
     email: trimmedEmail,
     password,
-    options: { data: { name: trimmedName } },
+    options: { data: { name: trimmedName }, captchaToken },
   });
 
   if (error) {
