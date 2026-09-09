@@ -3,7 +3,7 @@
   // is consumed in-process by the app's bundler (no build step / project references separate the
   // two), so its files get typechecked under the app's own moduleResolution — "bundler" here
   // matches that, and (unlike NodeNext) doesn't require extensions on relative imports.
-  "extends": "@moniq/config/tsconfig.base.json",
+  "extends": "@mai/config/tsconfig.base.json",
   "compilerOptions": {
     "module": "preserve",
     "moduleResolution": "bundler",

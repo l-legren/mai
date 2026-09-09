@@ -3,7 +3,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { ExpenseRowSchema, type ExpenseRow } from '@moniq/schemas';
+import { ExpenseRowSchema, type ExpenseRow } from '@mai/schemas';
 
 import { ApiError } from './api-error';
 import { getCurrentUserId } from './auth.data';

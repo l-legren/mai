@@ -3,7 +3,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { SavingsGoalRowSchema } from '@moniq/schemas';
+import { SavingsGoalRowSchema } from '@mai/schemas';
 
 import { ApiError } from './api-error';
 import { getCurrentUserId } from './auth.data';

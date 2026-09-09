@@ -49,7 +49,7 @@ const AskTurnItem = ({ turn, onStop }: AskTurnItemProps) => {
 };
 
 /**
- * Ask Moniq, desktop/tablet (design frames 7a/7b/7c) — a stateless-per-request tool-calling agent
+ * Ask Mai, desktop/tablet (design frames 7a/7b/7c) — a stateless-per-request tool-calling agent
  * loop (see agent/src/run.ts) behind a plain-text chat UI, mirroring the mobile Ask tab's scope
  * (LEG-129): streaming text, one status line, no write/confirm UI since the backend has no write
  * tools yet.

@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "moniq",
-    "slug": "moniq",
+    "name": "Mai",
+    "slug": "mai",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "moniq",
+    "scheme": "mai",
     "userInterfaceStyle": "automatic",
     "android": {
       "adaptiveIcon": {
@@ -34,7 +34,7 @@
       "reactCompiler": true
     },
     "ios": {
-      "bundleIdentifier": "com.anonymous.moniq"
+      "bundleIdentifier": "com.anonymous.mai"
     }
   }
 }

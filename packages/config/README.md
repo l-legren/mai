@@ -1,4 +1,4 @@
-# @moniq/config
+# @mai/config
 
 Shared tooling bases for the monorepo. Each base is referenced **by package name** so it survives
 future moves (e.g. the app → `apps/mobile` in LEG-97).
@@ -17,16 +17,16 @@ only `prettier.json`.
 
 ```jsonc
 // package.json
-"prettier": "@moniq/config/prettier.json"
+"prettier": "@mai/config/prettier.json"
 ```
 
 ```jsonc
 // tsconfig.json
-"extends": "@moniq/config/tsconfig.base.json"
+"extends": "@mai/config/tsconfig.base.json"
 ```
 
 ```js
 // eslint.config.js
-import base from '@moniq/config/eslint.base.mjs';
+import base from '@mai/config/eslint.base.mjs';
 export default [...base, { ignores: ['dist/**'] }];
 ```

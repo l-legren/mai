@@ -34,7 +34,7 @@ describe('signUpAction', () => {
 
   it('returns invalidInput when a field is missing entirely, not just empty', async () => {
     // formData.get() returns null for a missing field — String(null) is the non-empty string
-    // "null", which would slip past @moniq/auth's validation without the `?? ''` fallback.
+    // "null", which would slip past @mai/auth's validation without the `?? ''` fallback.
     const client = createMockClient();
     vi.mocked(createSupabaseServerClient).mockResolvedValue(client as never);
 

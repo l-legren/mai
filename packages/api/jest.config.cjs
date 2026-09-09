@@ -1,5 +1,5 @@
 /** @type {import('jest').Config} */
 module.exports = {
-  displayName: '@moniq/api',
+  displayName: '@mai/api',
   preset: 'jest-expo',
 };

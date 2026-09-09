@@ -16,7 +16,7 @@ type RecentSpendingResult = {
 };
 
 /**
- * Real moniq tools the agent can call, scoped to a single user for the lifetime of one request.
+ * Real mai tools the agent can call, scoped to a single user for the lifetime of one request.
  * A factory (rather than a static `ToolSet`) because `getRecentSpending`'s `execute` needs to
  * close over `userId` (to pass to `withScopedRead`) and `today` — the other two tools don't have
  * an `execute` body yet (LEG-108) and don't need either, but live in the same factory so callers
@@ -27,7 +27,7 @@ type RecentSpendingResult = {
  * disagree on what day it currently is, and `expenses.spent_on` is always written against the
  * device's local date — so the window has to be anchored to that same local date to line up.
  */
-export function createMoniqTools(userId: string, today: string): ToolSet {
+export function createMaiTools(userId: string, today: string): ToolSet {
   return {
     getSpendingByCategory: tool({
       description:

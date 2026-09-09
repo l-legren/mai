@@ -41,7 +41,7 @@ assets/       → fonts, images, icons
 app.json, tsconfig.json, jest.config.js, eslint.config.mjs, .env → app-scoped config
 ```
 
-Every `src/...` path in this doc is relative to this directory (`apps/mobile/`). See the root `CLAUDE.md`'s "Shared packages" section for `@moniq/api`/`@moniq/auth`, which this app consumes but doesn't own.
+Every `src/...` path in this doc is relative to this directory (`apps/mobile/`). See the root `CLAUDE.md`'s "Shared packages" section for `@mai/api`/`@mai/auth`, which this app consumes but doesn't own.
 
 # React Compiler
 
@@ -61,13 +61,13 @@ The codebase uses a strict layer separation. Never collapse layers or skip one.
 ```
 src/app/        → screens          (call hooks only)
 src/hooks/      → React Query       (import services only)
-src/services/   → business logic    (import @moniq/api + @moniq/auth + src/data only)
-@moniq/api      → Supabase data layer (see root CLAUDE.md's "Shared packages" section)
-@moniq/auth     → shared auth business logic (see root CLAUDE.md's "Shared packages" section)
+src/services/   → business logic    (import @mai/api + @mai/auth + src/data only)
+@mai/api      → Supabase data layer (see root CLAUDE.md's "Shared packages" section)
+@mai/auth     → shared auth business logic (see root CLAUDE.md's "Shared packages" section)
 src/data/       → local device persistence (AsyncStorage only — theme preference)
 ```
 
-Data flows **app → hooks → services → (`@moniq/api` + `@moniq/auth` + `src/data`)**; imports only ever point one level down. Services are the layer allowed to import from all three — most resources live in `@moniq/api` (Supabase), auth logic lives in `@moniq/auth` (its own package, not built on `@moniq/api` — see root `CLAUDE.md` for why), and a couple of resources (currently just the theme preference) live in `src/data` (AsyncStorage) — these are genuinely different data sources, not different names for the same layer.
+Data flows **app → hooks → services → (`@mai/api` + `@mai/auth` + `src/data`)**; imports only ever point one level down. Services are the layer allowed to import from all three — most resources live in `@mai/api` (Supabase), auth logic lives in `@mai/auth` (its own package, not built on `@mai/api` — see root `CLAUDE.md` for why), and a couple of resources (currently just the theme preference) live in `src/data` (AsyncStorage) — these are genuinely different data sources, not different names for the same layer.
 
 ## `src/data/` — local device persistence
 
@@ -78,7 +78,7 @@ Data flows **app → hooks → services → (`@moniq/api` + `@moniq/auth` + `src
 ## `src/services/` — business layer
 
 - Owns domain models (camelCase, e.g. `Expense`, `Income`, `Cost`), mappers, merges, and business rules (allowance/daily-budget formulas, insights aggregation, money formatting).
-- Composes multiple `@moniq/api`/`@moniq/auth` (and, for local device settings, `src/data`) calls and applies rules.
+- Composes multiple `@mai/api`/`@mai/auth` (and, for local device settings, `src/data`) calls and applies rules.
 - Never imports from `hooks/`.
 - File naming: `<resource>.service.ts`.
 - Mappers (e.g. `mapRowToExpense`) live here and are exported for unit testing.
@@ -93,7 +93,7 @@ Data flows **app → hooks → services → (`@moniq/api` + `@moniq/auth` + `src
 
 1. Add the key to `src/hooks/query-keys.ts` first.
 2. Add the row schema (if new) to `packages/schemas/index.ts`, then the data function to `packages/api/src/<resource>.data.ts` — takes `client: SupabaseClient` as its first parameter; export both from `packages/api/src/index.ts`.
-3. Add the service function to `src/services/<resource>.service.ts`, importing from `'@moniq/api'` and passing through the app's own `supabase` client (from `src/data/supabase.ts`).
+3. Add the service function to `src/services/<resource>.service.ts`, importing from `'@mai/api'` and passing through the app's own `supabase` client (from `src/data/supabase.ts`).
 4. Add the hook in `src/hooks/`.
 
 ## Query keys
@@ -111,7 +111,7 @@ Runner: **Jest** (`jest-expo` preset). Test files live next to the code as `<nam
 
 ## Supabase smoke test
 
-Jest mocks `@moniq/api`'s Supabase client seam (`@moniq/api/supabase-client`, see
+Jest mocks `@mai/api`'s Supabase client seam (`@mai/api/supabase-client`, see
 `packages/api/jest.setup.cjs`), so `pnpm test` can't catch a wrong column name, a missing RLS
 policy, or a missing table grant — only a real request to Postgres can.
 `apps/mobile/scripts/smoke-test-supabase.mjs` round-trips every Supabase-backed resource

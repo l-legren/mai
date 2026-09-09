@@ -6,12 +6,12 @@ import {
   type ExpenseRow,
   type NewExpenseRow,
   type PaginatedExpenseRows,
-} from '@moniq/api';
+} from '@mai/api';
 import { createSupabaseServerClient } from '../supabase-server';
 
 export type { ExpenseRow, NewExpenseRow, PaginatedExpenseRows };
 
-// cache() dedupes this per request. Ordered newest-first (see @moniq/api's getExpenseRows).
+// cache() dedupes this per request. Ordered newest-first (see @mai/api's getExpenseRows).
 export const getCurrentExpenses = cache(async () => {
   const supabase = await createSupabaseServerClient();
   return getExpenseRows(supabase);

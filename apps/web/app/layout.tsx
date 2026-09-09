@@ -13,9 +13,9 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: 'moniq',
+  title: 'mai',
   description:
-    'Moniq sorts every transaction, watches your budgets and tells you plainly how the month is going — so you find out on the 9th, not on the 30th.',
+    'Mai sorts every transaction, watches your budgets and tells you plainly how the month is going — so you find out on the 9th, not on the 30th.',
   icons: {
     icon: '/favicon.ico',
   },

@@ -1,4 +1,4 @@
-import type { ExpenseRow } from '@moniq/api';
+import type { ExpenseRow } from '@mai/api';
 
 export type Transaction = {
   id: string;

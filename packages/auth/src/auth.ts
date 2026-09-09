@@ -1,6 +1,6 @@
 /**
  * Framework-agnostic auth — domain model, mapper, validation rules, and the raw Supabase Auth
- * calls behind them, all in one place. Unlike `@moniq/api`'s data functions, these aren't shared
+ * calls behind them, all in one place. Unlike `@mai/api`'s data functions, these aren't shared
  * with any other resource (nothing outside this package calls `client.auth.signInWithPassword()`
  * etc. directly), so there's no separate "raw" layer to keep reusable — every error a caller can
  * get back from this package is an `AuthError`, not a mix of that and a lower-level `ApiError`.

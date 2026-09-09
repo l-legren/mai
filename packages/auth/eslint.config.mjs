@@ -1,3 +1,3 @@
-import base from '@moniq/config/eslint.base.mjs';
+import base from '@mai/config/eslint.base.mjs';
 
 export default [...base];

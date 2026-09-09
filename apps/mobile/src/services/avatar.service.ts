@@ -4,7 +4,7 @@
  * user gets an immediate, friendly error instead of waiting on a rejected upload request.
  */
 
-import { getAvatarSignedUrl, uploadAvatarFile } from '@moniq/api';
+import { getAvatarSignedUrl, uploadAvatarFile } from '@mai/api';
 
 import { supabase } from '@/data/supabase';
 

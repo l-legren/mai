@@ -3,7 +3,7 @@
   // typechecked under the app's own moduleResolution when pulled in transitively. Currently has no
   // internal relative imports so this hasn't bitten yet, but "bundler" is the correct setting the
   // moment it grows a second file (see packages/api's tsconfig comment for the full explanation).
-  "extends": "@moniq/config/tsconfig.base.json",
+  "extends": "@mai/config/tsconfig.base.json",
   "compilerOptions": {
     "module": "preserve",
     "moduleResolution": "bundler"

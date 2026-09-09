@@ -1,8 +1,8 @@
-# moniq
+# mai
 
 A daily-allowance budgeting app for iOS, Android, and web, built with Expo.
 
-moniq turns your monthly income, fixed costs, and savings goal into a single number: **how much you can spend today**. Log expenses against that daily allowance, track recurring income and fixed costs, and review spending patterns over time — all with a fully accessible, offline-first mobile UI.
+mai turns your monthly income, fixed costs, and savings goal into a single number: **how much you can spend today**. Log expenses against that daily allowance, track recurring income and fixed costs, and review spending patterns over time — all with a fully accessible, offline-first mobile UI.
 
 ## Core concept
 
@@ -36,15 +36,15 @@ it:
 ```
 apps/mobile/src/app/      screens (Expo Router)   → call hooks only
 apps/mobile/src/hooks/    React Query cache layer → import services only
-apps/mobile/src/services/ business logic          → import @moniq/api + src/data only
-packages/api/             Supabase data layer (@moniq/api)
+apps/mobile/src/services/ business logic          → import @mai/api + src/data only
+packages/api/             Supabase data layer (@mai/api)
 apps/mobile/src/data/     local device persistence → AsyncStorage only (theme preference)
 ```
 
 - **`apps/mobile/src/app/`** — file-based routes (Expo Router). Screens are presentation only; all state and logic is delegated to hooks.
 - **`apps/mobile/src/hooks/`** — TanStack React Query wrappers (`useQuery`/`useMutation`, optimistic updates). All cache keys are centralized in `apps/mobile/src/hooks/query-keys.ts`.
 - **`apps/mobile/src/services/`** — pure business logic: the allowance formula, expense/recurring/savings domain models and mappers, insights aggregation, auth rules. No framework or storage dependencies — this is the most heavily unit-tested layer.
-- **`packages/api/`** (`@moniq/api`) — the Supabase data layer: auth/session, expenses, recurring items, savings goal, savings targets, avatar storage. Framework-agnostic (no React Native imports) — the app builds the Supabase client and hands it in, so this package could be reused by a future non-mobile client.
+- **`packages/api/`** (`@mai/api`) — the Supabase data layer: auth/session, expenses, recurring items, savings goal, savings targets, avatar storage. Framework-agnostic (no React Native imports) — the app builds the Supabase client and hands it in, so this package could be reused by a future non-mobile client.
 - **`apps/mobile/src/data/`** — the one remaining local-only persistence layer: currently just the theme preference, via `AsyncStorage`.
 
 Supporting directories (all under `apps/mobile/src/`):
@@ -62,11 +62,11 @@ Plus `packages/config` (shared tsconfig/eslint/prettier bases), `packages/schema
 ```mermaid
 flowchart TB
     ROOT["// (true repo root)<br/>pnpm-workspace.yaml, turbo.json,<br/>husky, commitlint"]
-    APP["apps/mobile<br/>pkg name: moniq"]
-    API["packages/api<br/>@moniq/api"]
-    SCHEMAS["packages/schemas<br/>@moniq/schemas"]
-    CONFIG["packages/config<br/>@moniq/config"]
-    AGENT["agent<br/>@moniq/agent"]
+    APP["apps/mobile<br/>pkg name: mai"]
+    API["packages/api<br/>@mai/api"]
+    SCHEMAS["packages/schemas<br/>@mai/schemas"]
+    CONFIG["packages/config<br/>@mai/config"]
+    AGENT["agent<br/>@mai/agent"]
 
     APP -.->|workspace:*| API
     APP -.->|workspace:*| SCHEMAS
@@ -161,7 +161,7 @@ Run from the repo root unless noted. Package-scoped commands can also run via `p
 
 | Command                                              | Description                                                      |
 | ---------------------------------------------------- | ---------------------------------------------------------------- |
-| `pnpm test`                                          | Run the full Jest suite (app + `@moniq/api`)                     |
+| `pnpm test`                                          | Run the full Jest suite (app + `@mai/api`)                       |
 | `pnpm format` / `format:check`                       | Format/check with Prettier, repo-wide                            |
 | `pnpm exec turbo run typecheck`                      | Typecheck every workspace package                                |
 | `pnpm exec turbo run lint`                           | Lint every workspace package                                     |
@@ -173,7 +173,7 @@ Run from the repo root unless noted. Package-scoped commands can also run via `p
 
 ## Testing
 
-Tests live next to the code they cover (`<name>.test.ts`) and target the `services`/`data` layers (`apps/mobile/`) and `@moniq/api` (`packages/api/`) — pure business logic (allowance formula, mappers, aggregation) and persistence behavior. `pnpm test` from the repo root fans out to each package's own `test` script via turbo, cached independently per package.
+Tests live next to the code they cover (`<name>.test.ts`) and target the `services`/`data` layers (`apps/mobile/`) and `@mai/api` (`packages/api/`) — pure business logic (allowance formula, mappers, aggregation) and persistence behavior. `pnpm test` from the repo root fans out to each package's own `test` script via turbo, cached independently per package.
 
 ## Project conventions
 

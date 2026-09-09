@@ -44,7 +44,7 @@ const REDUCED_MOTION_PULSE = 0.5;
 
 /**
  * `Button` plus a slow, continuous breathing-border animation — for a single prominent
- * call-to-action that should invite a tap (e.g. "ask moniq"), not a general-purpose control.
+ * call-to-action that should invite a tap (e.g. "ask mai"), not a general-purpose control.
  * Shares `Button`'s color/variant system (`button-styles.ts`) so it stays visually consistent;
  * the only addition is the decorative animated outline layer. The pulse is decorative only —
  * the accessibility label carries the action regardless of motion settings, and it degrades to

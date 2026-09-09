@@ -10,7 +10,7 @@ import {
   type NewProfileOnboardingRow,
   type ProfileOnboardingRow,
   type ProfileOnboardingRowUpdate,
-} from '@moniq/api';
+} from '@mai/api';
 import countryToCurrency, { type Countries } from 'country-to-currency';
 import { z } from 'zod';
 

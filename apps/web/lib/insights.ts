@@ -4,7 +4,7 @@
  * apps/mobile's insights.service.ts but web has no services/ layer of its own (see lib/recurring.ts).
  */
 import { addMonths, format, startOfMonth, subMonths } from 'date-fns';
-import type { ExpenseRow } from '@moniq/api';
+import type { ExpenseRow } from '@mai/api';
 import { CATEGORY_IDS, isCategoryId, type CategoryId } from './categories';
 
 export type MonthlyTotal = {

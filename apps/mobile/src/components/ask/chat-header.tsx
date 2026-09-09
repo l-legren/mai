@@ -13,7 +13,7 @@ type ChatHeaderProps = {
 // minimum touch target (WCAG 2.5.5) rather than growing the visible pill.
 const END_CHAT_HIT_SLOP = (44 - 34) / 2;
 
-/** "Ask Moniq" title + the always-available "End chat" exit (design 3a–4b). */
+/** "Ask Mai" title + the always-available "End chat" exit (design 3a–4b). */
 export function ChatHeader({ onEndChat }: ChatHeaderProps) {
   const { t } = useTranslation();
   const { palette } = useAppTheme();

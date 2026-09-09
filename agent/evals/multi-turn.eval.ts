@@ -1,7 +1,7 @@
 import assert from 'node:assert';
 import { evaluate } from '@lmnr-ai/lmnr';
 
-import { MAX_RECENT_SPENDING_DAYS, createMoniqTools } from '../src/tools.ts';
+import { MAX_RECENT_SPENDING_DAYS, createMaiTools } from '../src/tools.ts';
 import { MULTI_TURN_DATASET } from './multi-turn-dataset.ts';
 import { evaluateNumbersGrounded, evaluateToolUsage } from './evaluators.ts';
 import { multiTurnExecutor } from './executors.ts';
@@ -10,7 +10,7 @@ import type { MultiTurnEvalData, MultiTurnResult, MultiTurnTarget } from './type
 // Runtime-type guarantee, not a model-behaviour question — no LLM call needed. Fails loudly (at
 // `pnpm eval` time) if `getRecentSpending`'s day cap ever regresses, without needing Jest set up
 // for this package. `getSpendingByCategory` schema below is unaffected — it has no `days` field.
-const { getRecentSpending } = createMoniqTools('eval-fixture-user', '2026-01-01');
+const { getRecentSpending } = createMaiTools('eval-fixture-user', '2026-01-01');
 assert(
   getRecentSpending.inputSchema &&
     'safeParse' in getRecentSpending.inputSchema &&

@@ -1,5 +1,5 @@
 import { cache } from 'react';
-import { getSavingsGoalValue, saveSavingsGoalValue } from '@moniq/api';
+import { getSavingsGoalValue, saveSavingsGoalValue } from '@mai/api';
 import { createSupabaseServerClient } from '../supabase-server';
 
 // cache() dedupes this per request.

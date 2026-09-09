@@ -19,7 +19,7 @@ export {
   HomeIcon,
   RecurringIcon,
   InsightsIcon,
-  AskMoniqIcon,
+  AskMaiIcon,
   SendIcon,
   SidebarToggleIcon,
   TrashIcon,

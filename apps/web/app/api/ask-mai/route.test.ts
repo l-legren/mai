@@ -10,7 +10,7 @@ import { createMockClient } from '../../../vitest.setup';
 import { POST } from './route';
 
 function requestFor(body: unknown) {
-  return new Request('http://localhost/api/ask-moniq', {
+  return new Request('http://localhost/api/ask-mai', {
     method: 'POST',
     body: JSON.stringify(body),
   });
@@ -21,7 +21,7 @@ const validBody = {
   messages: [{ role: 'user', content: 'How much did I spend this week?' }],
 };
 
-describe('POST /api/ask-moniq', () => {
+describe('POST /api/ask-mai', () => {
   it('returns 401 without calling the agent service when there is no session', async () => {
     const client = createMockClient();
     client.auth.getSession.mockResolvedValue({ data: { session: null }, error: null });
@@ -78,7 +78,7 @@ describe('POST /api/ask-moniq', () => {
     const response = await POST(requestFor(validBody));
 
     expect(globalThis.fetch).toHaveBeenCalledWith(
-      'https://agent.example.com/ask-moniq',
+      'https://agent.example.com/ask-mai',
       expect.objectContaining({
         method: 'POST',
         headers: expect.objectContaining({ Authorization: 'Bearer test-token' }),

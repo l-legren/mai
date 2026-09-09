@@ -1,7 +1,7 @@
 import AskChatView from './AskChatView';
 
-const AskMoniqPage = () => {
+const AskMaiPage = () => {
   return <AskChatView />;
 };
 
-export default AskMoniqPage;
+export default AskMaiPage;

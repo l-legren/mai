@@ -8,7 +8,7 @@ import {
   insertRecurringRow,
   type NewRecurringRow,
   type RecurringRow,
-} from '@moniq/api';
+} from '@mai/api';
 
 import {
   INCOME_CATEGORY_IDS,

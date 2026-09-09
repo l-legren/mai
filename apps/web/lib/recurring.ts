@@ -4,7 +4,7 @@
  * own, so this lives alongside the other lib/ utilities instead).
  */
 import { format, parse } from 'date-fns';
-import type { RecurringRow } from '@moniq/api';
+import type { RecurringRow } from '@mai/api';
 import {
   INCOME_CATEGORY_IDS,
   RECURRING_EXPENSE_CATEGORY_IDS,

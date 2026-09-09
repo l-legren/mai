@@ -1,7 +1,7 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { AuthError, signUp } from '@moniq/auth';
+import { AuthError, signUp } from '@mai/auth';
 import { createSupabaseServerClient } from '@/lib/supabase-server';
 import type { AuthFormState } from './auth-form-state';
 

@@ -13,9 +13,9 @@ apps/
 
 packages/
   config/     → shared tsconfig/eslint/prettier bases
-  schemas/    → framework-agnostic zod row schemas (@moniq/schemas)
-  api/        → the Supabase-backed data layer (@moniq/api) — see "Shared packages" below
-  auth/       → shared auth business logic (@moniq/auth) — see "Shared packages" below
+  schemas/    → framework-agnostic zod row schemas (@mai/schemas)
+  api/        → the Supabase-backed data layer (@mai/api) — see "Shared packages" below
+  auth/       → shared auth business logic (@mai/auth) — see "Shared packages" below
 
 agent/        → standalone AI agent package, its own tsconfig/deps
 
@@ -28,24 +28,24 @@ design-system/ → reference-only design export for apps/web UI work — see app
 
 # Shared packages
 
-`@moniq/api` and `@moniq/auth` are consumed by both `apps/mobile` and `apps/web` — rules here apply
+`@mai/api` and `@mai/auth` are consumed by both `apps/mobile` and `apps/web` — rules here apply
 regardless of which app you're working in.
 
-## `packages/api` (`@moniq/api`) — the actual data layer
+## `packages/api` (`@mai/api`) — the actual data layer
 
 - Talks to Supabase (Postgres + Storage + Edge Functions + Auth). Returns raw persisted row/value shapes.
 - Framework-agnostic — no React/React Native imports, and **no client singleton**. Every exported function takes the Supabase client as its **first parameter** (e.g. `getExpenseRows(client, ...)`) instead of reaching for one internally. This is what lets the package be shared safely by both `apps/mobile` (one client for the whole app lifetime, built once in `src/data/supabase.ts` — AsyncStorage-backed, imported directly by mobile's `services/` layer) and `apps/web`'s server-rendered code (a fresh client per request, built via `@supabase/ssr` inside whichever Server Action/Server Component needs it). A module-level singleton — the package's original design — can't serve both: a Node server handles many concurrent users through one process, so a shared mutable "current client" variable would race across requests. Each app owns building its own client; this package only ever receives one as an argument.
 - Functions that need the signed-in user's id (`getCurrentUserId`) are themselves called internally by several other data functions (expenses, avatar, profile, recurring, savings, savings-targets) — thread `client` into those internal cross-file calls too, not just each function's own exported signature. The compiler will catch anything missed once a signature changes.
-- File naming: `<resource>.data.ts` (e.g. `savings.data.ts`), exported through the package's single `index.ts` barrel — callers import everything from `'@moniq/api'`, never a submodule path.
-- Raw stored types (`ExpenseRow`, `RecurringRow`, …) live in `@moniq/schemas` (the zod schema + its inferred type) and are re-exported from each `<resource>.data.ts` / the barrel. Write-shape types (`New<Resource>Row`, `<Resource>RowUpdate`) — what a caller sends, not what the DB returns — stay defined in the data file itself, not in `@moniq/schemas`.
+- File naming: `<resource>.data.ts` (e.g. `savings.data.ts`), exported through the package's single `index.ts` barrel — callers import everything from `'@mai/api'`, never a submodule path.
+- Raw stored types (`ExpenseRow`, `RecurringRow`, …) live in `@mai/schemas` (the zod schema + its inferred type) and are re-exported from each `<resource>.data.ts` / the barrel. Write-shape types (`New<Resource>Row`, `<Resource>RowUpdate`) — what a caller sends, not what the DB returns — stay defined in the data file itself, not in `@mai/schemas`.
 - **Types that come from the database must be runtime-typed with `zod`**, not just asserted via TypeScript — define the schema in `packages/schemas` and derive the type with `z.infer<>` rather than hand-writing a `type`/`interface`. A compile-time type is not a guarantee about what Supabase actually returns.
 - Tests build a plain mock client object and pass it directly into the function under test — no client-seam module to mock.
 
-## `packages/auth` (`@moniq/auth`) — shared auth, business logic and raw calls together
+## `packages/auth` (`@mai/auth`) — shared auth, business logic and raw calls together
 
 - Framework-agnostic sign-in/sign-up validation, error-code mapping (`AuthError` / `AuthErrorCode`), session handling, **and** the raw `client.auth.*`/`client.rpc(...)` Supabase calls behind them, all in one file — shared because both `apps/mobile` and `apps/web` implement the same auth feature against the same Supabase project. Same client-as-first-parameter rule as `packages/api`, for the same reason.
-- **Does not depend on `@moniq/api`.** This package does _not_ follow the `packages/api` (raw) → `services/` (business rules) split — unlike `getCurrentUserId` (which stays in `@moniq/api` because six unrelated resources call it directly), nothing outside this package ever calls `signInWithPassword`/`signUpWithPassword`/etc., so there's no cross-package reuse to justify keeping a separate raw layer. Every error this package's public functions can throw is an `AuthError` — never a lower-level `ApiError`.
-- Each app's own auth entry point (`apps/mobile/src/services/auth.service.ts`, `apps/web/lib/auth.ts`) binds this app's one Supabase client to `@moniq/auth`'s functions and re-exports the bound versions — kept so callers (mobile's hooks, web's `AuthForm`) never pass a client explicitly and never need to know `@moniq/auth` exists, and so each app's own layering rules still hold.
+- **Does not depend on `@mai/api`.** This package does _not_ follow the `packages/api` (raw) → `services/` (business rules) split — unlike `getCurrentUserId` (which stays in `@mai/api` because six unrelated resources call it directly), nothing outside this package ever calls `signInWithPassword`/`signUpWithPassword`/etc., so there's no cross-package reuse to justify keeping a separate raw layer. Every error this package's public functions can throw is an `AuthError` — never a lower-level `ApiError`.
+- Each app's own auth entry point (`apps/mobile/src/services/auth.service.ts`, `apps/web/lib/auth.ts`) binds this app's one Supabase client to `@mai/auth`'s functions and re-exports the bound versions — kept so callers (mobile's hooks, web's `AuthForm`) never pass a client explicitly and never need to know `@mai/auth` exists, and so each app's own layering rules still hold.
 
 # Component conventions
 

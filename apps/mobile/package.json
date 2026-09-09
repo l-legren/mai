@@ -1,5 +1,5 @@
 {
-  "name": "moniq",
+  "name": "mai",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "private": true,
@@ -7,9 +7,9 @@
     "@expo-google-fonts/plus-jakarta-sans": "^0.4.2",
     "@expo/ui": "~57.0.11",
     "@expo/vector-icons": "^15.1.1",
-    "@moniq/api": "workspace:*",
-    "@moniq/auth": "workspace:*",
-    "@moniq/schemas": "workspace:*",
+    "@mai/api": "workspace:*",
+    "@mai/auth": "workspace:*",
+    "@mai/schemas": "workspace:*",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-community/slider": "5.2.0",
     "@react-navigation/bottom-tabs": "^7.18.15",
@@ -56,7 +56,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@moniq/config": "workspace:*",
+    "@mai/config": "workspace:*",
     "@react-native/jest-preset": "0.86.2",
     "@types/jest": "29.5.14",
     "@types/react": "~19.2.18",

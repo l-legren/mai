@@ -1,7 +1,7 @@
 import { AVATAR_MAX_BYTES, AvatarUploadError, uploadAvatar } from './avatar.service';
 
-jest.mock('@moniq/api', () => ({
-  ...jest.requireActual('@moniq/api'),
+jest.mock('@mai/api', () => ({
+  ...jest.requireActual('@mai/api'),
   uploadAvatarFile: jest.fn().mockResolvedValue('user-1/avatar'),
 }));
 

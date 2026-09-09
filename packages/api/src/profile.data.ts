@@ -4,7 +4,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { ProfileOnboardingRowSchema, type ProfileOnboardingRow } from '@moniq/schemas';
+import { ProfileOnboardingRowSchema, type ProfileOnboardingRow } from '@mai/schemas';
 
 import { ApiError } from './api-error';
 import { getCurrentUserId } from './auth.data';

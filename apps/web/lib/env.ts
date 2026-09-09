@@ -2,7 +2,7 @@
  * Central place for reading/validating this app's env vars — one accessor per var group, each
  * throwing the same "missing, copy .env.example" error shape rather than letting a bad config
  * surface as a confusing downstream failure (a Supabase client built with `undefined` as its URL,
- * a fetch to `undefined/ask-moniq`).
+ * a fetch to `undefined/ask-mai`).
  *
  * Read fresh on every call rather than cached at module scope: `proxy.ts` (middleware) can't share
  * a module graph with a Route Handler/Server Component (see `lib/supabase-server.ts`'s doc
@@ -22,7 +22,7 @@ export function getSupabaseEnv(): { supabaseUrl: string; supabaseAnonKey: string
 }
 
 /**
- * Server-only — read inside the `ask-moniq` Route Handler, never sent to the browser. Unlike
+ * Server-only — read inside the `ask-mai` Route Handler, never sent to the browser. Unlike
  * `getSupabaseEnv`'s `NEXT_PUBLIC_*` vars, this one has no `NEXT_PUBLIC_` prefix: the browser only
  * ever talks to our own same-origin proxy route, never the agent service directly.
  */

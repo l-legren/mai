@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { ExpenseRow } from '@moniq/api';
+import type { ExpenseRow } from '@mai/api';
 import {
   breakdownSlices,
   budgetBarWidthPct,

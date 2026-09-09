@@ -6,10 +6,10 @@ create extension if not exists pgcrypto;
 do $$
 declare
   test_user_id uuid := '11111111-1111-1111-1111-111111111111';
-  test_email text := 'dev@moniq.app';
+  test_email text := 'dev@mai.app';
 begin
 
--- Test user: dev@moniq.app / password123 (local Supabase auth only).
+-- Test user: dev@mai.app / password123 (local Supabase auth only).
 insert into auth.users (
   instance_id, id, aud, role, email, encrypted_password,
   email_confirmed_at, recovery_sent_at, last_sign_in_at,
