@@ -220,6 +220,13 @@
       "spentOnThisWeek": "What did I spend money on this week?",
       "spentLast14Days": "How much have I spent in the last 14 days?",
       "biggestCategoryThisWeek": "What's my biggest spending category this week?"
+    },
+    "remember": {
+      "byline": "Mai suggests",
+      "primaryLabel": "Remember",
+      "secondaryLabel": "Not now",
+      "saved": "Saved to memory.",
+      "dismissed": "Okay, I won't remember that."
     }
   },
   "landing": {

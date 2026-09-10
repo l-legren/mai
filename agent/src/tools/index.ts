@@ -1,7 +1,7 @@
 import { tool, type ToolSet } from 'ai';
 import { z } from 'zod';
 
-import { withScopedRead, withScopedWrite } from './db.ts';
+import { withScopedRead, withScopedWrite } from '../db.ts';
 
 /** Hard ceiling on how far back `getRecentSpending` can look — enforced before any DB call. */
 export const MAX_RECENT_SPENDING_DAYS = 30;
@@ -21,9 +21,8 @@ type RecentSpendingResult = {
 /**
  * Real mai tools the agent can call, scoped to a single user for the lifetime of one request.
  * A factory (rather than a static `ToolSet`) because `getRecentSpending`'s `execute` needs to
- * close over `userId` (to pass to `withScopedRead`) and `today` — the other two tools don't have
- * an `execute` body yet (LEG-108) and don't need either, but live in the same factory so callers
- * have one place to get "this user's tools" from.
+ * close over `userId` (to pass to `withScopedRead`) and `today` — the other tools don't have
+ * an `execute` body (LEG-108, or `rememberFact` needing confirmation — see `saveUserMemory`).
  *
  * `today` is the caller's own local calendar date (YYYY-MM-DD), not computed here or in SQL via
  * `current_date`: the database session's timezone (UTC) and the user's device timezone can
@@ -92,11 +91,15 @@ export function createMaiTools(userId: string, today: string): ToolSet {
 
     rememberFact: tool({
       description:
-        'Save a durable fact about the user for future conversations — a stated preference, a ' +
-        'goal, or a recurring detail they share (e.g. "saving for a house down payment", ' +
-        '"categorizes coffee as dining out"). Do not use for one-off details only relevant to the ' +
-        `current message. Write it as concisely as possible — max ${MAX_MEMORY_CONTENT_LENGTH} ` +
-        'characters, one fact per call.',
+        'Propose a finance-related fact to remember. Only use this when the user expresses ' +
+        'concern about a spending routine or category, a future plan or financial goal, or ' +
+        'explicitly asks you to remember something about their finances (e.g. "saving for a ' +
+        'house down payment", "worried about takeout spending", "count coffee as dining out"). ' +
+        'Never use for anything unrelated to their finances, or for a one-off detail only ' +
+        `relevant to the current message. Write it as concisely as possible — max ` +
+        `${MAX_MEMORY_CONTENT_LENGTH} characters, one fact per call. This only proposes the ` +
+        'fact — the user still has to confirm it before it is actually saved, so do not tell ' +
+        'the user it has been remembered yet.',
       inputSchema: z.object({
         content: z
           .string()
@@ -106,14 +109,16 @@ export function createMaiTools(userId: string, today: string): ToolSet {
             `The fact to remember, written as concise plain prose. Max ${MAX_MEMORY_CONTENT_LENGTH} characters.`
           ),
       }),
-      execute: async ({ content }): Promise<{ saved: true }> => {
-        await withScopedWrite(userId, async (tx) => {
-          await tx`insert into public.mai_memories (user_id, content) values (${userId}, ${content})`;
-        });
-        return { saved: true };
-      },
+      // No execute — proposal only; saveUserMemory runs after the client's confirm gate.
     }),
   };
+}
+
+/** Persists a fact once the user confirms it — called directly, bypassing the model. */
+export async function saveUserMemory(userId: string, content: string): Promise<void> {
+  await withScopedWrite(userId, async (tx) => {
+    await tx`insert into public.mai_memories (user_id, content) values (${userId}, ${content})`;
+  });
 }
 
 /** Not a tool — called directly in runAskMai so memories are already in the prompt every turn. */

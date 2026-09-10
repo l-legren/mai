@@ -2,11 +2,12 @@ import { useMutation } from '@tanstack/react-query';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { sendAskMessage, type AskMessage } from '@/services/ask.service';
+import { sendAskMessage, saveMemory, type AskMessage } from '@/services/ask.service';
 
 export type AskDisplayTurn =
   | { kind: 'user'; text: string; a11yLabel: string }
   | { kind: 'assistant'; lines: string[]; statusLine?: string }
+  | { kind: 'confirm'; content: string }
   | { kind: 'loading' }
   | { kind: 'error'; message: string };
 
@@ -25,18 +26,14 @@ function linesFrom(text: string): string[] {
 }
 
 /**
- * Owns the Ask Mai transcript. The agent loop itself is stateless per request (see
- * agent/src/run.ts), so this hook is the one place the running conversation lives — every send
- * replays the full transcript so far, nothing is persisted server-side.
+ * Owns the Ask Mai transcript. The agent loop is stateless per request (agent/src/run.ts), so
+ * this hook holds the running conversation and replays it in full on every send.
  *
- * The reply streams in token-by-token: each `text` event replaces the trailing turn (first the
- * `loading` placeholder, then its own previous partial text) so the UI renders progressively
- * instead of waiting for the whole turn to finish.
+ * `text` events replace the trailing turn as they stream in. A `confirm` event (a proposed
+ * `rememberFact`) appends its own turn instead — nothing is saved until `confirmMemory()` fires.
  *
- * `reset()` (the "End chat" action) can fire while a reply is still streaming. Every state-mutating
- * callback below is guarded by a generation number bumped by `reset()`, so a stream that was
- * already in flight can't repopulate the conversation after it's been cleared — and the fetch
- * itself is aborted (via `controllerRef`) so ending a chat mid-reply stops the wasted request too.
+ * A generation counter (bumped by `reset()`) guards every state-mutating callback so a stream
+ * still in flight can't repopulate the conversation after "End chat" clears it.
  */
 export function useAskConversation() {
   const { t } = useTranslation();
@@ -44,6 +41,7 @@ export function useAskConversation() {
   const [turns, setTurns] = useState<AskDisplayTurn[]>([]);
   const generationRef = useRef(0);
   const controllerRef = useRef<AbortController | null>(null);
+  const pendingMemoryRef = useRef<string | null>(null);
 
   const mutation = useMutation({
     // Never throws: a failed/aborted stream is reported through the returned `failed` flag instead
@@ -58,6 +56,7 @@ export function useAskConversation() {
 
       let text = '';
       const toolsUsed = new Set<string>();
+      let hasConfirm = false;
 
       try {
         await sendAskMessage(
@@ -70,6 +69,17 @@ export function useAskConversation() {
               return;
             }
 
+            if (event.type === 'confirm') {
+              hasConfirm = true;
+              pendingMemoryRef.current = event.content;
+              setTurns((prev) => [
+                ...prev.slice(0, -1),
+                ...(text ? [{ kind: 'assistant' as const, lines: linesFrom(text) }] : []),
+                { kind: 'confirm' as const, content: event.content },
+              ]);
+              return;
+            }
+
             text += event.text;
             setTurns((prev) => [
               ...prev.slice(0, -1),
@@ -79,30 +89,34 @@ export function useAskConversation() {
           controller.signal
         );
 
-        return { generation, text, toolsUsed: [...toolsUsed], failed: false };
+        return { generation, text, toolsUsed: [...toolsUsed], hasConfirm, failed: false };
       } catch (error) {
         // Also fires for `reset()` deliberately aborting — that's not a real failure, so it's not logged.
         if (!controller.signal.aborted) {
           console.error('useAskConversation: send failed', error);
         }
-        return { generation, text, toolsUsed: [...toolsUsed], failed: true };
+        return { generation, text, toolsUsed: [...toolsUsed], hasConfirm, failed: true };
       }
     },
-    onSuccess: ({ generation, text, toolsUsed, failed }) => {
+    onSuccess: ({ generation, text, toolsUsed, hasConfirm, failed }) => {
       if (generation !== generationRef.current) return;
 
-      if (failed && !text) {
+      if (failed && !text && !hasConfirm) {
         // Nothing ever streamed before the failure — drop the loading placeholder. Per product
         // decision, no visible error turn is shown; the failure is logged above instead.
         setTurns((prev) => prev.slice(0, -1));
         return;
       }
 
-      setTurns((prev) => [
-        ...prev.slice(0, -1),
-        { kind: 'assistant', lines: linesFrom(text), statusLine: statusLineFor(toolsUsed, t) },
-      ]);
-      setTranscript((prev) => [...prev, { role: 'assistant', content: text }]);
+      if (!hasConfirm) {
+        setTurns((prev) => [
+          ...prev.slice(0, -1),
+          { kind: 'assistant', lines: linesFrom(text), statusLine: statusLineFor(toolsUsed, t) },
+        ]);
+      }
+      if (text) {
+        setTranscript((prev) => [...prev, { role: 'assistant', content: text }]);
+      }
     },
   });
 
@@ -122,12 +136,48 @@ export function useAskConversation() {
     mutation.mutate(nextTranscript);
   }
 
+  /** Confirms the pending `rememberFact` proposal — only now does the fact actually get saved. */
+  async function confirmMemory() {
+    const content = pendingMemoryRef.current;
+    if (!content) return;
+    pendingMemoryRef.current = null;
+
+    try {
+      await saveMemory(content);
+      const note = t('ask.remember.saved');
+      setTurns((prev) => [
+        ...prev.filter((turn) => turn.kind !== 'confirm'),
+        { kind: 'assistant', lines: [note] },
+      ]);
+      setTranscript((prev) => [...prev, { role: 'assistant', content: note }]);
+    } catch (error) {
+      console.error('useAskConversation: saveMemory failed', error);
+      setTurns((prev) => [
+        ...prev.filter((turn) => turn.kind !== 'confirm'),
+        { kind: 'error', message: t('ask.error') },
+      ]);
+    }
+  }
+
+  /** Dismisses the pending `rememberFact` proposal — nothing is saved. */
+  function dismissMemory() {
+    pendingMemoryRef.current = null;
+
+    const note = t('ask.remember.dismissed');
+    setTurns((prev) => [
+      ...prev.filter((turn) => turn.kind !== 'confirm'),
+      { kind: 'assistant', lines: [note] },
+    ]);
+    setTranscript((prev) => [...prev, { role: 'assistant', content: note }]);
+  }
+
   function reset() {
     generationRef.current += 1;
     controllerRef.current?.abort();
+    pendingMemoryRef.current = null;
     setTranscript([]);
     setTurns([]);
   }
 
-  return { turns, isSending: mutation.isPending, sendMessage, reset };
+  return { turns, isSending: mutation.isPending, sendMessage, confirmMemory, dismissMemory, reset };
 }

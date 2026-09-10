@@ -1,7 +1,7 @@
 import assert from 'node:assert';
 import { evaluate } from '@lmnr-ai/lmnr';
 
-import { MAX_RECENT_SPENDING_DAYS, createMaiTools } from '../src/tools.ts';
+import { MAX_RECENT_SPENDING_DAYS, createMaiTools } from '../src/tools/index.ts';
 import { MULTI_TURN_DATASET } from './multi-turn-dataset.ts';
 import { evaluateNumbersGrounded, evaluateToolUsage } from './evaluators.ts';
 import { multiTurnExecutor } from './executors.ts';
@@ -41,5 +41,5 @@ void evaluate<MultiTurnEvalData, MultiTurnTarget, MultiTurnResult>({
       return evaluateNumbersGrounded(output, target, data).pass ? 1 : 0;
     },
   },
-  groupName: 'multi-turn-agent-loop',
+  groupName: 'mai-multi-turn-agent-loop',
 });

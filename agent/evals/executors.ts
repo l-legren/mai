@@ -1,7 +1,7 @@
 import { generateText, stepCountIs, tool, type ModelMessage, type ToolSet } from 'ai';
 import { anthropic } from '@ai-sdk/anthropic';
 import { z } from 'zod';
-import { createMaiTools } from '../src/tools.ts';
+import { createMaiTools } from '../src/tools/index.ts';
 import type {
   EvalData,
   SingleTurnResult,
@@ -56,7 +56,7 @@ export const singleTurnExecutor = async (data: EvalData): Promise<SingleTurnResu
   }
 
   const { toolCalls } = await generateText({
-    model: anthropic('claude-haiku-4-5'),
+    model: anthropic(data.config?.model ?? 'claude-haiku-4-5'),
     messages,
     tools,
     stopWhen: stepCountIs(1),

@@ -2,7 +2,7 @@ import { createAnthropic } from '@ai-sdk/anthropic';
 import { stepCountIs, streamText } from 'ai';
 
 import { DEFAULT_CURRENCY, buildAskMaiSystemPrompt } from './prompts.ts';
-import { createMaiTools, getUserMemories } from './tools.ts';
+import { createMaiTools, getUserMemories } from './tools/index.ts';
 import type { AskMaiMessage } from './types.ts';
 
 const anthropicWorkspaceId = process.env.ANTHROPIC_WORKSPACE_ID;
@@ -16,7 +16,7 @@ const anthropic = createAnthropic({
   headers: { 'anthropic-workspace-id': anthropicWorkspaceId },
 });
 
-const MODEL_ID = 'claude-haiku-4-5';
+const MODEL_ID = 'claude-sonnet-5';
 // Bounded step count for the Ask Mai tool loop: room for one tool call, its result, and a final
 // text step, with headroom — not unbounded. This is a multi-*step* loop within one turn, not
 // multi-turn memory; the caller supplies the running transcript each call.
