@@ -48,3 +48,15 @@ export function getAgentServiceUrl(): string {
   }
   return agentServiceUrl;
 }
+
+export type AppEnvironment = 'development' | 'preview' | 'production';
+
+// NODE_ENV can't tell Preview from Production (both are 'production'); falls closed to 'production' if NEXT_PUBLIC_VERCEL_ENV is unset.
+export function getAppEnvironment(): AppEnvironment {
+  if (process.env.NODE_ENV !== 'production') return 'development';
+  return process.env.NEXT_PUBLIC_VERCEL_ENV === 'preview' ? 'preview' : 'production';
+}
+
+export function isLocalDev(): boolean {
+  return getAppEnvironment() === 'development';
+}

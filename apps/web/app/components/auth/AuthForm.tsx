@@ -6,7 +6,7 @@ import { Button, Input, showErrorSnackbar } from '@/app/components/ui';
 import { initialAuthFormState } from '@/app/actions/auth-form-state';
 import { signInAction } from '@/app/actions/sign-in';
 import { signUpAction } from '@/app/actions/sign-up';
-import { getTurnstileSiteKey } from '@/lib/env';
+import { getAppEnvironment, getTurnstileSiteKey } from '@/lib/env';
 import type { AuthMode } from './ModeSwitch';
 import TurnstileWidget from './TurnstileWidget';
 
@@ -71,7 +71,7 @@ const AuthForm = ({ mode }: AuthFormProps) => {
         autoComplete={isSignUp ? 'new-password' : 'current-password'}
       />
 
-      <TurnstileWidget siteKey={getTurnstileSiteKey()} />
+      {getAppEnvironment() === 'production' && <TurnstileWidget siteKey={getTurnstileSiteKey()} />}
 
       {state.confirmationPending && (
         <p role="status" aria-live="polite" className="text-center text-sm text-[#5FBF86]">
