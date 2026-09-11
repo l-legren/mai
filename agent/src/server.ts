@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import chalk from 'chalk';
 import { Hono, type Context } from 'hono';
 import { stream } from 'hono/streaming';
 import { serve } from '@hono/node-server';
@@ -85,10 +86,13 @@ app.post('/ask-mai/remember', async (ctx) => {
   return ctx.json({ saved: true });
 });
 
-serve(
-  {
-    fetch: app.fetch,
-    port: Number(process.env.HONO_SERVER_LOCAL_PORT ?? 3060),
-  },
-  () => console.log('Running server on localhost:3060')
-);
+const port = Number(process.env.HONO_SERVER_LOCAL_PORT ?? 3060);
+const railwayEnv = process.env.RAILWAY_ENVIRONMENT_NAME;
+
+serve({ fetch: app.fetch, port }, () => {
+  const location = railwayEnv
+    ? chalk.cyan(`Railway (${railwayEnv})`) +
+      (process.env.RAILWAY_PUBLIC_DOMAIN ? ` — https://${process.env.RAILWAY_PUBLIC_DOMAIN}` : '')
+    : chalk.yellow(`local — http://localhost:${port}`);
+  console.log(`${chalk.green('✓')} mai agent server running on ${location}`);
+});
