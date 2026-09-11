@@ -31,7 +31,8 @@ export async function completeOnboardingAction(
       avatar_url: null,
       notifications_enabled: false,
     });
-  } catch {
+  } catch (error) {
+    console.error('[onboarding] insertProfileOnboardingRow failed:', error);
     return { errorCode: 'unknown' };
   }
 
