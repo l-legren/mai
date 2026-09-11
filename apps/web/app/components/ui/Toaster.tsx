@@ -1,8 +1,6 @@
 'use client';
 
-// shadcn/ui sonner (new-york style) — customized: dropped the next-themes theme switch (this app
-// is dark-only, see app/globals.css), and swapped shadcn's --popover/--radius tokens for this
-// app's own --mq-* ones.
+// shadcn/ui sonner (new-york style) — customized: dropped next-themes (dark-only app), uses --mq-* tokens.
 import { Toaster as Sonner, type ToasterProps } from 'sonner';
 
 const Toaster = (props: ToasterProps) => {

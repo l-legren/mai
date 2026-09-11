@@ -59,11 +59,7 @@ export async function insertProfileOnboardingRow(
 
 const DEFAULT_CURRENCY = 'EUR';
 
-/**
- * ISO 3166-1 alpha-2 country code → ISO 4217 currency code. Shared by mobile (from reverse-geocoded
- * GPS) and web (from edge geolocation) so both derive currency the same way instead of each
- * matching on city-name text, which can't disambiguate same-named cities in different countries.
- */
+// ISO 3166-1 alpha-2 country code → ISO 4217 currency code. Shared by mobile and web.
 export function deriveCurrencyFromCountryCode(countryCode: string | null): string {
   if (!countryCode) return DEFAULT_CURRENCY;
   const upper = countryCode.trim().toUpperCase() as Countries;

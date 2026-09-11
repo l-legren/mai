@@ -22,8 +22,7 @@ const NameStep = () => {
 
   return (
     <form action={formAction} className="flex w-full flex-col gap-3.5">
-      {/* city was entered on the previous step and lives in OnboardingDraftProvider's context,
-          not on this page's inputs — carried through as a hidden field for the form submit. */}
+      {/* city was set on the previous step; carried through as a hidden field */}
       <input type="hidden" name="city" value={draft.city} />
 
       <h1

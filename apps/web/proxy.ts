@@ -13,9 +13,7 @@ import { DETECTED_CITY_HEADER, DETECTED_COUNTRY_HEADER } from './lib/geo';
 export async function proxy(request: NextRequest) {
   const { supabaseUrl, supabaseAnonKey } = getSupabaseEnv();
 
-  // Populated by Vercel's edge network in production; empty locally/off-Vercel, where onboarding
-  // falls back to manual entry. City is percent-encoded going in (HTTP header values must be
-  // ASCII; city names often aren't — see lib/geo.ts's decode side.
+  // Empty off-Vercel (local dev). City is percent-encoded — header values must be ASCII.
   const { country, city } = geolocation(request);
   if (country) request.headers.set(DETECTED_COUNTRY_HEADER, country);
   if (city) request.headers.set(DETECTED_CITY_HEADER, encodeURIComponent(city));
