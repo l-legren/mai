@@ -5,6 +5,7 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { ProfileOnboardingRowSchema, type ProfileOnboardingRow } from '@mai/schemas';
+import countryToCurrency, { type Countries } from 'country-to-currency';
 
 import { ApiError } from './api-error';
 import { getCurrentUserId } from './auth.data';
@@ -54,6 +55,19 @@ export async function insertProfileOnboardingRow(
     .single();
   if (error) throw new ApiError(error.message, error);
   return ProfileOnboardingRowSchema.parse(data);
+}
+
+const DEFAULT_CURRENCY = 'EUR';
+
+/**
+ * ISO 3166-1 alpha-2 country code → ISO 4217 currency code. Shared by mobile (from reverse-geocoded
+ * GPS) and web (from edge geolocation) so both derive currency the same way instead of each
+ * matching on city-name text, which can't disambiguate same-named cities in different countries.
+ */
+export function deriveCurrencyFromCountryCode(countryCode: string | null): string {
+  if (!countryCode) return DEFAULT_CURRENCY;
+  const upper = countryCode.trim().toUpperCase() as Countries;
+  return countryToCurrency[upper] ?? DEFAULT_CURRENCY;
 }
 
 export type ProfileOnboardingRowUpdate = Partial<NewProfileOnboardingRow>;

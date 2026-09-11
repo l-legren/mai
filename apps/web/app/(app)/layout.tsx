@@ -17,6 +17,8 @@ const AppLayout = async ({ children }: PropsWithChildren) => {
 
   const profile = await getCurrentProfile();
 
+  if (!profile) redirect('/onboarding');
+
   return (
     <div className="flex min-h-svh bg-bg">
       <Sidebar profile={profile} />

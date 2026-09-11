@@ -1,8 +1,8 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, FormError, Input } from '@/app/components/ui';
+import { Button, Input, showErrorSnackbar } from '@/app/components/ui';
 import { initialAuthFormState } from '@/app/actions/auth-form-state';
 import { signInAction } from '@/app/actions/sign-in';
 import { signUpAction } from '@/app/actions/sign-up';
@@ -28,6 +28,10 @@ const AuthForm = ({ mode }: AuthFormProps) => {
   };
 
   const errorMessage = state.errorCode ? t(`auth.errors.${state.errorCode}`) : null;
+
+  useEffect(() => {
+    if (errorMessage) showErrorSnackbar(errorMessage);
+  }, [errorMessage]);
 
   return (
     <form action={formAction} className="flex w-full flex-col gap-3.5">
@@ -68,8 +72,6 @@ const AuthForm = ({ mode }: AuthFormProps) => {
       />
 
       <TurnstileWidget siteKey={getTurnstileSiteKey()} />
-
-      <FormError message={errorMessage} />
 
       {state.confirmationPending && (
         <p role="status" aria-live="polite" className="text-center text-sm text-[#5FBF86]">

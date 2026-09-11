@@ -27,10 +27,19 @@ describe('AppLayout', () => {
     expect(redirect).toHaveBeenCalledWith('/pending-approval');
   });
 
-  it('does not redirect once the user is approved', async () => {
+  it('redirects to /onboarding when the approved user has not completed onboarding', async () => {
     vi.mocked(getCurrentUser).mockResolvedValue({ id: 'user-1' } as never);
     vi.mocked(getCurrentApproval).mockResolvedValue({ approved: true } as never);
     vi.mocked(getCurrentProfile).mockResolvedValue(null);
+
+    await expect(AppLayout({ children: null })).rejects.toThrow('REDIRECT:/onboarding');
+    expect(redirect).toHaveBeenCalledWith('/onboarding');
+  });
+
+  it('does not redirect once the user is approved and onboarded', async () => {
+    vi.mocked(getCurrentUser).mockResolvedValue({ id: 'user-1' } as never);
+    vi.mocked(getCurrentApproval).mockResolvedValue({ approved: true } as never);
+    vi.mocked(getCurrentProfile).mockResolvedValue({ first_name: 'Mara' } as never);
 
     await AppLayout({ children: null });
 

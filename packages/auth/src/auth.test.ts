@@ -156,6 +156,25 @@ describe('signUp', () => {
       signUp(client as never, 'Mara', 'user@example.com', 'password')
     ).rejects.toMatchObject({ code: 'unknown' });
   });
+
+  it('logs the real backend message instead of only the mapped "unknown" code', async () => {
+    const client = createMockClient();
+    client.auth.signUp.mockResolvedValue({
+      data: { session: null },
+      error: new Error('captcha verification process failed'),
+    });
+    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    await expect(
+      signUp(client as never, 'Mara', 'user@example.com', 'password')
+    ).rejects.toMatchObject({ code: 'unknown' });
+
+    expect(consoleError).toHaveBeenCalledWith(
+      '[auth] signUp failed:',
+      'captcha verification process failed'
+    );
+    consoleError.mockRestore();
+  });
 });
 
 describe('signOutUser', () => {

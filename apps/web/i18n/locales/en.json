@@ -266,5 +266,34 @@
   "pendingApproval": {
     "title": "Your account is pending approval",
     "message": "Thanks for signing up. An admin needs to approve your account before you can start using Mai — check back soon."
+  },
+  "onboarding": {
+    "progress": "Step {{step}} of {{total}}",
+    "back": "Back",
+    "next": "Next",
+    "finish": "Finish",
+    "getStarted": "Get started",
+    "pleaseWait": "Please wait…",
+    "welcome": {
+      "title": "Welcome to Mai",
+      "subtitle": "Let's set up your account in a couple of steps."
+    },
+    "city": {
+      "title": "Where are you based?",
+      "label": "City",
+      "placeholder": "Your city",
+      "currencyPreview": "Prices will show in {{currency}}."
+    },
+    "name": {
+      "title": "What should we call you?",
+      "firstName": "First name",
+      "firstNamePlaceholder": "Your first name",
+      "surname": "Surname",
+      "surnamePlaceholder": "Your surname (optional)"
+    },
+    "errors": {
+      "invalidInput": "Enter your first name and city.",
+      "unknown": "Something went wrong. Please try again."
+    }
   }
 }

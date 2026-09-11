@@ -28,6 +28,7 @@ export {
   getProfileOnboardingRow,
   insertProfileOnboardingRow,
   updateProfileOnboardingRow,
+  deriveCurrencyFromCountryCode,
   type ProfileOnboardingRow,
   type NewProfileOnboardingRow,
   type ProfileOnboardingRowUpdate,

@@ -93,6 +93,9 @@ export async function signUp(
     if (message.includes('already registered') || message.includes('already exists')) {
       throw new AuthError('emailInUse');
     }
+    // AuthError only carries a mapped code to the caller — log the real message here or it's
+    // lost, leaving "unknown" with no way to tell captcha failure from rate limit from anything else.
+    console.error('[auth] signUp failed:', error.message);
     throw new AuthError('unknown');
   }
 
