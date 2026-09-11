@@ -31,18 +31,6 @@ type RecentSpendingResult = {
  */
 export function createMaiTools(userId: string, today: string): ToolSet {
   return {
-    getSpendingByCategory: tool({
-      description:
-        "Get the user's total spending per category for a date range. Use for questions about " +
-        'what was spent, on what, over a specific calendar period (e.g. "March 2026").',
-      inputSchema: z.object({
-        startDate: z.string().describe('YYYY-MM-DD, inclusive'),
-        endDate: z.string().describe('YYYY-MM-DD, inclusive'),
-      }),
-      // TODO(LEG-108): wire to Supabase via `withScopedRead`, same pattern as
-      // `getRecentSpending` below, once absolute date-range queries are needed.
-    }),
-
     getSavingsTargets: tool({
       description:
         "Get the user's active savings targets with progress (saved vs goal amount, target date). " +
@@ -55,7 +43,8 @@ export function createMaiTools(userId: string, today: string): ToolSet {
       description:
         "Get the user's total spending and per-category breakdown for the last N days, inclusive " +
         'of today. Use for questions about recent or relative spending (e.g. "this week", "the ' +
-        `last 10 days"). Do not use for savings goals or a specific calendar date range. N must be ` +
+        `last 10 days"). Optionally filter to one category (e.g. "how much on groceries this ` +
+        `week"). Do not use for savings goals or a specific calendar date range. N must be ` +
         `between 1 and ${MAX_RECENT_SPENDING_DAYS}.`,
       inputSchema: z.object({
         days: z
@@ -66,14 +55,21 @@ export function createMaiTools(userId: string, today: string): ToolSet {
           .describe(
             `Number of days to look back, inclusive of today. Max ${MAX_RECENT_SPENDING_DAYS}.`
           ),
+        category: z
+          .string()
+          .optional()
+          .describe(
+            'Optional category id to filter to a single category; omit for all categories.'
+          ),
       }),
-      execute: async ({ days }): Promise<RecentSpendingResult> => {
+      execute: async ({ days, category }): Promise<RecentSpendingResult> => {
         return withScopedRead(userId, async (tx) => {
           const rows = await tx<{ category: string; total: string }[]>`
             select category, sum(amount)::numeric as total
             from public.expenses
             where spent_on >= (${today}::date - ${days - 1}::integer)
               and spent_on <= ${today}::date
+              ${category ? tx`and category = ${category}` : tx``}
             group by category
             order by total desc
           `;
