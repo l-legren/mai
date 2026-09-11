@@ -4,7 +4,7 @@
  * via `consumeAskMaiStream` rather than duplicating the read loop.
  */
 
-import { consumeAskMaiStream, type AskMessageRow, type AskStreamEvent } from '@mai/api';
+import { ApiError, consumeAskMaiStream, type AskMessageRow, type AskStreamEvent } from '@mai/api';
 
 export type { AskMessageRow, AskStreamEvent };
 
@@ -23,4 +23,14 @@ export async function sendAskMessage(
   });
 
   return consumeAskMaiStream(response, onEvent);
+}
+
+/** Persists a rememberFact proposal once the user confirms it. */
+export async function confirmMemory(content: string): Promise<void> {
+  const response = await fetch('/api/ask-mai/remember', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ content }),
+  });
+  if (!response.ok) throw new ApiError(`ask-mai remember request failed (${response.status})`);
 }

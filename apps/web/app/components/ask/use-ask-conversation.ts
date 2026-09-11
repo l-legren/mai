@@ -2,7 +2,11 @@
 
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { sendAskMessage, type AskMessageRow } from '@/lib/ask';
+import {
+  sendAskMessage,
+  confirmMemory as confirmAskMaiMemory,
+  type AskMessageRow,
+} from '@/lib/ask';
 import { localDateIso } from '@/lib/utils/local-date';
 
 export type AskMessage = AskMessageRow;
@@ -10,6 +14,7 @@ export type AskMessage = AskMessageRow;
 export type AskDisplayTurn =
   | { kind: 'user'; text: string; a11yLabel: string }
   | { kind: 'assistant'; text: string; statusLine?: string }
+  | { kind: 'confirm'; content: string }
   | { kind: 'loading' }
   | { kind: 'error' };
 
@@ -25,17 +30,13 @@ function statusLineFor(toolsUsed: string[], t: (key: string) => string): string 
 
 /**
  * Owns the Ask Mai transcript client-side. The agent loop is stateless per request (see
- * agent/src/run.ts), so this hook is the one place the running conversation lives — every send
- * replays the full transcript so far, nothing is persisted server-side.
+ * agent/src/run.ts), so this hook holds the running conversation and replays it on every send.
  *
- * The reply streams in token-by-token: each `text` event replaces the trailing turn (first the
- * `loading` placeholder, then its own previous partial text) so the UI renders progressively
- * instead of waiting for the whole turn to finish.
+ * `text` events replace the trailing turn as they stream in. A `confirm` event (a proposed
+ * `rememberFact`) appends its own turn instead — nothing is saved until `confirmMemory()` fires.
  *
- * Every state-mutating callback is guarded by a generation number bumped by `reset()`, so a stream
- * already in flight can't repopulate the conversation after it's been cleared — and the fetch
- * itself is aborted via `controllerRef`, so `stop()` (mid-reply) and `reset()` (End chat) both stop
- * the wasted request too.
+ * A generation counter (bumped by `reset()`) guards every state-mutating callback so a stream
+ * still in flight can't repopulate the conversation after `stop()`/`reset()` clears it.
  */
 export function useAskConversation() {
   const { t } = useTranslation();
@@ -44,6 +45,7 @@ export function useAskConversation() {
   const [isSending, setIsSending] = useState(false);
   const generationRef = useRef(0);
   const controllerRef = useRef<AbortController | null>(null);
+  const pendingMemoryRef = useRef<string | null>(null);
 
   async function runSend(nextTranscript: AskMessage[]) {
     const generation = generationRef.current;
@@ -53,6 +55,7 @@ export function useAskConversation() {
     let text = '';
     const toolsUsed = new Set<string>();
     let failed = false;
+    let hasConfirm = false;
 
     try {
       await sendAskMessage(
@@ -63,6 +66,17 @@ export function useAskConversation() {
 
           if (event.type === 'tool') {
             toolsUsed.add(event.toolName);
+            return;
+          }
+
+          if (event.type === 'confirm') {
+            hasConfirm = true;
+            pendingMemoryRef.current = event.content;
+            setTurns((prev) => [
+              ...prev.slice(0, -1),
+              ...(text ? [{ kind: 'assistant' as const, text }] : []),
+              { kind: 'confirm' as const, content: event.content },
+            ]);
             return;
           }
 
@@ -82,16 +96,20 @@ export function useAskConversation() {
 
     if (generation !== generationRef.current) return;
 
-    if (!text) {
+    if (!text && !hasConfirm) {
       // Nothing ever streamed. A deliberate stop()/reset() abort just drops the loading
       // placeholder; a real failure replaces it with a visible line instead of vanishing.
       setTurns((prev) => [...prev.slice(0, -1), ...(failed ? [{ kind: 'error' as const }] : [])]);
     } else {
-      setTurns((prev) => [
-        ...prev.slice(0, -1),
-        { kind: 'assistant', text, statusLine: statusLineFor([...toolsUsed], t) },
-      ]);
-      setTranscript((prev) => [...prev, { role: 'assistant', content: text }]);
+      if (!hasConfirm) {
+        setTurns((prev) => [
+          ...prev.slice(0, -1),
+          { kind: 'assistant', text, statusLine: statusLineFor([...toolsUsed], t) },
+        ]);
+      }
+      if (text) {
+        setTranscript((prev) => [...prev, { role: 'assistant', content: text }]);
+      }
     }
     setIsSending(false);
   }
@@ -113,6 +131,38 @@ export function useAskConversation() {
     void runSend(nextTranscript);
   }
 
+  /** Confirms the pending `rememberFact` proposal — only now does the fact actually get saved. */
+  async function confirmMemory() {
+    const content = pendingMemoryRef.current;
+    if (!content) return;
+    pendingMemoryRef.current = null;
+
+    try {
+      await confirmAskMaiMemory(content);
+      const note = t('ask.remember.saved');
+      setTurns((prev) => [
+        ...prev.filter((turn) => turn.kind !== 'confirm'),
+        { kind: 'assistant', text: note },
+      ]);
+      setTranscript((prev) => [...prev, { role: 'assistant', content: note }]);
+    } catch (error) {
+      console.error('useAskConversation: confirmMemory failed', error);
+      setTurns((prev) => [...prev.filter((turn) => turn.kind !== 'confirm'), { kind: 'error' }]);
+    }
+  }
+
+  /** Dismisses the pending `rememberFact` proposal — nothing is saved. */
+  function dismissMemory() {
+    pendingMemoryRef.current = null;
+
+    const note = t('ask.remember.dismissed');
+    setTurns((prev) => [
+      ...prev.filter((turn) => turn.kind !== 'confirm'),
+      { kind: 'assistant', text: note },
+    ]);
+    setTranscript((prev) => [...prev, { role: 'assistant', content: note }]);
+  }
+
   function stop() {
     controllerRef.current?.abort();
   }
@@ -120,10 +170,11 @@ export function useAskConversation() {
   function reset() {
     generationRef.current += 1;
     controllerRef.current?.abort();
+    pendingMemoryRef.current = null;
     setTranscript([]);
     setTurns([]);
     setIsSending(false);
   }
 
-  return { turns, isSending, sendMessage, stop, reset };
+  return { turns, isSending, sendMessage, confirmMemory, dismissMemory, stop, reset };
 }

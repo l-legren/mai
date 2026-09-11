@@ -22,5 +22,5 @@ void evaluate<EvalData, EvalTarget, SingleTurnResult>({
       return evaluateUsedCorrectTools(output, target).pass ? 1 : 0;
     },
   },
-  groupName: 'single-turn-tool-selection',
+  groupName: 'mai-single-turn-tool-selection',
 });

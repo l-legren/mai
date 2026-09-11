@@ -273,6 +273,14 @@
     "error": "Something went wrong. Please try again.",
     "statusLine": {
       "recentSpending": "Reviewed your recent spending"
+    },
+    "remember": {
+      "primaryLabel": "Remember",
+      "primaryA11yLabel": "Remember this fact",
+      "secondaryLabel": "Not now",
+      "secondaryA11yLabel": "Don't remember this fact",
+      "saved": "Saved to memory.",
+      "dismissed": "Okay, I won't remember that."
     }
   },
   "auth": {

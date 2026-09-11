@@ -5,7 +5,12 @@
  * hook layer owns holding the transcript across turns.
  */
 
-import { streamAskMaiReply, type AskMessageRow, type AskStreamEvent } from '@mai/api';
+import {
+  streamAskMaiReply,
+  confirmAskMaiMemory,
+  type AskMessageRow,
+  type AskStreamEvent,
+} from '@mai/api';
 import { supabase } from '@/data/supabase';
 import { todayISO } from '@/utils/date';
 
@@ -31,4 +36,9 @@ export async function sendAskMessage(
     signal,
     process.env.EXPO_PUBLIC_RAILWAY_AGENT_SERVICE_URL
   );
+}
+
+/** Persists a `rememberFact` proposal once the user has confirmed it — see the confirm-gate rule. */
+export async function saveMemory(content: string): Promise<void> {
+  return confirmAskMaiMemory(supabase, content, process.env.EXPO_PUBLIC_RAILWAY_AGENT_SERVICE_URL);
 }
