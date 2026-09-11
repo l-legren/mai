@@ -1,12 +1,12 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, FormError, Input } from '@/app/components/ui';
+import { Button, Input, showErrorSnackbar } from '@/app/components/ui';
 import { initialAuthFormState } from '@/app/actions/auth-form-state';
 import { signInAction } from '@/app/actions/sign-in';
 import { signUpAction } from '@/app/actions/sign-up';
-import { getTurnstileSiteKey } from '@/lib/env';
+import { getAppEnvironment, getTurnstileSiteKey } from '@/lib/env';
 import type { AuthMode } from './ModeSwitch';
 import TurnstileWidget from './TurnstileWidget';
 
@@ -27,7 +27,15 @@ const AuthForm = ({ mode }: AuthFormProps) => {
     // Password reset isn't wired to a backend yet — design-only for now.
   };
 
-  const errorMessage = state.errorCode ? t(`auth.errors.${state.errorCode}`) : null;
+  const emailError = state.errorCode === 'invalidEmail' ? t('auth.errors.invalidEmail') : null;
+  const toastMessage =
+    state.errorCode && state.errorCode !== 'invalidEmail'
+      ? t(`auth.errors.${state.errorCode}`)
+      : null;
+
+  useEffect(() => {
+    if (toastMessage) showErrorSnackbar(toastMessage);
+  }, [toastMessage]);
 
   return (
     <form action={formAction} className="flex w-full flex-col gap-3.5">
@@ -46,6 +54,7 @@ const AuthForm = ({ mode }: AuthFormProps) => {
         type="email"
         placeholder={t('auth.emailPlaceholder')}
         autoComplete="email"
+        error={emailError}
       />
 
       <Input
@@ -67,9 +76,7 @@ const AuthForm = ({ mode }: AuthFormProps) => {
         autoComplete={isSignUp ? 'new-password' : 'current-password'}
       />
 
-      <TurnstileWidget siteKey={getTurnstileSiteKey()} />
-
-      <FormError message={errorMessage} />
+      {getAppEnvironment() === 'production' && <TurnstileWidget siteKey={getTurnstileSiteKey()} />}
 
       {state.confirmationPending && (
         <p role="status" aria-live="polite" className="text-center text-sm text-[#5FBF86]">

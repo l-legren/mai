@@ -56,7 +56,7 @@ regardless of which app you're working in.
 
 # Comments
 
-Keep comments to **1–2 lines**. Extend only for genuinely complex logic that needs it — not by default.
+Only comment when necessary — most code needs none. When one is warranted, **one line, hard cap ~250 characters**. No multi-line/multi-paragraph docstrings explaining rationale, history, or comparisons to other code, even to match a neighboring file's existing verbose style.
 
 # Testing
 

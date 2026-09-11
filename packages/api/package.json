@@ -17,6 +17,7 @@
   "dependencies": {
     "@mai/schemas": "workspace:*",
     "@supabase/supabase-js": "^2.112.3",
+    "country-to-currency": "^3.0.1",
     "zod": "^4.4.3"
   },
   "devDependencies": {

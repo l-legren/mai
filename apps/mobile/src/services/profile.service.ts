@@ -7,11 +7,11 @@ import {
   getProfileOnboardingRow,
   insertProfileOnboardingRow,
   updateProfileOnboardingRow,
+  deriveCurrencyFromCountryCode,
   type NewProfileOnboardingRow,
   type ProfileOnboardingRow,
   type ProfileOnboardingRowUpdate,
 } from '@mai/api';
-import countryToCurrency, { type Countries } from 'country-to-currency';
 import { z } from 'zod';
 
 import { supabase } from '@/data/supabase';
@@ -43,29 +43,6 @@ export async function getProfile(): Promise<Profile | null> {
   return row ? mapRowToProfile(row) : null;
 }
 
-const DEFAULT_CURRENCY = 'EUR';
-
-/**
- * ISO 3166-1 alpha-2 country code → ISO 4217 currency code, via the `country-to-currency` package.
- * This is the reliable path (LEG-100 fixed the LEG-99 city-name heuristic's known ambiguity —
- * "Cambridge" UK vs US, "Paris" France vs Texas — by reverse-geocoding the device's location to a
- * country code during onboarding instead of matching on city text).
- */
-export function deriveCurrencyFromCountryCode(countryCode: string): string {
-  const upper = countryCode.trim().toUpperCase() as Countries;
-  return countryToCurrency[upper] ?? DEFAULT_CURRENCY;
-}
-
-/**
- * Currency for the onboarding/profile city step. `countryCode` comes from reverse-geocoding the
- * device's location (see the city onboarding step) — without it (permission denied, or a manual
- * edit with no location fix) there's no reliable signal, so this falls back to EUR rather than
- * guessing from city-name text, which can't disambiguate same-named cities in different countries.
- */
-export function deriveCurrency(countryCode: string | null): string {
-  return countryCode ? deriveCurrencyFromCountryCode(countryCode) : DEFAULT_CURRENCY;
-}
-
 const NewProfileSchema = z.object({
   firstName: z.string().min(1),
   surname: z.string(),
@@ -85,7 +62,7 @@ export async function completeOnboarding(input: NewProfile): Promise<Profile> {
     first_name: parsed.firstName.trim(),
     surname: parsed.surname.trim(),
     city: parsed.city.trim(),
-    currency: deriveCurrency(parsed.countryCode),
+    currency: deriveCurrencyFromCountryCode(parsed.countryCode),
     avatar_url: parsed.avatarUrl,
     notifications_enabled: parsed.notificationsEnabled,
   };
@@ -108,7 +85,9 @@ export async function updateProfile(input: ProfileUpdate): Promise<Profile> {
     ...(parsed.notificationsEnabled !== undefined && {
       notifications_enabled: parsed.notificationsEnabled,
     }),
-    ...(parsed.countryCode !== undefined && { currency: deriveCurrency(parsed.countryCode) }),
+    ...(parsed.countryCode !== undefined && {
+      currency: deriveCurrencyFromCountryCode(parsed.countryCode),
+    }),
   };
 
   const updated = await updateProfileOnboardingRow(supabase, update);

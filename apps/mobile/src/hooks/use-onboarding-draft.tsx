@@ -1,6 +1,5 @@
+import { deriveCurrencyFromCountryCode } from '@mai/api';
 import { createContext, useContext, useState, type ReactNode } from 'react';
-
-import { deriveCurrency } from '@/services/profile.service';
 
 type AvatarState = 'empty' | 'granted' | 'denied';
 
@@ -55,7 +54,7 @@ export function OnboardingDraftProvider({ children }: { children: ReactNode }) {
     setAvatarState: (avatarState) => setDraft((d) => ({ ...d, avatarState })),
     setNotificationsEnabled: (notificationsEnabled) =>
       setDraft((d) => ({ ...d, notificationsEnabled })),
-    previewCurrency: draft.countryCode ? deriveCurrency(draft.countryCode) : null,
+    previewCurrency: draft.countryCode ? deriveCurrencyFromCountryCode(draft.countryCode) : null,
   };
 
   return (

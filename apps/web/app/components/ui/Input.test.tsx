@@ -25,4 +25,22 @@ describe('Input', () => {
 
     expect(screen.getByText('Forgot?')).not.toBeNull();
   });
+
+  it('marks the input invalid and links it to the error message', () => {
+    render(<Input label="Email" error="Enter a valid email address." />);
+
+    const input = screen.getByLabelText('Email');
+    const error = screen.getByRole('alert');
+
+    expect(input.getAttribute('aria-invalid')).toBe('true');
+    expect(input.getAttribute('aria-describedby')).toBe(error.id);
+    expect(error.textContent).toBe('Enter a valid email address.');
+  });
+
+  it('has no error state when error is not set', () => {
+    render(<Input label="Email" />);
+
+    expect(screen.getByLabelText('Email').getAttribute('aria-invalid')).toBeNull();
+    expect(screen.queryByRole('alert')).toBeNull();
+  });
 });

@@ -15,7 +15,6 @@
     "@react-navigation/bottom-tabs": "^7.18.15",
     "@supabase/supabase-js": "^2.112.3",
     "@tanstack/react-query": "^5.101.4",
-    "country-to-currency": "^3.0.1",
     "date-fns": "^4.4.0",
     "expo": "~57.0.13",
     "expo-blur": "~57.0.2",
