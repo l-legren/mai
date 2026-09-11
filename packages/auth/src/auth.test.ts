@@ -142,6 +142,18 @@ describe('signUp', () => {
     ).rejects.toMatchObject({ code: 'emailInUse' });
   });
 
+  it('wraps an invalid-email-address rejection as an invalidEmail AuthError', async () => {
+    const client = createMockClient();
+    client.auth.signUp.mockResolvedValue({
+      data: { session: null },
+      error: new Error('Email address "fake@fake.com" is invalid'),
+    });
+
+    await expect(
+      signUp(client as never, 'Mara', 'fake@fake.com', 'password')
+    ).rejects.toMatchObject({ code: 'invalidEmail' });
+  });
+
   it('wraps any other backend rejection as an unknown AuthError', async () => {
     const client = createMockClient();
     client.auth.signUp.mockResolvedValue({

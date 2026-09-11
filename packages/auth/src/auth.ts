@@ -15,7 +15,12 @@ export type AuthUser = {
   email: string | null;
 };
 
-export type AuthErrorCode = 'invalidInput' | 'invalidCredentials' | 'emailInUse' | 'unknown';
+export type AuthErrorCode =
+  | 'invalidInput'
+  | 'invalidCredentials'
+  | 'emailInUse'
+  | 'invalidEmail'
+  | 'unknown';
 
 export class AuthError extends Error {
   code: AuthErrorCode;
@@ -92,6 +97,9 @@ export async function signUp(
     const message = error.message.toLowerCase();
     if (message.includes('already registered') || message.includes('already exists')) {
       throw new AuthError('emailInUse');
+    }
+    if (message.includes('email') && message.includes('invalid')) {
+      throw new AuthError('invalidEmail');
     }
     // Log the real message — AuthError only carries the mapped code onward.
     console.error('[auth] signUp failed:', error.message);

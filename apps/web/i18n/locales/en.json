@@ -260,6 +260,7 @@
       "invalidInput": "Enter your name, email and password.",
       "invalidCredentials": "Incorrect email or password.",
       "emailInUse": "An account with this email already exists.",
+      "invalidEmail": "Enter a valid email address.",
       "unknown": "Something went wrong. Please try again."
     }
   },

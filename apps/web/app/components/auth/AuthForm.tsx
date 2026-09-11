@@ -27,11 +27,15 @@ const AuthForm = ({ mode }: AuthFormProps) => {
     // Password reset isn't wired to a backend yet — design-only for now.
   };
 
-  const errorMessage = state.errorCode ? t(`auth.errors.${state.errorCode}`) : null;
+  const emailError = state.errorCode === 'invalidEmail' ? t('auth.errors.invalidEmail') : null;
+  const toastMessage =
+    state.errorCode && state.errorCode !== 'invalidEmail'
+      ? t(`auth.errors.${state.errorCode}`)
+      : null;
 
   useEffect(() => {
-    if (errorMessage) showErrorSnackbar(errorMessage);
-  }, [errorMessage]);
+    if (toastMessage) showErrorSnackbar(toastMessage);
+  }, [toastMessage]);
 
   return (
     <form action={formAction} className="flex w-full flex-col gap-3.5">
@@ -50,6 +54,7 @@ const AuthForm = ({ mode }: AuthFormProps) => {
         type="email"
         placeholder={t('auth.emailPlaceholder')}
         autoComplete="email"
+        error={emailError}
       />
 
       <Input
