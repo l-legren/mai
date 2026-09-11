@@ -2,6 +2,7 @@
 
 // shadcn/ui sonner (new-york style) — customized: dropped next-themes (dark-only app), uses --mq-* tokens.
 import { Toaster as Sonner, type ToasterProps } from 'sonner';
+import 'sonner/dist/styles.css';
 
 const Toaster = (props: ToasterProps) => {
   return (
