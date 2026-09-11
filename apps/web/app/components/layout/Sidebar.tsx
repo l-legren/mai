@@ -36,7 +36,7 @@ const Sidebar = ({ profile }: SidebarProps) => {
     <nav
       aria-label={t('nav.primary')}
       className={cn(
-        'flex shrink-0 flex-col border-r border-border bg-surface py-[22px] transition-[width] duration-150',
+        'sticky top-0 flex h-svh shrink-0 flex-col border-r border-border bg-surface py-[22px] transition-[width] duration-150',
         collapsed ? 'w-[68px] items-center px-0' : 'w-[252px] px-3.5'
       )}
     >
