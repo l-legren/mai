@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
+import { AgentNote } from '@/components/ask/agent-note';
 import { AskLoadingIndicator } from '@/components/ask/ask-loading-indicator';
 import { AssistantMessage } from '@/components/ask/assistant-message';
 import { ChatHeader } from '@/components/ask/chat-header';
@@ -12,13 +13,35 @@ import { Screen } from '@/components/ui/screen';
 import { Spacing } from '@/constants/theme';
 import { useAskConversation, type AskDisplayTurn } from '@/hooks/use-ask-conversation';
 
-function AskTurnItem({ turn }: { turn: AskDisplayTurn }) {
+type AskTurnItemProps = {
+  turn: AskDisplayTurn;
+  onConfirmMemory: () => void;
+  onDismissMemory: () => void;
+};
+
+function AskTurnItem({ turn, onConfirmMemory, onDismissMemory }: AskTurnItemProps) {
+  const { t } = useTranslation();
+
   if (turn.kind === 'user') {
     return <UserMessageBubble text={turn.text} a11yLabel={turn.a11yLabel} />;
   }
 
   if (turn.kind === 'assistant') {
     return <AssistantMessage lines={turn.lines} statusLine={turn.statusLine} />;
+  }
+
+  if (turn.kind === 'confirm') {
+    return (
+      <AgentNote
+        message={turn.content}
+        primaryLabel={t('ask.remember.primaryLabel')}
+        primaryA11yLabel={t('ask.remember.primaryA11yLabel')}
+        secondaryLabel={t('ask.remember.secondaryLabel')}
+        secondaryA11yLabel={t('ask.remember.secondaryA11yLabel')}
+        onPrimaryAction={onConfirmMemory}
+        onSecondaryAction={onDismissMemory}
+      />
+    );
   }
 
   if (turn.kind === 'loading') {
@@ -35,7 +58,8 @@ function AskTurnItem({ turn }: { turn: AskDisplayTurn }) {
  */
 export default function AskScreen() {
   const { t } = useTranslation();
-  const { turns, isSending, sendMessage, reset } = useAskConversation();
+  const { turns, isSending, sendMessage, confirmMemory, dismissMemory, reset } =
+    useAskConversation();
   const [draft, setDraft] = useState('');
 
   function handleSubmit() {
@@ -54,7 +78,14 @@ export default function AskScreen() {
         {turns.length === 0 ? (
           <AssistantMessage lines={[t('ask.greeting')]} />
         ) : (
-          turns.map((turn, index) => <AskTurnItem key={index} turn={turn} />)
+          turns.map((turn, index) => (
+            <AskTurnItem
+              key={index}
+              turn={turn}
+              onConfirmMemory={confirmMemory}
+              onDismissMemory={dismissMemory}
+            />
+          ))
         )}
       </ScrollView>
 

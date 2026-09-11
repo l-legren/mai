@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
+import { Analytics } from '@vercel/analytics/next';
 import { Plus_Jakarta_Sans } from 'next/font/google';
+import { Toaster } from './components/ui';
 import I18nProvider from './i18n-provider';
 import './globals.css';
 
@@ -27,6 +29,8 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
     <html lang="en" className={`${plusJakartaSans.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col font-sans">
         <I18nProvider>{children}</I18nProvider>
+        <Toaster />
+        <Analytics />
       </body>
     </html>
   );

@@ -10,15 +10,17 @@ import {
   useAskConversation,
   type AskDisplayTurn,
 } from '@/app/components/ask';
-import { ChatBubble, FormError } from '@/app/components/ui';
+import { AgentNote, ChatBubble, FormError } from '@/app/components/ui';
 import { cn } from '@/lib/utils';
 
 type AskTurnItemProps = {
   turn: AskDisplayTurn;
   onStop: () => void;
+  onConfirmMemory: () => void;
+  onDismissMemory: () => void;
 };
 
-const AskTurnItem = ({ turn, onStop }: AskTurnItemProps) => {
+const AskTurnItem = ({ turn, onStop, onConfirmMemory, onDismissMemory }: AskTurnItemProps) => {
   const { t } = useTranslation();
 
   if (turn.kind === 'user') {
@@ -41,6 +43,19 @@ const AskTurnItem = ({ turn, onStop }: AskTurnItemProps) => {
     );
   }
 
+  if (turn.kind === 'confirm') {
+    return (
+      <AgentNote
+        message={turn.content}
+        primaryLabel={t('ask.remember.primaryLabel')}
+        secondaryLabel={t('ask.remember.secondaryLabel')}
+        onPrimaryAction={onConfirmMemory}
+        onSecondaryAction={onDismissMemory}
+        bylineLabel={t('ask.remember.byline')}
+      />
+    );
+  }
+
   if (turn.kind === 'error') {
     return <FormError message={t('ask.error')} />;
   }
@@ -51,11 +66,12 @@ const AskTurnItem = ({ turn, onStop }: AskTurnItemProps) => {
 /**
  * Ask Mai, desktop/tablet (design frames 7a/7b/7c) — a stateless-per-request tool-calling agent
  * loop (see agent/src/run.ts) behind a plain-text chat UI, mirroring the mobile Ask tab's scope
- * (LEG-129): streaming text, one status line, no write/confirm UI since the backend has no write
- * tools yet.
+ * (LEG-129): streaming text, one status line, plus a confirm gate before saving an agent-proposed
+ * memory.
  */
 const AskChatView = () => {
-  const { turns, isSending, sendMessage, stop, reset } = useAskConversation();
+  const { turns, isSending, sendMessage, confirmMemory, dismissMemory, stop, reset } =
+    useAskConversation();
   const [draft, setDraft] = useState('');
 
   const handleSubmit = () => {
@@ -78,7 +94,15 @@ const AskChatView = () => {
           {turns.length === 0 ? (
             <EmptyState onSelectPrompt={sendMessage} />
           ) : (
-            turns.map((turn, index) => <AskTurnItem key={index} turn={turn} onStop={stop} />)
+            turns.map((turn, index) => (
+              <AskTurnItem
+                key={index}
+                turn={turn}
+                onStop={stop}
+                onConfirmMemory={confirmMemory}
+                onDismissMemory={dismissMemory}
+              />
+            ))
           )}
         </div>
       </div>

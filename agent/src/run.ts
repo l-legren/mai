@@ -1,11 +1,22 @@
-import { anthropic } from '@ai-sdk/anthropic';
+import { createAnthropic } from '@ai-sdk/anthropic';
 import { stepCountIs, streamText } from 'ai';
 
 import { DEFAULT_CURRENCY, buildAskMaiSystemPrompt } from './prompts.ts';
-import { createMaiTools } from './tools.ts';
+import { createMaiTools, getUserMemories } from './tools/index.ts';
 import type { AskMaiMessage } from './types.ts';
 
-const MODEL_ID = 'claude-haiku-4-5';
+const anthropicWorkspaceId = process.env.ANTHROPIC_WORKSPACE_ID;
+if (!anthropicWorkspaceId) {
+  throw new Error('Missing ANTHROPIC_WORKSPACE_ID. Copy .env.example to .env and fill it in.');
+}
+
+// The API key is org-scoped, not workspace-scoped, so every request must carry this header or
+// Anthropic rejects it outright (`This API key is not scoped to a workspace...`).
+const anthropic = createAnthropic({
+  headers: { 'anthropic-workspace-id': anthropicWorkspaceId },
+});
+
+const MODEL_ID = 'claude-sonnet-5';
 // Bounded step count for the Ask Mai tool loop: room for one tool call, its result, and a final
 // text step, with headroom — not unbounded. This is a multi-*step* loop within one turn, not
 // multi-turn memory; the caller supplies the running transcript each call.
@@ -17,20 +28,20 @@ const ASK_MAX_STEPS = 4;
  * Tools are scoped to `userId` via `createMaiTools`, so the model can only ever read that one
  * user's data.
  *
- * Returns the `streamText` result directly (not awaited) — the Edge Function adapter is
- * responsible for turning `result.fullStream` into an HTTP response the client can read
- * incrementally, so the reply renders token-by-token instead of the app waiting for the whole
- * turn (including any tool round trip) to finish.
+ * Awaits fetching saved memories first, then returns the `streamText` result unawaited (still
+ * streams token-by-token).
  */
-export function runAskMai(
+export async function runAskMai(
   userId: string,
   messages: AskMaiMessage[],
   today: string,
   currency: string = DEFAULT_CURRENCY
 ) {
+  const memories = await getUserMemories(userId);
+
   return streamText({
     model: anthropic(MODEL_ID),
-    system: buildAskMaiSystemPrompt(currency),
+    system: buildAskMaiSystemPrompt(currency, memories),
     messages,
     tools: createMaiTools(userId, today),
     stopWhen: stepCountIs(ASK_MAX_STEPS),

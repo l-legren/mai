@@ -44,7 +44,7 @@ const TurnstileWidget = ({ siteKey }: TurnstileWidgetProps) => {
           }
         }}
       />
-      <div ref={containerRef} />
+      <div ref={containerRef} className="flex justify-center" />
     </>
   );
 };

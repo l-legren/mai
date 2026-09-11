@@ -12,7 +12,7 @@ const SAVINGS_TARGETS_TOOL_DESCRIPTION =
  * value is needed — the point is grading the model's *use* of a tool result, not the tool itself.
  *
  * Not covered here: the 30-day cap on `getRecentSpending` is enforced by its zod input schema
- * (agent/src/tools.ts) and asserted directly below at module load — it's a runtime-type
+ * (agent/src/tools/index.ts) and asserted directly below at module load — it's a runtime-type
  * guarantee, not a model-behaviour question, so it doesn't need an LLM in the loop.
  */
 export const MULTI_TURN_DATASET: MultiTurnDatasetEntry[] = [

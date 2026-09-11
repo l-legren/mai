@@ -15,11 +15,15 @@ export type AskMessageRow = {
   content: string;
 };
 
-export type AskStreamEvent = { type: 'text'; text: string } | { type: 'tool'; toolName: string };
+export type AskStreamEvent =
+  | { type: 'text'; text: string }
+  | { type: 'tool'; toolName: string }
+  | { type: 'confirm'; content: string };
 
 const AskStreamLineSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('text'), text: z.string() }),
   z.object({ type: z.literal('tool'), toolName: z.string() }),
+  z.object({ type: z.literal('confirm'), content: z.string() }),
   z.object({ type: z.literal('error') }),
 ]);
 
@@ -93,4 +97,27 @@ export async function consumeAskMaiStream(
       newlineIndex = buffer.indexOf('\n');
     }
   }
+}
+
+/** Confirms a `rememberFact` proposal — persists it now, on the user's go-ahead. */
+export async function confirmAskMaiMemory(
+  client: SupabaseClient,
+  content: string,
+  agentServiceUrl?: string
+): Promise<void> {
+  const {
+    data: { session },
+  } = await client.auth.getSession();
+  if (!session) throw new ApiError('Not signed in');
+
+  const response = await fetch(`${agentServiceUrl ?? 'localhost:3060'}/ask-mai/remember`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${session.access_token}`,
+    },
+    body: JSON.stringify({ content }),
+  });
+
+  if (!response.ok) throw new ApiError(`ask-mai remember request failed (${response.status})`);
 }

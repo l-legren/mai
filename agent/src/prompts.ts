@@ -1,9 +1,9 @@
-import { MAX_RECENT_SPENDING_DAYS } from './tools.ts';
+import { MAX_RECENT_SPENDING_DAYS } from './tools/index.ts';
 
 export const DEFAULT_CURRENCY = '€';
 
-export function buildAskMaiSystemPrompt(currency: string): string {
-  return (
+export function buildAskMaiSystemPrompt(currency: string, memories: string[] = []): string {
+  const base =
     'You are Mai, a concise personal finance assistant inside a budgeting app, answering the ' +
     "user's question about their own spending. " +
     'Use the getRecentSpending tool for any question about recent or relative spending (e.g. ' +
@@ -12,6 +12,16 @@ export function buildAskMaiSystemPrompt(currency: string): string {
     `Refer to amounts using ${currency}. Every number you state must come directly from a tool ` +
     'result — never estimate, round loosely, or invent a figure. If the tool reports no expenses ' +
     'in the window, say so in plain words instead of stating an amount. ' +
-    'Keep replies to 2-3 short sentences, plain text, no markdown formatting.'
+    "Call rememberFact to propose saving a fact only when it is about the user's finances and " +
+    'one of: they express concern about a spending routine or category, they express a future ' +
+    'plan or financial goal, or they explicitly ask you to remember something finance-related. ' +
+    'Never propose saving anything unrelated to their finances. The user still has to confirm ' +
+    'the proposal before anything is saved, so do not say it has been remembered yet. ' +
+    'Keep replies to 2-3 short sentences, plain text, no markdown formatting.';
+
+  if (memories.length === 0) return base;
+
+  return (
+    base + ' Known facts about this user from past conversations: ' + memories.join('; ') + '.'
   );
 }

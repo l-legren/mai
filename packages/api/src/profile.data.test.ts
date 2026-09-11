@@ -3,6 +3,7 @@ import {
   getProfileOnboardingRow,
   insertProfileOnboardingRow,
   updateProfileOnboardingRow,
+  deriveCurrencyFromCountryCode,
 } from './profile.data';
 import { createMockSupabaseClient } from './test-helpers';
 import { mockQueryBuilder } from './utils/supabase-query-builder';
@@ -60,5 +61,19 @@ describe('profile.data', () => {
     await expect(
       updateProfileOnboardingRow(client as never, { city: 'Paris' })
     ).rejects.toBeInstanceOf(ApiError);
+  });
+});
+
+describe('deriveCurrencyFromCountryCode', () => {
+  it('resolves a known country code to its currency', () => {
+    expect(deriveCurrencyFromCountryCode('GB')).toBe('GBP');
+  });
+
+  it('is case-insensitive and trims whitespace', () => {
+    expect(deriveCurrencyFromCountryCode('  jp  ')).toBe('JPY');
+  });
+
+  it('falls back to EUR when no country code is available', () => {
+    expect(deriveCurrencyFromCountryCode(null)).toBe('EUR');
   });
 });

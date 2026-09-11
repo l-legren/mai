@@ -1,28 +1,30 @@
 import postgres from 'postgres';
 
-/**
- * Direct Postgres connection as the `mcp_readonly` role (see supabase/roles.sql +
- * supabase/migrations/20260722110000_mcp_readonly_access.sql) — a different auth path from the
- * rest of the app, which goes through PostgREST as `authenticated` via the Supabase JS client.
- * This is what lets a tool's `execute` body read a user's data without an `authenticated` session:
- * the caller instead names the user explicitly via a per-transaction `app.mcp_user_id` GUC.
- *
- * Lazily constructed so importing this module (e.g. transitively via tools.ts, from the
- * single-turn eval executor) never requires MCP_READONLY_DATABASE_URL to be set — only actually
- * calling `withScopedRead` does.
- */
-let sql: postgres.Sql | undefined;
+/** Direct Postgres connections as mcp_readonly/mcp_write (supabase/roles.sql); lazy per env var. */
+let readSql: postgres.Sql | undefined;
+let writeSql: postgres.Sql | undefined;
 
-function getSql(): postgres.Sql {
-  if (!sql) {
+function getReadSql(): postgres.Sql {
+  if (!readSql) {
     const connectionString = process.env.MCP_READONLY_DATABASE_URL;
     if (!connectionString) {
       throw new Error('MCP_READONLY_DATABASE_URL is not set');
     }
     // max: 1 — an Edge Function isolate handles one request at a time; no pool needed.
-    sql = postgres(connectionString, { max: 1 });
+    readSql = postgres(connectionString, { max: 1 });
   }
-  return sql;
+  return readSql;
+}
+
+function getWriteSql(): postgres.Sql {
+  if (!writeSql) {
+    const connectionString = process.env.MCP_WRITE_DATABASE_URL;
+    if (!connectionString) {
+      throw new Error('MCP_WRITE_DATABASE_URL is not set');
+    }
+    writeSql = postgres(connectionString, { max: 1 });
+  }
+  return writeSql;
 }
 
 /**
@@ -42,7 +44,24 @@ export async function withScopedRead<T>(
     throw new Error('withScopedRead requires a non-empty userId');
   }
 
-  const client = getSql();
+  const client = getReadSql();
+  const result = await client.begin(async (tx) => {
+    await tx`select set_config('app.mcp_user_id', ${userId}, true)`;
+    return fn(tx);
+  });
+  return result as T;
+}
+
+/** Same as withScopedRead but via mcp_write; fn must set user_id itself (no auth.uid() here). */
+export async function withScopedWrite<T>(
+  userId: string,
+  fn: (tx: postgres.TransactionSql) => Promise<T>
+): Promise<T> {
+  if (!userId) {
+    throw new Error('withScopedWrite requires a non-empty userId');
+  }
+
+  const client = getWriteSql();
   const result = await client.begin(async (tx) => {
     await tx`select set_config('app.mcp_user_id', ${userId}, true)`;
     return fn(tx);

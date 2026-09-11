@@ -28,6 +28,7 @@ export {
   getProfileOnboardingRow,
   insertProfileOnboardingRow,
   updateProfileOnboardingRow,
+  deriveCurrencyFromCountryCode,
   type ProfileOnboardingRow,
   type NewProfileOnboardingRow,
   type ProfileOnboardingRowUpdate,
@@ -57,6 +58,7 @@ export { getSavingsGoalValue, saveSavingsGoalValue } from './savings.data';
 export {
   streamAskMaiReply,
   consumeAskMaiStream,
+  confirmAskMaiMemory,
   type AskMessageRow,
   type AskStreamEvent,
 } from './ask.data';
