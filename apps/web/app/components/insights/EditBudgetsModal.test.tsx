@@ -16,8 +16,12 @@ function saveButton() {
   return screen.getByRole('button', { name: 'Save' });
 }
 
+function groceriesSlider() {
+  return screen.getByRole('slider', { name: 'Groceries' });
+}
+
 describe('EditBudgetsModal', () => {
-  it('pre-fills each category input from the current budgets', () => {
+  it('pre-fills each category slider from the current budgets', () => {
     render(
       <EditBudgetsModal
         open
@@ -27,21 +31,24 @@ describe('EditBudgetsModal', () => {
       />
     );
 
-    expect((screen.getByLabelText('Groceries') as HTMLInputElement).value).toBe('400');
-    expect((screen.getByLabelText('Transport') as HTMLInputElement).value).toBe('');
+    expect(groceriesSlider().getAttribute('aria-valuetext')).toBe('€400.00');
+    expect(screen.getByRole('slider', { name: 'Transport' }).getAttribute('aria-valuetext')).toBe(
+      '€0.00'
+    );
   });
 
-  it('only submits categories with a non-blank amount', async () => {
+  it('only submits categories with a positive amount', async () => {
     vi.mocked(upsertBudgetsAction).mockResolvedValue({ success: true });
     render(<EditBudgetsModal open onClose={vi.fn()} periodMonth="2026-08" currentBudgets={[]} />);
 
-    fireEvent.change(screen.getByLabelText('Groceries'), { target: { value: '400' } });
+    groceriesSlider().focus();
+    fireEvent.keyDown(groceriesSlider(), { key: 'ArrowRight' });
     fireEvent.click(saveButton());
 
     await vi.waitFor(() => expect(upsertBudgetsAction).toHaveBeenCalled());
     expect(upsertBudgetsAction).toHaveBeenCalledWith({
       periodMonth: '2026-08',
-      entries: [{ category: 'groceries', amount: 400 }],
+      entries: [{ category: 'groceries', amount: 10 }],
     });
   });
 
@@ -50,7 +57,8 @@ describe('EditBudgetsModal', () => {
     const onClose = vi.fn();
     render(<EditBudgetsModal open onClose={onClose} periodMonth="2026-08" currentBudgets={[]} />);
 
-    fireEvent.change(screen.getByLabelText('Groceries'), { target: { value: '400' } });
+    groceriesSlider().focus();
+    fireEvent.keyDown(groceriesSlider(), { key: 'ArrowRight' });
     fireEvent.click(saveButton());
 
     await vi.waitFor(() => expect(onClose).toHaveBeenCalled());
@@ -65,7 +73,8 @@ describe('EditBudgetsModal', () => {
     const onClose = vi.fn();
     render(<EditBudgetsModal open onClose={onClose} periodMonth="2026-08" currentBudgets={[]} />);
 
-    fireEvent.change(screen.getByLabelText('Groceries'), { target: { value: '400' } });
+    groceriesSlider().focus();
+    fireEvent.keyDown(groceriesSlider(), { key: 'ArrowRight' });
     fireEvent.click(saveButton());
 
     await vi.waitFor(() =>

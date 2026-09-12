@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import type { CategoryBudgetRow } from '@mai/api';
 import { upsertBudgetsAction } from '@/app/actions/upsert-budgets';
-import { Button, FormError, Input, Modal } from '@/app/components/ui';
+import { AmountSlider, Button, FormError, Modal } from '@/app/components/ui';
 import { CATEGORY_IDS, type CategoryId } from '@/lib/categories';
 
 export type EditBudgetsModalProps = {
@@ -17,7 +17,7 @@ export type EditBudgetsModalProps = {
 
 type AmountsByCategory = Record<CategoryId, string>;
 
-// Blank input means "leave unset" — no delete support yet, so an entry is only sent if non-blank.
+// A zero/blank slider means "leave unset" — no delete support yet, so an entry is only sent when positive.
 function initialAmounts(currentBudgets: CategoryBudgetRow[]): AmountsByCategory {
   const byCategory = new Map(currentBudgets.map((row) => [row.category, row.amount]));
   return Object.fromEntries(
@@ -43,15 +43,15 @@ const EditBudgetsModal = ({
     onClose();
   };
 
-  const handleAmountChange = (category: CategoryId, value: string) => {
-    setAmounts((prev) => ({ ...prev, [category]: value.replace(/[^0-9.]/g, '') }));
+  const handleAmountChange = (category: CategoryId, value: number) => {
+    setAmounts((prev) => ({ ...prev, [category]: String(value) }));
   };
 
   const handleSave = () => {
     if (isPending) return;
 
-    const entries = CATEGORY_IDS.filter((category) => amounts[category].trim() !== '').map(
-      (category) => ({ category, amount: parseFloat(amounts[category]) })
+    const entries = CATEGORY_IDS.filter((category) => Number(amounts[category]) > 0).map(
+      (category) => ({ category, amount: Number(amounts[category]) })
     );
 
     startTransition(async () => {
@@ -78,15 +78,13 @@ const EditBudgetsModal = ({
           {t('insights.budgetVsActual.editModal.title')}
         </h2>
 
-        <div className="flex flex-col gap-3.5">
+        <div className="flex flex-col gap-5">
           {CATEGORY_IDS.map((category) => (
-            <Input
+            <AmountSlider
               key={category}
               label={t(`categories.${category}`)}
-              placeholder="0"
-              inputMode="decimal"
-              value={amounts[category]}
-              onChange={(event) => handleAmountChange(category, event.target.value)}
+              value={Number(amounts[category]) || 0}
+              onChange={(value) => handleAmountChange(category, value)}
             />
           ))}
         </div>
