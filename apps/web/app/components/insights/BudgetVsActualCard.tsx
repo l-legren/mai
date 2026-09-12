@@ -1,14 +1,19 @@
 'use client';
 
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { CategoryBudgetRow } from '@mai/api';
 import { Card } from '@/app/components/ui';
 import { BUDGET_MARKER_PCT, budgetBarWidthPct, type BudgetVsActualRow } from '@/lib/insights';
 import { formatCurrency } from '@/lib/utils/format-expense';
 import { cn } from '@/lib/utils';
+import EditBudgetsModal from './EditBudgetsModal';
 
 export type BudgetVsActualCardProps = {
   rows: BudgetVsActualRow[];
   monthLabel: string;
+  periodMonth: string;
+  currentBudgets: CategoryBudgetRow[];
 };
 
 const LABEL_COL_PX = 130;
@@ -58,22 +63,44 @@ const BudgetRow = ({ row }: BudgetRowProps) => {
   );
 };
 
-const BudgetVsActualCard = ({ rows, monthLabel }: BudgetVsActualCardProps) => {
+const BudgetVsActualCard = ({
+  rows,
+  monthLabel,
+  periodMonth,
+  currentBudgets,
+}: BudgetVsActualCardProps) => {
   const { t } = useTranslation();
+  const [isEditOpen, setIsEditOpen] = useState(false);
   const overCount = rows.filter((row) => row.spent > row.limit).length;
   const underCount = rows.length - overCount;
   const markerLeft = `calc(${LABEL_COL_PX}px + (100% - ${LABEL_COL_PX + AMOUNT_COL_PX}px) * ${BUDGET_MARKER_PCT / 100})`;
 
   return (
     <Card>
-      <div>
-        <div className="text-[15px] font-semibold text-text">
-          {t('insights.budgetVsActual.title')}
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <div className="text-[15px] font-semibold text-text">
+            {t('insights.budgetVsActual.title')}
+          </div>
+          <div className="mt-1 text-[13px] text-text-3">
+            {t('insights.budgetVsActual.summary', { overCount, underCount, month: monthLabel })}
+          </div>
         </div>
-        <div className="mt-1 text-[13px] text-text-3">
-          {t('insights.budgetVsActual.summary', { overCount, underCount, month: monthLabel })}
-        </div>
+        <button
+          type="button"
+          onClick={() => setIsEditOpen(true)}
+          className="shrink-0 text-[13px] font-medium text-text-2 hover:text-text"
+        >
+          {t('insights.budgetVsActual.editBudgets')}
+        </button>
       </div>
+
+      <EditBudgetsModal
+        open={isEditOpen}
+        onClose={() => setIsEditOpen(false)}
+        periodMonth={periodMonth}
+        currentBudgets={currentBudgets}
+      />
 
       {rows.length === 0 ? (
         <p className="mt-4 text-[13.5px] text-text-3">{t('insights.budgetVsActual.empty')}</p>
