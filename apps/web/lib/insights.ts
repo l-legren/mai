@@ -4,7 +4,7 @@
  * apps/mobile's insights.service.ts but web has no services/ layer of its own (see lib/recurring.ts).
  */
 import { addMonths, format, startOfMonth, subMonths } from 'date-fns';
-import type { ExpenseRow } from '@mai/api';
+import type { CategoryBudgetRow, ExpenseRow } from '@mai/api';
 import { CATEGORY_IDS, isCategoryId, type CategoryId } from './categories';
 
 export type MonthlyTotal = {
@@ -27,21 +27,6 @@ export type BudgetVsActualRow = {
 export type NetBalancePoint = {
   monthKey: string;
   balance: number;
-};
-
-/**
- * No per-category budget limit is stored anywhere yet (no table in packages/schemas or
- * packages/api, and mobile's only "budget" concept is a single daily allowance, not per-category
- * limits) — these are placeholder limits so the "Budget vs actual" card renders something
- * meaningful until real budget storage + an edit flow exist.
- */
-export const MOCK_CATEGORY_BUDGETS: Record<CategoryId, number> = {
-  groceries: 400,
-  restaurants: 200,
-  drinks: 60,
-  clothing: 120,
-  transport: 150,
-  other: 80,
 };
 
 /** The "Budget" reference line sits at this % across every row's rail, calibrated so a category
@@ -112,22 +97,29 @@ export function categoryBreakdown(expenses: ExpenseRow[], monthKey: string): Cat
     .sort((a, b) => b.amount - a.amount);
 }
 
-/** Spend vs. placeholder limit per category for one month, ranked by how far over/close to budget. */
+/**
+ * Spend vs. real budget limit per category for one month, ranked by how far over/close to budget.
+ * Only includes categories with a budget row set (regardless of spend — a zero-spend category
+ * with a budget still shows), sourced from `category_budgets` (`getCurrentBudgets`).
+ */
 export function budgetVsActual(
   expenses: ExpenseRow[],
   monthKey: string,
-  budgets: Record<CategoryId, number> = MOCK_CATEGORY_BUDGETS
+  budgetRows: CategoryBudgetRow[]
 ): BudgetVsActualRow[] {
   const spentByCategory = new Map(
     categoryBreakdown(expenses, monthKey).map((row) => [row.category, row.amount])
   );
 
-  return CATEGORY_IDS.map((category) => ({
-    category,
-    spent: spentByCategory.get(category) ?? 0,
-    limit: budgets[category],
-  }))
-    .filter((row) => row.spent > 0)
+  return budgetRows
+    .filter((row): row is CategoryBudgetRow & { category: CategoryId } =>
+      isCategoryId(row.category)
+    )
+    .map((row) => ({
+      category: row.category,
+      spent: spentByCategory.get(row.category) ?? 0,
+      limit: row.amount,
+    }))
     .sort((a, b) => b.spent / b.limit - a.spent / a.limit);
 }
 
