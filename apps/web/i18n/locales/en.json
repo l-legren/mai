@@ -292,6 +292,10 @@
       "surname": "Surname",
       "surnamePlaceholder": "Your surname (optional)"
     },
+    "budgets": {
+      "title": "Set a few budgets",
+      "subtitle": "Optional, but a great way to get better control of your finances — you can always change these later."
+    },
     "errors": {
       "invalidInput": "Enter your first name and city.",
       "unknown": "Something went wrong. Please try again."

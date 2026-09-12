@@ -1,7 +1,10 @@
 'use server';
 
+import { format } from 'date-fns';
 import { redirect } from 'next/navigation';
 import { deriveCurrencyFromCountryCode, insertProfileOnboardingRow } from '@mai/api';
+import { upsertBudget } from '@/lib/dal/category-budgets';
+import { CATEGORY_IDS } from '@/lib/categories';
 import { getDetectedLocation } from '@/lib/geo';
 import { createSupabaseServerClient } from '@/lib/supabase-server';
 import type { OnboardingFormState } from './onboarding-form-state';
@@ -34,6 +37,20 @@ export async function completeOnboardingAction(
   } catch {
     return { errorCode: 'unknown' };
   }
+
+  // Budget estimates are optional (LEG-151) — a failed/skipped entry never blocks finishing
+  // onboarding, since the profile row above is already the one atomic "onboarding complete" write.
+  const periodMonth = format(new Date(), 'yyyy-MM');
+  const budgetEntries = CATEGORY_IDS.map((category) => ({
+    category,
+    amount: parseFloat(String(formData.get(`budget_${category}`) ?? '')),
+  })).filter((entry) => entry.amount > 0);
+
+  await Promise.allSettled(
+    budgetEntries.map((entry) =>
+      upsertBudget({ category: entry.category, period_month: periodMonth, amount: entry.amount })
+    )
+  );
 
   redirect('/');
 }

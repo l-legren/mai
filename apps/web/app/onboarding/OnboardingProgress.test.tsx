@@ -17,7 +17,16 @@ describe('OnboardingProgress', () => {
 
     const bar = screen.getByRole('progressbar');
     expect(bar.getAttribute('aria-valuenow')).toBe('1');
-    expect((bar.firstElementChild as HTMLElement).style.width).toBe('33.33333333333333%');
+    expect((bar.firstElementChild as HTMLElement).style.width).toBe('25%');
+  });
+
+  it('reflects the third step for the budgets route', () => {
+    vi.mocked(usePathname).mockReturnValue('/onboarding/budgets');
+    render(<OnboardingProgress />);
+
+    const bar = screen.getByRole('progressbar');
+    expect(bar.getAttribute('aria-valuenow')).toBe('3');
+    expect((bar.firstElementChild as HTMLElement).style.width).toBe('75%');
   });
 
   it('reflects the last step for the name route', () => {
@@ -25,7 +34,7 @@ describe('OnboardingProgress', () => {
     render(<OnboardingProgress />);
 
     const bar = screen.getByRole('progressbar');
-    expect(bar.getAttribute('aria-valuenow')).toBe('3');
+    expect(bar.getAttribute('aria-valuenow')).toBe('4');
     expect((bar.firstElementChild as HTMLElement).style.width).toBe('100%');
   });
 });

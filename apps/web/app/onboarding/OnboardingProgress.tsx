@@ -3,7 +3,7 @@
 import { usePathname } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 
-const STEPS = ['/onboarding', '/onboarding/city', '/onboarding/name'];
+const STEPS = ['/onboarding', '/onboarding/city', '/onboarding/budgets', '/onboarding/name'];
 
 const OnboardingProgress = () => {
   const pathname = usePathname();

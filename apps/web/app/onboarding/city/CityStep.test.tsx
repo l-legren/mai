@@ -46,11 +46,11 @@ describe('CityStep', () => {
     );
   });
 
-  it('navigates to the name step on Next', () => {
+  it('navigates to the budgets step on Next', () => {
     renderStep('London');
 
     fireEvent.click(screen.getByRole('button', { name: 'Next' }));
 
-    expect(push).toHaveBeenCalledWith('/onboarding/name');
+    expect(push).toHaveBeenCalledWith('/onboarding/budgets');
   });
 });

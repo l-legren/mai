@@ -54,7 +54,7 @@ const CityStep = ({ previewCurrency }: CityStepProps) => {
           type="button"
           size="lg"
           disabled={!canContinue}
-          onClick={() => router.push('/onboarding/name')}
+          onClick={() => router.push('/onboarding/budgets')}
           className="flex-1"
         >
           {t('onboarding.next')}
