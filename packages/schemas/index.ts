@@ -55,6 +55,17 @@ export const SavingsTargetRowSchema = z.object({
 
 export type SavingsTargetRow = z.infer<typeof SavingsTargetRowSchema>;
 
+/** Persisted category budget row (`public.category_budgets`). One row per user/category/month —
+ * `period_month` is `'YYYY-MM'`, matching the mobile app's `monthKey` convention. */
+export const CategoryBudgetRowSchema = z.object({
+  id: z.string(),
+  category: z.string(),
+  period_month: z.string(),
+  amount: z.number(),
+});
+
+export type CategoryBudgetRow = z.infer<typeof CategoryBudgetRowSchema>;
+
 /** Persisted onboarding profile row (`public.profile_onboarding`). A missing row means the user
  * hasn't completed onboarding yet — there is no "empty" row state. */
 export const ProfileOnboardingRowSchema = z.object({
