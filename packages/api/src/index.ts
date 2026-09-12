@@ -62,3 +62,10 @@ export {
   type AskMessageRow,
   type AskStreamEvent,
 } from './ask.data';
+
+export {
+  getBudgetRows,
+  upsertBudgetRow,
+  type CategoryBudgetRow,
+  type NewCategoryBudgetRow,
+} from './category-budgets.data';
