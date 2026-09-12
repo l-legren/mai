@@ -1,11 +1,14 @@
 'use client';
 
-import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/app/components/ui';
 import { useFocusHeading } from './useFocusHeading';
 
-const OnboardingWelcome = () => {
+export type OnboardingWelcomeProps = {
+  onNext: () => void;
+};
+
+const OnboardingWelcome = ({ onNext }: OnboardingWelcomeProps) => {
   const { t } = useTranslation();
   const headingRef = useFocusHeading<HTMLHeadingElement>();
 
@@ -21,8 +24,8 @@ const OnboardingWelcome = () => {
         </h1>
         <p className="text-sm text-text-2">{t('onboarding.welcome.subtitle')}</p>
       </div>
-      <Button asChild size="lg" className="w-full">
-        <Link href="/onboarding/city">{t('onboarding.getStarted')}</Link>
+      <Button type="button" size="lg" className="w-full" onClick={onNext}>
+        {t('onboarding.getStarted')}
       </Button>
     </div>
   );
