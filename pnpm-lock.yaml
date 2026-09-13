@@ -396,6 +396,9 @@ importers:
       '@types/jest':
         specifier: 29.5.14
         version: 29.5.14
+      ai:
+        specifier: ^7.0.66
+        version: 7.0.66(zod@4.4.3)
       eslint:
         specifier: ^9.39.5
         version: 9.39.5(jiti@2.7.0)

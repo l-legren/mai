@@ -59,8 +59,10 @@ export {
   streamAskMaiReply,
   consumeAskMaiStream,
   confirmAskMaiMemory,
+  wrapAskMessagesAsUIMessages,
   type AskMessageRow,
   type AskStreamEvent,
+  type MinimalUIMessage,
 } from './ask.data';
 
 export {

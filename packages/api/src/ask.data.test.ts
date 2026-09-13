@@ -5,9 +5,9 @@ import { streamAskMaiReply } from './ask.data';
 const client = createMockSupabaseClient();
 const mockGetSession = client.auth.getSession as jest.MockedFunction<typeof client.auth.getSession>;
 
-/** Builds a fetch Response whose body streams the given NDJSON lines in one or more chunks. */
-function fakeStreamResponse(lines: string[], options?: { ok?: boolean; status?: number }) {
-  const body = lines.map((line) => `${line}\n`).join('');
+/** Builds a fetch Response whose body streams the given UIMessageChunks as an SSE event per chunk. */
+function fakeStreamResponse(chunks: unknown[], options?: { ok?: boolean; status?: number }) {
+  const body = chunks.map((chunk) => `data: ${JSON.stringify(chunk)}\n\n`).join('');
   const encoder = new TextEncoder();
   let sent = false;
 
@@ -37,12 +37,12 @@ describe('ask.data', () => {
     } as never);
   });
 
-  it('emits a text event per streamed line and resolves once the stream ends', async () => {
+  it('emits a text event per streamed delta and resolves once the stream ends', async () => {
     globalThis.fetch = jest.fn().mockResolvedValue(
       fakeStreamResponse([
-        JSON.stringify({ type: 'tool', toolName: 'getRecentSpending' }),
-        JSON.stringify({ type: 'text', text: 'You spent ' }),
-        JSON.stringify({ type: 'text', text: '€80 this week.' }),
+        { type: 'tool-input-available', toolCallId: '1', toolName: 'getRecentSpending', input: {} },
+        { type: 'text-delta', id: 't1', delta: 'You spent ' },
+        { type: 'text-delta', id: 't1', delta: '€80 this week.' },
       ])
     ) as never;
 
@@ -54,6 +54,24 @@ describe('ask.data', () => {
       { type: 'text', text: 'You spent ' },
       { type: 'text', text: '€80 this week.' },
     ]);
+  });
+
+  it('emits a confirm event (not a generic tool event) for a rememberFact proposal', async () => {
+    globalThis.fetch = jest.fn().mockResolvedValue(
+      fakeStreamResponse([
+        {
+          type: 'tool-input-available',
+          toolCallId: '1',
+          toolName: 'rememberFact',
+          input: { content: 'Wants to cut back on dining out' },
+        },
+      ])
+    ) as never;
+
+    const events: unknown[] = [];
+    await streamAskMaiReply(client as never, today, messages, (event) => events.push(event));
+
+    expect(events).toEqual([{ type: 'confirm', content: 'Wants to cut back on dining out' }]);
   });
 
   it('throws an ApiError when there is no active session', async () => {
@@ -78,8 +96,8 @@ describe('ask.data', () => {
   it('throws rather than silently continuing when the stream reports a mid-stream error', async () => {
     globalThis.fetch = jest.fn().mockResolvedValue(
       fakeStreamResponse([
-        JSON.stringify({ type: 'text', text: 'partial' }),
-        JSON.stringify({ type: 'error' }),
+        { type: 'text-delta', id: 't1', delta: 'partial' },
+        { type: 'error', errorText: 'boom' },
       ])
     ) as never;
 
