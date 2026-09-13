@@ -1,11 +1,16 @@
 'use client';
 
 import { createContext, useContext, useState, type ReactNode } from 'react';
+import { CATEGORY_IDS, type CategoryId } from '@/lib/categories';
+
+type BudgetsDraft = Record<CategoryId, string>;
 
 type OnboardingDraft = {
   firstName: string;
   surname: string;
   city: string;
+  /** Blank means "no budget entered for this category" — the estimate step is optional. */
+  budgets: BudgetsDraft;
 };
 
 type OnboardingDraftValue = {
@@ -13,6 +18,7 @@ type OnboardingDraftValue = {
   setFirstName: (value: string) => void;
   setSurname: (value: string) => void;
   setCity: (value: string) => void;
+  setBudgetAmount: (category: CategoryId, value: string) => void;
 };
 
 const OnboardingDraftContext = createContext<OnboardingDraftValue | null>(null);
@@ -23,12 +29,17 @@ export type OnboardingDraftProviderProps = {
   children: ReactNode;
 };
 
+function emptyBudgets(): BudgetsDraft {
+  return Object.fromEntries(CATEGORY_IDS.map((category) => [category, ''])) as BudgetsDraft;
+}
+
 // Scoped to the /onboarding layout — resets automatically once the flow completes and unmounts.
 export function OnboardingDraftProvider({ initialCity, children }: OnboardingDraftProviderProps) {
   const [draft, setDraft] = useState<OnboardingDraft>({
     firstName: '',
     surname: '',
     city: initialCity,
+    budgets: emptyBudgets(),
   });
 
   const value: OnboardingDraftValue = {
@@ -36,6 +47,8 @@ export function OnboardingDraftProvider({ initialCity, children }: OnboardingDra
     setFirstName: (firstName) => setDraft((d) => ({ ...d, firstName })),
     setSurname: (surname) => setDraft((d) => ({ ...d, surname })),
     setCity: (city) => setDraft((d) => ({ ...d, city })),
+    setBudgetAmount: (category, value) =>
+      setDraft((d) => ({ ...d, budgets: { ...d.budgets, [category]: value } })),
   };
 
   return (

@@ -5,8 +5,17 @@ import { OnboardingDraftProvider, useOnboardingDraft } from './OnboardingDraftPr
 
 afterEach(cleanup);
 
+const EMPTY_BUDGETS = {
+  groceries: '',
+  drinks: '',
+  restaurants: '',
+  clothing: '',
+  transport: '',
+  other: '',
+};
+
 function DraftProbe() {
-  const { draft, setFirstName, setSurname, setCity } = useOnboardingDraft();
+  const { draft, setFirstName, setSurname, setCity, setBudgetAmount } = useOnboardingDraft();
 
   return (
     <div>
@@ -14,6 +23,7 @@ function DraftProbe() {
       <button onClick={() => setFirstName('Mara')}>set first name</button>
       <button onClick={() => setSurname('Lund')}>set surname</button>
       <button onClick={() => setCity('Berlin')}>set city</button>
+      <button onClick={() => setBudgetAmount('groceries', '400')}>set groceries budget</button>
     </div>
   );
 }
@@ -27,15 +37,21 @@ describe('OnboardingDraftProvider', () => {
     );
 
     expect(screen.getByTestId('draft').textContent).toBe(
-      JSON.stringify({ firstName: '', surname: '', city: 'London' })
+      JSON.stringify({ firstName: '', surname: '', city: 'London', budgets: EMPTY_BUDGETS })
     );
 
     fireEvent.click(screen.getByText('set first name'));
     fireEvent.click(screen.getByText('set surname'));
     fireEvent.click(screen.getByText('set city'));
+    fireEvent.click(screen.getByText('set groceries budget'));
 
     expect(screen.getByTestId('draft').textContent).toBe(
-      JSON.stringify({ firstName: 'Mara', surname: 'Lund', city: 'Berlin' })
+      JSON.stringify({
+        firstName: 'Mara',
+        surname: 'Lund',
+        city: 'Berlin',
+        budgets: { ...EMPTY_BUDGETS, groceries: '400' },
+      })
     );
   });
 
