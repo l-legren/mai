@@ -1,9 +1,8 @@
 import { createAnthropic } from '@ai-sdk/anthropic';
-import { stepCountIs, streamText } from 'ai';
+import { convertToModelMessages, stepCountIs, streamText, type UIMessage } from 'ai';
 
 import { DEFAULT_CURRENCY, buildAskMaiSystemPrompt } from './prompts.ts';
 import { createMaiTools, getUserMemories } from './tools/index.ts';
-import type { AskMaiMessage } from './types.ts';
 
 const anthropicWorkspaceId = process.env.ANTHROPIC_WORKSPACE_ID;
 if (!anthropicWorkspaceId) {
@@ -33,16 +32,19 @@ const ASK_MAX_STEPS = 4;
  */
 export async function runAskMai(
   userId: string,
-  messages: AskMaiMessage[],
+  messages: UIMessage[],
   today: string,
   currency: string = DEFAULT_CURRENCY
 ) {
-  const memories = await getUserMemories(userId);
+  const [memories, modelMessages] = await Promise.all([
+    getUserMemories(userId),
+    convertToModelMessages(messages),
+  ]);
 
   return streamText({
     model: anthropic(MODEL_ID),
     system: buildAskMaiSystemPrompt(currency, memories),
-    messages,
+    messages: modelMessages,
     tools: createMaiTools(userId, today),
     stopWhen: stepCountIs(ASK_MAX_STEPS),
     onError: ({ error }) => {
