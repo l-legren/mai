@@ -1,10 +1,16 @@
 /**
  * Browser-side call to this app's own `/api/ask-mai` proxy route (not the agent service
- * directly — see that route's doc comment). Reuses `@mai/api`'s NDJSON parsing/error handling
- * via `consumeAskMaiStream` rather than duplicating the read loop.
+ * directly — see that route's doc comment). Reuses `@mai/api`'s UI Message Stream parsing/error
+ * handling via `consumeAskMaiStream` rather than duplicating the read loop.
  */
 
-import { ApiError, consumeAskMaiStream, type AskMessageRow, type AskStreamEvent } from '@mai/api';
+import {
+  ApiError,
+  consumeAskMaiStream,
+  wrapAskMessagesAsUIMessages,
+  type AskMessageRow,
+  type AskStreamEvent,
+} from '@mai/api';
 
 export type { AskMessageRow, AskStreamEvent };
 
@@ -18,7 +24,7 @@ export async function sendAskMessage(
   const response = await fetch('/api/ask-mai', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ today, messages }),
+    body: JSON.stringify({ today, messages: wrapAskMessagesAsUIMessages(messages) }),
     signal,
   });
 

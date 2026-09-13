@@ -1,9 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
 import { sendAskMessage } from './ask';
 
-/** Builds a fetch Response whose body streams the given NDJSON lines in one chunk. */
-function fakeStreamResponse(lines: string[], options?: { ok?: boolean; status?: number }) {
-  const body = lines.map((line) => `${line}\n`).join('');
+/** Builds a fetch Response whose body streams the given UIMessageChunks as an SSE event each. */
+function fakeStreamResponse(chunks: unknown[], options?: { ok?: boolean; status?: number }) {
+  const body = chunks.map((chunk) => `data: ${JSON.stringify(chunk)}\n\n`).join('');
   const encoder = new TextEncoder();
   let sent = false;
 
@@ -26,11 +26,11 @@ describe('sendAskMessage', () => {
   const today = '2026-01-01';
   const messages = [{ role: 'user' as const, content: 'How much did I spend this week?' }];
 
-  it('posts to the same-origin proxy route and emits an event per streamed line', async () => {
+  it('posts to the same-origin proxy route and emits an event per streamed chunk', async () => {
     globalThis.fetch = vi
       .fn()
       .mockResolvedValue(
-        fakeStreamResponse([JSON.stringify({ type: 'text', text: 'You spent €80.' })])
+        fakeStreamResponse([{ type: 'text-delta', id: 't1', delta: 'You spent €80.' }])
       ) as never;
 
     const events: unknown[] = [];
@@ -41,7 +41,12 @@ describe('sendAskMessage', () => {
       expect.objectContaining({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ today, messages }),
+        body: JSON.stringify({
+          today,
+          messages: [
+            { id: '0', role: 'user', parts: [{ type: 'text', text: messages[0].content }] },
+          ],
+        }),
       })
     );
     expect(events).toEqual([{ type: 'text', text: 'You spent €80.' }]);
