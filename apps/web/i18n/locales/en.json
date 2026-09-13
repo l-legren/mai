@@ -177,10 +177,19 @@
     "budgetVsActual": {
       "title": "Budget vs actual",
       "summary": "{{overCount}} over, {{underCount}} with room. {{month}}.",
-      "marker": "Budget",
       "over": "{{amount}} over",
       "left": "{{amount}} left",
-      "empty": "No spending logged yet this month."
+      "empty": "No budgets set yet.",
+      "editBudgets": "Edit budgets",
+      "editModal": {
+        "title": "Edit budgets",
+        "save": "Save",
+        "savingPending": "Saving…",
+        "errors": {
+          "invalidEntry": "Enter an amount greater than zero.",
+          "unknown": "Something went wrong. Please try again."
+        }
+      }
     },
     "whereItWent": {
       "title": "Where it went",

@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { CategoryBudgetRow } from '@mai/api';
 import {
   BudgetVsActualCard,
   NetBalanceCard,
@@ -23,6 +24,8 @@ export type InsightsViewProps = {
   netBalance: NetBalancePoint[];
   categoryTotals: CategoryTotal[];
   budgetRows: BudgetVsActualRow[];
+  categoryBudgets: CategoryBudgetRow[];
+  currentMonthKey: string;
   currentMonthLabel: string;
 };
 
@@ -39,6 +42,8 @@ const InsightsView = ({
   netBalance,
   categoryTotals,
   budgetRows,
+  categoryBudgets,
+  currentMonthKey,
   currentMonthLabel,
 }: InsightsViewProps) => {
   const { t } = useTranslation();
@@ -73,7 +78,12 @@ const InsightsView = ({
         <SpendingVsIncomeCard series={visibleSeries} />
 
         <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-2">
-          <BudgetVsActualCard rows={budgetRows} monthLabel={currentMonthLabel} />
+          <BudgetVsActualCard
+            rows={budgetRows}
+            monthLabel={currentMonthLabel}
+            periodMonth={currentMonthKey}
+            currentBudgets={categoryBudgets}
+          />
           <WhereItWentCard totals={categoryTotals} monthLabel={currentMonthLabel} />
         </div>
 

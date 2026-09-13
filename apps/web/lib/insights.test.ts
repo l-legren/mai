@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { ExpenseRow } from '@mai/api';
+import type { CategoryBudgetRow, ExpenseRow } from '@mai/api';
 import {
   breakdownSlices,
   budgetBarWidthPct,
@@ -100,19 +100,40 @@ describe('categoryBreakdown', () => {
   });
 });
 
+function makeBudgetRow(overrides: Partial<CategoryBudgetRow> = {}): CategoryBudgetRow {
+  return { id: '1', category: 'groceries', period_month: '2026-08', amount: 400, ...overrides };
+}
+
 describe('budgetVsActual', () => {
   it('ranks categories by how far over budget they are, most over first', () => {
     const expenses = [
       makeExpense({ category: 'groceries', amount: -300, spent_on: '2026-08-01' }), // 75% of 400
       makeExpense({ category: 'transport', amount: -165, spent_on: '2026-08-01' }), // 110% of 150
     ];
-    const rows = budgetVsActual(expenses, '2026-08', { groceries: 400, transport: 150 } as never);
+    const budgetRows = [
+      makeBudgetRow({ id: '1', category: 'groceries', amount: 400 }),
+      makeBudgetRow({ id: '2', category: 'transport', amount: 150 }),
+    ];
+
+    const rows = budgetVsActual(expenses, '2026-08', budgetRows);
+
     expect(rows.map((row) => row.category)).toEqual(['transport', 'groceries']);
   });
 
-  it('omits categories with no spend this month', () => {
-    const rows = budgetVsActual([], '2026-08', { groceries: 400 } as never);
+  it('omits a category with no budget set this month, even if it has spend', () => {
+    const expenses = [makeExpense({ category: 'groceries', amount: -50, spent_on: '2026-08-01' })];
+
+    const rows = budgetVsActual(expenses, '2026-08', []);
+
     expect(rows).toEqual([]);
+  });
+
+  it('includes a zero-spend category as long as it has a budget set', () => {
+    const rows = budgetVsActual([], '2026-08', [
+      makeBudgetRow({ category: 'groceries', amount: 400 }),
+    ]);
+
+    expect(rows).toEqual([{ category: 'groceries', spent: 0, limit: 400 }]);
   });
 });
 
