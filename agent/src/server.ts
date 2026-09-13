@@ -2,7 +2,7 @@ import 'dotenv/config';
 import chalk from 'chalk';
 import { Hono, type Context } from 'hono';
 import { serve } from '@hono/node-server';
-import { validateUIMessages } from 'ai';
+import { createUIMessageStreamResponse, toUIMessageStream, validateUIMessages } from 'ai';
 import { supabase } from './data/supabase.ts';
 import { AskMaiRequestMetaSchema, RememberFactRequestSchema } from './types.ts';
 import { runAskMai } from './run.ts';
@@ -52,7 +52,7 @@ app.post('/ask-mai', async (ctx) => {
 
   // rememberFact's tool call (no `execute`, see tools/index.ts) streams out as a native
   // `tool-input-available` part here — no more manual re-encoding into a custom 'confirm' event.
-  return result.toUIMessageStreamResponse();
+  return createUIMessageStreamResponse({ stream: toUIMessageStream({ stream: result.stream }) });
 });
 
 app.post('/ask-mai/remember', async (ctx) => {
