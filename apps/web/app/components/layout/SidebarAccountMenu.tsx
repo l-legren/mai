@@ -73,7 +73,7 @@ const SidebarAccountMenu = ({ profile, collapsed }: SidebarAccountMenuProps) => 
         aria-label={collapsed ? t('nav.accountMenu') : undefined}
         className={cn(
           'flex h-11 w-full items-center gap-3 rounded-mq-sm px-3 hover:bg-white/[0.04]',
-          collapsed && 'justify-center px-0'
+          collapsed ? 'justify-center px-0' : 'max-lg:justify-center max-lg:px-0'
         )}
       >
         <span
@@ -82,16 +82,19 @@ const SidebarAccountMenu = ({ profile, collapsed }: SidebarAccountMenuProps) => 
         >
           {initial}
         </span>
-        {!collapsed && (
-          <>
-            <span className="min-w-0 flex-1 truncate text-left text-sm font-medium text-text">
-              {profile?.first_name}
-            </span>
-            <span aria-hidden="true" className="text-[13px] text-text-5">
-              •••
-            </span>
-          </>
-        )}
+        <span
+          className={cn(
+            'flex min-w-0 flex-1 items-center justify-between gap-2',
+            collapsed ? 'hidden' : 'max-lg:hidden'
+          )}
+        >
+          <span className="min-w-0 flex-1 truncate text-left text-sm font-medium text-text">
+            {profile?.first_name}
+          </span>
+          <span aria-hidden="true" className="text-[13px] text-text-5">
+            •••
+          </span>
+        </span>
       </button>
     </div>
   );

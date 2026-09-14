@@ -60,6 +60,12 @@
   --mq-shadow-window: 0 24px 70px rgba(0, 0, 0, 0.22);
   --mq-shadow-pop: 0 14px 34px rgba(0, 0, 0, 0.5);
   --mq-shadow-tip: 0 8px 22px rgba(0, 0, 0, 0.4);
+
+  /* Not in design-system/styles.css (layout, not a visual token) — single source of truth for
+     Sidebar.tsx's expanded/collapsed width so the CSS breakpoint and the manual-toggle classes
+     can't drift out of sync with each other. */
+  --mq-sidebar-w-expanded: 252px;
+  --mq-sidebar-w-collapsed: 68px;
 }
 
 @theme inline {
@@ -110,6 +116,9 @@
   --shadow-mq-window: var(--mq-shadow-window);
   --shadow-mq-pop: var(--mq-shadow-pop);
   --shadow-mq-tip: var(--mq-shadow-tip);
+
+  --width-mq-sidebar-expanded: var(--mq-sidebar-w-expanded);
+  --width-mq-sidebar-collapsed: var(--mq-sidebar-w-collapsed);
 }
 
 body {
