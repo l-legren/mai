@@ -1,12 +1,16 @@
 'use client';
 
 import { useTranslation } from 'react-i18next';
+import { cn } from '@/lib/utils';
 
 export type LogoProps = {
   withWordmark?: boolean;
+  // Sidebar-only: hides the wordmark below the `lg` breakpoint via CSS rather than a JS viewport
+  // check, so there's no post-hydration flip (see Sidebar.tsx's own comment on this).
+  autoHideOnNarrow?: boolean;
 };
 
-const Logo = ({ withWordmark = true }: LogoProps) => {
+const Logo = ({ withWordmark = true, autoHideOnNarrow = false }: LogoProps) => {
   const { t } = useTranslation();
 
   return (
@@ -16,7 +20,14 @@ const Logo = ({ withWordmark = true }: LogoProps) => {
         M
       </span>
       {withWordmark && (
-        <span className="text-lg font-bold tracking-tight text-text">{t('common.appName')}</span>
+        <span
+          className={cn(
+            'text-lg font-bold tracking-tight text-text',
+            autoHideOnNarrow && 'max-lg:hidden'
+          )}
+        >
+          {t('common.appName')}
+        </span>
       )}
     </span>
   );

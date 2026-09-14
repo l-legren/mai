@@ -1,51 +1,35 @@
 // @vitest-environment jsdom
 import '@/i18n';
-import { afterEach, describe, expect, it, vi } from 'vitest';
-import { act, cleanup, render, screen } from '@testing-library/react';
+import { afterEach, describe, expect, it } from 'vitest';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import Sidebar from './Sidebar';
 
 afterEach(() => {
   cleanup();
-  vi.unstubAllGlobals();
 });
 
-// Only one listener is ever registered, so grabbing it off the mock's call args is enough — no
-// need to model addEventListener/removeEventListener as a real subscriber list.
-function mockMatchMedia(matches: boolean) {
-  const mediaQueryList = { matches, addEventListener: vi.fn(), removeEventListener: vi.fn() };
-  vi.stubGlobal('matchMedia', vi.fn().mockReturnValue(mediaQueryList));
-
-  return {
-    crossBreakpoint(next: boolean) {
-      mediaQueryList.matches = next;
-      act(() => mediaQueryList.addEventListener.mock.calls[0][1]({ matches: next }));
-    },
-  };
-}
-
 describe('Sidebar', () => {
-  it('starts expanded on a wide viewport', () => {
-    mockMatchMedia(false);
+  it('starts expanded — the narrow-viewport look is a CSS breakpoint, not JS state', () => {
     render(<Sidebar profile={null} />);
 
     expect(screen.getByRole('button', { name: 'Collapse sidebar' })).toBeTruthy();
   });
 
-  it('auto-collapses when the viewport is already narrow on mount', () => {
-    mockMatchMedia(true);
+  it('applies the max-lg auto-collapse classes when not manually toggled, so a narrow viewport is', () => {
     render(<Sidebar profile={null} />);
 
-    expect(screen.getByRole('button', { name: 'Expand sidebar' })).toBeTruthy();
+    const nav = screen.getByRole('navigation', { name: 'Main navigation' });
+    expect(nav.className).toContain('max-lg:w-mq-sidebar-collapsed');
   });
 
-  it('collapses and expands as the viewport crosses the breakpoint', () => {
-    const media = mockMatchMedia(false);
+  it('manually toggling collapses regardless of viewport, and drops the auto-collapse classes', () => {
     render(<Sidebar profile={null} />);
 
-    media.crossBreakpoint(true);
-    expect(screen.getByRole('button', { name: 'Expand sidebar' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Collapse sidebar' }));
 
-    media.crossBreakpoint(false);
-    expect(screen.getByRole('button', { name: 'Collapse sidebar' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Expand sidebar' })).toBeTruthy();
+    const nav = screen.getByRole('navigation', { name: 'Main navigation' });
+    expect(nav.className).toContain('w-mq-sidebar-collapsed');
+    expect(nav.className).not.toContain('max-lg:');
   });
 });
