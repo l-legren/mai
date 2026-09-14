@@ -71,9 +71,9 @@
     "typescript": "~6.0.3"
   },
   "scripts": {
-    "start": "expo start",
-    "android": "expo run:android",
-    "ios": "expo run:ios",
+    "start": "node scripts/dev.mjs start",
+    "android": "node scripts/dev.mjs run:android",
+    "ios": "node scripts/dev.mjs run:ios",
     "build:android": "expo run:android",
     "build:ios": "expo run:ios",
     "web": "expo start --web",
