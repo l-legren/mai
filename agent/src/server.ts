@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import chalk from 'chalk';
 import { Hono, type Context } from 'hono';
+import { logger } from 'hono/logger';
 import { serve } from '@hono/node-server';
 import { createUIMessageStreamResponse, toUIMessageStream, validateUIMessages } from 'ai';
 import { supabase } from './data/supabase.ts';
@@ -9,6 +10,8 @@ import { runAskMai } from './run.ts';
 import { saveUserMemory } from './tools/index.ts';
 
 const app = new Hono();
+
+app.use(logger());
 
 type AuthResult = { userId: string } | { error: string };
 
@@ -48,7 +51,16 @@ app.post('/ask-mai', async (ctx) => {
     return ctx.json({ message: 'Invalid shape of the payload' }, 400);
   }
 
-  const result = await runAskMai(auth.userId, messages, metaResult.data.today);
+  // Awaits the memories DB read (see run.ts) before any streaming starts, so a failure there
+  // (or a model-setup error) is still a normal exception at this point, not a stream error —
+  // caught here so it reaches the client as a real error instead of an opaque connection drop.
+  let result: Awaited<ReturnType<typeof runAskMai>>;
+  try {
+    result = await runAskMai(auth.userId, messages, metaResult.data.today);
+  } catch (error) {
+    console.error('ask-mai: runAskMai failed', error);
+    return ctx.json({ error: 'Failed to generate a reply' }, 500);
+  }
 
   // rememberFact's tool call (no `execute`, see tools/index.ts) streams out as a native
   // `tool-input-available` part here — no more manual re-encoding into a custom 'confirm' event.
@@ -69,7 +81,13 @@ app.post('/ask-mai/remember', async (ctx) => {
   const validationResult = RememberFactRequestSchema.safeParse(jsonBody);
   if (!validationResult.success) return ctx.json({ message: 'Invalid shape of the payload' }, 400);
 
-  await saveUserMemory(auth.userId, validationResult.data.content);
+  try {
+    await saveUserMemory(auth.userId, validationResult.data.content);
+  } catch (error) {
+    console.error('ask-mai remember: saveUserMemory failed', error);
+    return ctx.json({ error: 'Failed to save memory' }, 500);
+  }
+
   return ctx.json({ saved: true });
 });
 
