@@ -2,6 +2,7 @@ import { format } from 'date-fns';
 import { describe, expect, it, vi } from 'vitest';
 
 vi.mock('next/navigation', () => ({ redirect: vi.fn() }));
+vi.mock('next/cache', () => ({ updateTag: vi.fn() }));
 vi.mock('@/lib/supabase-server', () => ({ createSupabaseServerClient: vi.fn() }));
 vi.mock('@/lib/geo', () => ({ getDetectedLocation: vi.fn() }));
 vi.mock('@/lib/dal/category-budgets', () => ({ upsertBudget: vi.fn() }));
@@ -10,9 +11,11 @@ vi.mock('@mai/api', () => ({
   deriveCurrencyFromCountryCode: vi.fn((code: string | null) => (code === 'GB' ? 'GBP' : 'EUR')),
 }));
 
+import { updateTag } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { deriveCurrencyFromCountryCode, insertProfileOnboardingRow } from '@mai/api';
 import { upsertBudget } from '@/lib/dal/category-budgets';
+import { profileCacheTag } from '@/lib/dal/profile';
 import { getDetectedLocation } from '@/lib/geo';
 import { createSupabaseServerClient } from '@/lib/supabase-server';
 import { createMockClient } from '../../vitest.setup';
@@ -67,6 +70,24 @@ describe('completeOnboardingAction', () => {
       notifications_enabled: false,
     });
     expect(redirect).toHaveBeenCalledWith('/');
+  });
+
+  it('invalidates the cached profile for the newly onboarded user', async () => {
+    const client = createMockClient();
+    vi.mocked(client.auth.getUser).mockResolvedValue({
+      data: { user: { id: 'user-1' } },
+      error: null,
+    } as never);
+    vi.mocked(createSupabaseServerClient).mockResolvedValue(client as never);
+    vi.mocked(getDetectedLocation).mockResolvedValue({ countryCode: 'GB', city: 'London' });
+    vi.mocked(insertProfileOnboardingRow).mockResolvedValue({} as never);
+
+    await completeOnboardingAction(
+      initialOnboardingFormState,
+      formDataFor({ firstName: 'Mara', surname: '', city: 'London' })
+    );
+
+    expect(updateTag).toHaveBeenCalledWith(profileCacheTag('user-1'));
   });
 
   it('returns unknown instead of throwing when the insert fails', async () => {
