@@ -60,7 +60,6 @@ export async function runAskMai(
     // Haiku 4.5 errors if `effort` is sent.
     providerOptions: tier === 'sonnet' ? { anthropic: { effort: 'low' } } : undefined,
     onFinish: async ({ usage }) => {
-      console.log('🚀 ~ runAskMai ~ usage:', usage);
       if (usage.totalTokens) {
         await addDailyTokensUsed(userId, usage.totalTokens);
       }
