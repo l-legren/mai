@@ -24,7 +24,7 @@ const AgentNote = ({
   bylineLabel,
 }: AgentNoteProps) => {
   return (
-    <div className="flex flex-col gap-3 rounded-mq-lg border border-accent-border bg-surface-accent px-[22px] py-5">
+    <div className="flex flex-col gap-3 rounded-mq-lg border border-accent-border bg-surface-accent px-[22px] py-5 shadow-mq-card">
       {showByline && bylineLabel && (
         <div className="flex items-center gap-2">
           <span aria-hidden="true" className="flex text-accent">

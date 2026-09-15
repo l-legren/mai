@@ -19,7 +19,7 @@ const ModeSwitch = ({ mode }: ModeSwitchProps) => {
   return (
     <div className="flex items-center justify-center gap-1.5 text-sm">
       <span className="text-text-3">{lead}</span>
-      <Link href={href} className="font-semibold text-accent hover:text-[#FF6BB1]">
+      <Link href={href} className="font-semibold text-accent hover:text-accent-hover">
         {action}
       </Link>
     </div>

@@ -26,12 +26,7 @@ const RecurringItemRow = ({ item, divider = true, onDelete }: RecurringItemRowPr
   )({});
 
   return (
-    <div
-      className={cn(
-        'flex items-center gap-4 px-6 py-3.5',
-        divider && 'border-t border-white/[0.06]'
-      )}
-    >
+    <div className={cn('flex items-center gap-4 px-6 py-3.5', divider && 'border-t border-border')}>
       <div
         aria-hidden="true"
         className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-full bg-fill text-text-2"
@@ -52,7 +47,7 @@ const RecurringItemRow = ({ item, divider = true, onDelete }: RecurringItemRowPr
           type="button"
           onClick={onDelete}
           aria-label={t('recurring.deleteLabel', { name: item.name })}
-          className="shrink-0 rounded-mq-sm p-1.5 text-text-3 hover:bg-white/5 hover:text-text"
+          className="shrink-0 rounded-mq-sm p-1.5 text-text-3 hover:bg-fill hover:text-text"
         >
           <TrashIcon />
         </button>

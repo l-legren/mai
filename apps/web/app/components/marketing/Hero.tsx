@@ -10,7 +10,7 @@ const Hero = () => {
   return (
     <section className="flex flex-1 items-center px-6 py-10 sm:px-10 lg:px-14">
       <div className="mx-auto flex w-full max-w-3xl flex-col items-start gap-6 text-left">
-        <div className="inline-flex items-center gap-2.5 rounded-full border border-white/15 px-3.5 py-1.5">
+        <div className="inline-flex items-center gap-2.5 rounded-full border border-border-3 px-3.5 py-1.5">
           <span className="h-1.5 w-1.5 rounded-full bg-accent" aria-hidden="true" />
           <span className="text-xs font-medium text-text-2 sm:text-[12.5px]">
             {t('landing.badge')}

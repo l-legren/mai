@@ -42,7 +42,7 @@ const SavingsSlider = ({ value, breakEven }: SavingsSliderProps) => {
   };
 
   return (
-    <div className="rounded-mq-lg border border-border bg-surface-raised px-6 py-5">
+    <div className="rounded-mq-lg border border-border bg-surface-raised px-6 py-5 shadow-mq-card">
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <div className="flex flex-wrap items-baseline gap-3">
           <span className="text-[15px] font-semibold text-text">

@@ -59,7 +59,7 @@ const EquationCard = ({ income, costs, costsItemCount, savingsGoal }: EquationCa
   const allowance = computeAllowance({ incomeTotal: income, costsTotal: costs, savingsGoal });
 
   return (
-    <div className="flex flex-col gap-4 rounded-mq-lg border border-border bg-surface-raised px-6 py-5 md:flex-row md:gap-8">
+    <div className="flex flex-col gap-4 rounded-mq-lg border border-border bg-surface-raised px-6 py-5 shadow-mq-card md:flex-row md:gap-8">
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-baseline justify-between gap-3">
           <span className="text-[15px] font-semibold text-text">
