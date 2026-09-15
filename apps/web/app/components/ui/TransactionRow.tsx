@@ -35,7 +35,7 @@ const TransactionRow = ({
     <div
       className={cn(
         'flex items-center gap-4 px-6 py-3.5',
-        divider && 'border-t border-white/[0.06]',
+        divider && 'border-t border-border',
         past && 'opacity-[0.62]'
       )}
     >
@@ -57,7 +57,7 @@ const TransactionRow = ({
           type="button"
           onClick={onDelete}
           aria-label={deleteLabel}
-          className="shrink-0 rounded-mq-sm p-1.5 text-text-3 hover:bg-white/5 hover:text-text"
+          className="shrink-0 rounded-mq-sm p-1.5 text-text-3 hover:bg-fill hover:text-text"
         >
           <TrashIcon />
         </button>

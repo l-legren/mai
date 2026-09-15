@@ -93,7 +93,7 @@ const SidebarAccountMenu = ({ profile, collapsed }: SidebarAccountMenuProps) => 
         aria-expanded={isOpen}
         aria-label={collapsed ? t('nav.accountMenu') : undefined}
         className={cn(
-          'flex h-11 w-full items-center gap-3 rounded-mq-sm px-3 hover:bg-white/[0.04]',
+          'flex h-11 w-full items-center gap-3 rounded-mq-sm px-3 hover:bg-fill',
           collapsed ? 'justify-center px-0' : 'max-lg:justify-center max-lg:px-0'
         )}
       >

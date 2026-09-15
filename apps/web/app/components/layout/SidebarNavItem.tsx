@@ -47,10 +47,10 @@ const SidebarNavItem = ({ item, collapsed }: SidebarNavItemProps) => {
       className={cn(
         'group relative flex h-11 items-center gap-3 rounded-mq-sm px-3 transition-colors',
         collapsed ? 'w-11 justify-center px-0' : 'max-lg:w-11 max-lg:justify-center max-lg:px-0',
-        isActive ? 'bg-accent-tint text-accent' : 'text-text-2 hover:bg-white/[0.04]'
+        isActive ? 'bg-accent-tint text-accent' : 'text-text-2 hover:bg-fill'
       )}
     >
-      <Icon className={cn('shrink-0', isActive ? 'text-accent' : 'text-[#8E888E]')} />
+      <Icon className={cn('shrink-0', isActive ? 'text-accent' : 'text-text-3')} />
       <span
         className={cn(
           'text-[14.5px] font-medium',

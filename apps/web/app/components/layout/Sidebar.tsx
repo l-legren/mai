@@ -47,7 +47,7 @@ const Sidebar = ({ profile }: SidebarProps) => {
           onClick={toggleCollapsed}
           aria-label={t(collapsed ? 'nav.expandSidebar' : 'nav.collapseSidebar')}
           className={cn(
-            'flex items-center justify-center rounded-mq-lg text-text-4 hover:bg-white/[0.04] hover:text-text-2',
+            'flex items-center justify-center rounded-mq-lg text-text-4 hover:bg-fill hover:text-text-2',
             collapsed ? 'h-11 w-11' : 'h-7 w-7 max-lg:h-11 max-lg:w-11'
           )}
         >
