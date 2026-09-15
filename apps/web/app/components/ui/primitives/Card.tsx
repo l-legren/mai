@@ -18,7 +18,7 @@ const Card = ({ title, action, onAction, accent = false, flush = false, children
   return (
     <div
       className={cn(
-        'flex flex-col overflow-hidden rounded-mq-lg border',
+        'flex flex-col overflow-hidden rounded-mq-lg border shadow-mq-card',
         accent ? 'border-accent-border bg-surface-accent' : 'border-border bg-surface-raised'
       )}
     >
