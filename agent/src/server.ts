@@ -3,10 +3,14 @@ import chalk from 'chalk';
 import { Hono, type Context } from 'hono';
 import { logger } from 'hono/logger';
 import { serve } from '@hono/node-server';
-import { createUIMessageStreamResponse, toUIMessageStream, validateUIMessages } from 'ai';
+import {
+  createUIMessageStream,
+  createUIMessageStreamResponse,
+  toUIMessageStream,
+  validateUIMessages,
+} from 'ai';
 import { supabase } from './data/supabase.ts';
 import { AskMaiRequestMetaSchema, RememberFactRequestSchema } from './types.ts';
-import { DailyQuotaExceededError } from './context/usage.ts';
 import { runAskMai } from './run.ts';
 import { saveUserMemory } from './tools/index.ts';
 
@@ -55,20 +59,31 @@ app.post('/ask-mai', async (ctx) => {
   // Awaits the memories DB read (see run.ts) before any streaming starts, so a failure there
   // (or a model-setup error) is still a normal exception at this point, not a stream error —
   // caught here so it reaches the client as a real error instead of an opaque connection drop.
-  let result: Awaited<ReturnType<typeof runAskMai>>;
+  let runResult: Awaited<ReturnType<typeof runAskMai>>;
   try {
-    result = await runAskMai(auth.userId, messages, metaResult.data.today);
+    runResult = await runAskMai(auth.userId, messages, metaResult.data.today);
   } catch (error) {
-    if (error instanceof DailyQuotaExceededError) {
-      return ctx.json({ error: error.message }, 429);
-    }
     console.error('ask-mai: runAskMai failed', error);
     return ctx.json({ error: 'Failed to generate a reply' }, 500);
   }
 
+  // Delivered as a normal assistant turn (a `data-quotaExceeded` part, no text) rather than an
+  // HTTP error, so the client renders it through the same message-list UI as any other reply —
+  // see apps/web/app/(app)/ask/AskChatView.tsx and apps/mobile/src/hooks/ask-turns.ts.
+  if (runResult.type === 'blocked') {
+    const stream = createUIMessageStream({
+      execute: ({ writer }) => {
+        writer.write({ type: 'data-quotaExceeded', data: {} });
+      },
+    });
+    return createUIMessageStreamResponse({ stream });
+  }
+
   // rememberFact's tool call (no `execute`, see tools/index.ts) streams out as a native
   // `tool-input-available` part here — no more manual re-encoding into a custom 'confirm' event.
-  return createUIMessageStreamResponse({ stream: toUIMessageStream({ stream: result.stream }) });
+  return createUIMessageStreamResponse({
+    stream: toUIMessageStream({ stream: runResult.result.stream }),
+  });
 });
 
 app.post('/ask-mai/remember', async (ctx) => {

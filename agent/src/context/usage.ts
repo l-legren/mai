@@ -1,13 +1,5 @@
 import { withScopedRead, withScopedWrite } from '../db.ts';
 
-/** Thrown when a user has hit DAILY_TOKEN_HARD_CAP — server.ts maps this to a 429. */
-export class DailyQuotaExceededError extends Error {
-  constructor() {
-    super('Daily Ask Mai token quota exceeded');
-    this.name = 'DailyQuotaExceededError';
-  }
-}
-
 /** Fails open to 0 (Sonnet-eligible) on a read error rather than blocking Ask Mai over a DB hiccup. */
 export async function getDailyTokensUsed(userId: string): Promise<number> {
   try {
@@ -36,6 +28,6 @@ export async function addDailyTokensUsed(userId: string, tokens: number): Promis
       `;
     });
   } catch (error) {
-    console.error('usage: addDailyTokensUsed failed', error);
+    console.error('usage: addDailyTokensUsed failed: \n', error);
   }
 }

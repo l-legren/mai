@@ -2,11 +2,7 @@ import { createAnthropic } from '@ai-sdk/anthropic';
 import { convertToModelMessages, stepCountIs, streamText, type UIMessage } from 'ai';
 
 import { HAIKU_MODEL_ID, SONNET_MODEL_ID, selectModelTier } from './context/modelLimits.ts';
-import {
-  DailyQuotaExceededError,
-  addDailyTokensUsed,
-  getDailyTokensUsed,
-} from './context/usage.ts';
+import { addDailyTokensUsed, getDailyTokensUsed } from './context/usage.ts';
 import { DEFAULT_CURRENCY, buildAskMaiSystemPrompt } from './prompts.ts';
 import { createMaiTools, getUserMemories } from './tools/index.ts';
 
@@ -26,6 +22,9 @@ const anthropic = createAnthropic({
 // multi-turn memory; the caller supplies the running transcript each call.
 const ASK_MAX_STEPS = 4;
 
+export type RunAskMaiResult =
+  { type: 'blocked' } | { type: 'stream'; result: ReturnType<typeof streamText> };
+
 /**
  * Ask Mai's agent loop: a bounded, multi-*step* tool-calling turn (not multi-turn conversational
  * memory — the caller supplies the running transcript on every call; nothing is persisted here).
@@ -40,7 +39,7 @@ export async function runAskMai(
   messages: UIMessage[],
   today: string,
   currency: string = DEFAULT_CURRENCY
-) {
+): Promise<RunAskMaiResult> {
   const [memories, modelMessages, tokensUsedToday] = await Promise.all([
     getUserMemories(userId),
     convertToModelMessages(messages),
@@ -49,10 +48,10 @@ export async function runAskMai(
 
   const tier = selectModelTier(tokensUsedToday);
   if (tier === 'blocked') {
-    throw new DailyQuotaExceededError();
+    return { type: 'blocked' };
   }
 
-  return streamText({
+  const result = streamText({
     model: anthropic(tier === 'sonnet' ? SONNET_MODEL_ID : HAIKU_MODEL_ID),
     system: buildAskMaiSystemPrompt(currency, memories),
     messages: modelMessages,
@@ -60,13 +59,16 @@ export async function runAskMai(
     stopWhen: stepCountIs(ASK_MAX_STEPS),
     // Haiku 4.5 errors if `effort` is sent.
     providerOptions: tier === 'sonnet' ? { anthropic: { effort: 'low' } } : undefined,
-    onFinish: async ({ totalUsage }) => {
-      if (totalUsage.totalTokens) {
-        await addDailyTokensUsed(userId, totalUsage.totalTokens);
+    onFinish: async ({ usage }) => {
+      console.log('🚀 ~ runAskMai ~ usage:', usage);
+      if (usage.totalTokens) {
+        await addDailyTokensUsed(userId, usage.totalTokens);
       }
     },
     onError: ({ error }) => {
       console.error('runAskMai: stream error', error);
     },
   });
+
+  return { type: 'stream', result };
 }
