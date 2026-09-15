@@ -3,6 +3,7 @@ import type { SingleTurnDatasetEntry } from './types.ts';
 /**
  * Minimal single-turn dataset: two cases that should each pick a different tool. Having both in
  * the same run tests discrimination, not just "can it call a tool when there's only one option."
+ * The rememberFact cases run at effort: 'low' to match production (run.ts).
  */
 export const SINGLE_TURN_DATASET: SingleTurnDatasetEntry[] = [
   {
@@ -33,7 +34,7 @@ export const SINGLE_TURN_DATASET: SingleTurnDatasetEntry[] = [
     data: {
       prompt: "I keep overspending on takeout every week and it's stressing me out.",
       tools: ['rememberFact', 'getRecentSpending'],
-      config: { model: 'claude-sonnet-5' },
+      config: { model: 'claude-sonnet-5', effort: 'low' },
     },
     target: { expectedTools: ['rememberFact'], category: 'golden' },
     metadata: {
@@ -44,7 +45,7 @@ export const SINGLE_TURN_DATASET: SingleTurnDatasetEntry[] = [
     data: {
       prompt: 'I want to save up for a house down payment in the next 3 years.',
       tools: ['rememberFact', 'getSavingsTargets'],
-      config: { model: 'claude-sonnet-5' },
+      config: { model: 'claude-sonnet-5', effort: 'low' },
     },
     target: { expectedTools: ['rememberFact'], category: 'golden' },
     metadata: { description: 'future financial goal should trigger rememberFact' },
@@ -53,7 +54,7 @@ export const SINGLE_TURN_DATASET: SingleTurnDatasetEntry[] = [
     data: {
       prompt: 'Remember that my favorite color is blue.',
       tools: ['rememberFact'],
-      config: { model: 'claude-sonnet-5' },
+      config: { model: 'claude-sonnet-5', effort: 'low' },
     },
     target: { forbiddenTools: ['rememberFact'], category: 'negative' },
     metadata: { description: 'explicit remember request with no finance content must not save' },
@@ -62,7 +63,7 @@ export const SINGLE_TURN_DATASET: SingleTurnDatasetEntry[] = [
     data: {
       prompt: "By the way, my dog's name is Max.",
       tools: ['rememberFact'],
-      config: { model: 'claude-sonnet-5' },
+      config: { model: 'claude-sonnet-5', effort: 'low' },
     },
     target: { forbiddenTools: ['rememberFact'], category: 'negative' },
     metadata: { description: 'a non-finance fact volunteered casually must not be saved' },

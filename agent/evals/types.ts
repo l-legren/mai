@@ -15,6 +15,7 @@ export interface EvalData {
   config?: {
     model?: string;
     temperature?: number;
+    effort?: 'low' | 'medium' | 'high' | 'xhigh' | 'max';
   };
 }
 
@@ -70,6 +71,7 @@ export interface MultiTurnEvalData {
   config?: {
     model?: string;
     maxSteps?: number;
+    effort?: 'low' | 'medium' | 'high' | 'xhigh' | 'max';
   };
 }
 
