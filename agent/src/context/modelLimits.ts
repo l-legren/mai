@@ -2,31 +2,33 @@ export type ModelLimits = {
   inputLimit: number;
   outputLimit: number;
   contextWindow: number;
-  /** Max tokens a single user may consume across all requests to this model per day. */
   dailyLimitPerUser: number;
 };
 
 /** Default threshold for context window usage (80%) */
 export const DEFAULT_THRESHOLD = 0.8;
 
+export const SONNET_MODEL_ID = 'claude-sonnet-5';
+export const HAIKU_MODEL_ID = 'claude-haiku-4-5';
+
 /**
  * Model limits registry.
  * Currently only includes the Claude models this agent actually calls.
  */
 const MODEL_LIMITS: Record<string, ModelLimits> = {
-  'claude-sonnet-5': {
+  [SONNET_MODEL_ID]: {
     inputLimit: 2000,
     // Higher than haiku's: adaptive thinking is on by default on Sonnet 5 and its
     // reasoning tokens are billed as output, so this has to cover thinking + reply.
     outputLimit: 6000,
     contextWindow: 50000,
-    dailyLimitPerUser: 30000,
+    dailyLimitPerUser: 6000,
   },
-  'claude-haiku-4-5': {
+  [HAIKU_MODEL_ID]: {
     inputLimit: 10000,
     outputLimit: 2000,
     contextWindow: 50000,
-    dailyLimitPerUser: 30000,
+    dailyLimitPerUser: 25000,
   },
 };
 
@@ -35,7 +37,7 @@ const DEFAULT_LIMITS: ModelLimits = {
   inputLimit: 10000,
   outputLimit: 2000,
   contextWindow: 50000,
-  dailyLimitPerUser: 15000,
+  dailyLimitPerUser: 25000,
 };
 
 /**
@@ -58,4 +60,13 @@ export function isOverThreshold(
 /** Calculate usage percentage. */
 export function calculateUsagePercentage(totalTokens: number, contextWindow: number): number {
   return (totalTokens / contextWindow) * 100;
+}
+
+export type AskMaiModelTier = 'sonnet' | 'haiku' | 'blocked';
+
+/** `tokensUsedToday` must come from the server-tracked total, never client input. */
+export function selectModelTier(tokensUsedToday: number): AskMaiModelTier {
+  if (tokensUsedToday >= getModelLimits(HAIKU_MODEL_ID).dailyLimitPerUser) return 'blocked';
+  if (tokensUsedToday >= getModelLimits(SONNET_MODEL_ID).dailyLimitPerUser) return 'haiku';
+  return 'sonnet';
 }

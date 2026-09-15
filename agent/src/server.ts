@@ -6,6 +6,7 @@ import { serve } from '@hono/node-server';
 import { createUIMessageStreamResponse, toUIMessageStream, validateUIMessages } from 'ai';
 import { supabase } from './data/supabase.ts';
 import { AskMaiRequestMetaSchema, RememberFactRequestSchema } from './types.ts';
+import { DailyQuotaExceededError } from './context/usage.ts';
 import { runAskMai } from './run.ts';
 import { saveUserMemory } from './tools/index.ts';
 
@@ -58,6 +59,9 @@ app.post('/ask-mai', async (ctx) => {
   try {
     result = await runAskMai(auth.userId, messages, metaResult.data.today);
   } catch (error) {
+    if (error instanceof DailyQuotaExceededError) {
+      return ctx.json({ error: error.message }, 429);
+    }
     console.error('ask-mai: runAskMai failed', error);
     return ctx.json({ error: 'Failed to generate a reply' }, 500);
   }
