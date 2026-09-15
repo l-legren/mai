@@ -41,6 +41,10 @@ function isRememberFactPart(part: UIMessagePart): boolean {
   return part.type === 'tool-rememberFact';
 }
 
+function isQuotaExceededPart(part: UIMessagePart): boolean {
+  return part.type === 'data-quotaExceeded';
+}
+
 const RememberFactInputSchema = z.object({ content: z.string() });
 const RememberFactOutputSchema = z.object({ saved: z.boolean() });
 
@@ -92,10 +96,12 @@ const AskTurn = ({ message, isFinished, onConfirmMemory, onDismissMemory }: AskT
 
   const text = textOf(message);
   const rememberPart = message.parts.find(isRememberFactPart) as RememberFactPart | undefined;
+  const quotaExceeded = message.parts.some(isQuotaExceededPart);
   const statusLine = isFinished ? statusLineFor(toolNamesOf(message), t) : undefined;
 
   return (
     <>
+      {quotaExceeded && <ChatBubble from="agent">{t('ask.quotaExceeded')}</ChatBubble>}
       {text && (
         <ChatBubble from="agent" status={statusLine}>
           {text}
@@ -153,7 +159,11 @@ const RememberFactNote = ({ part, onConfirm, onDismiss }: RememberFactNoteProps)
 function isAwaitingReply(status: ChatStatus, lastMessage: UIMessage | undefined): boolean {
   if (status !== 'submitted' && status !== 'streaming') return false;
   if (!lastMessage || lastMessage.role !== 'assistant') return true;
-  return !textOf(lastMessage) && !lastMessage.parts.some(isRememberFactPart);
+  return (
+    !textOf(lastMessage) &&
+    !lastMessage.parts.some(isRememberFactPart) &&
+    !lastMessage.parts.some(isQuotaExceededPart)
+  );
 }
 
 /**

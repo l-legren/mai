@@ -44,6 +44,10 @@ function isRememberFactPart(part: UIMessagePart): boolean {
   return part.type === 'tool-rememberFact';
 }
 
+function isQuotaExceededPart(part: UIMessagePart): boolean {
+  return part.type === 'data-quotaExceeded';
+}
+
 export const RememberFactInputSchema = z.object({ content: z.string() });
 const RememberFactOutputSchema = z.object({ saved: z.boolean() });
 
@@ -79,6 +83,10 @@ export function turnsForAssistantMessage(
     turns.push({ kind: 'assistant', lines: linesFrom(text), statusLine });
   }
 
+  if (message.parts.some(isQuotaExceededPart)) {
+    turns.push({ kind: 'assistant', lines: [t('ask.quotaExceeded')] });
+  }
+
   const rememberPart = message.parts.find(isRememberFactPart) as RememberFactPart | undefined;
   if (!rememberPart) return turns;
 
@@ -111,7 +119,11 @@ export function turnsForAssistantMessage(
 export function isAwaitingReply(status: ChatStatus, lastMessage: UIMessage | undefined): boolean {
   if (status !== 'submitted' && status !== 'streaming') return false;
   if (!lastMessage || lastMessage.role !== 'assistant') return true;
-  return !textOf(lastMessage) && !lastMessage.parts.some(isRememberFactPart);
+  return (
+    !textOf(lastMessage) &&
+    !lastMessage.parts.some(isRememberFactPart) &&
+    !lastMessage.parts.some(isQuotaExceededPart)
+  );
 }
 
 export function pendingRememberPart(messages: UIMessage[]): RememberFactPart | undefined {

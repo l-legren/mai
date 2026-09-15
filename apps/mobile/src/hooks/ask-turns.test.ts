@@ -100,6 +100,18 @@ describe('turnsForAssistantMessage', () => {
       { kind: 'error', message: 'ask.error' },
     ]);
   });
+
+  it('maps a quotaExceeded part to an assistant turn', () => {
+    const message = {
+      id: '1',
+      role: 'assistant',
+      parts: [{ type: 'data-quotaExceeded', data: {} }],
+    } as unknown as UIMessage;
+
+    expect(turnsForAssistantMessage(message, true, t)).toEqual([
+      { kind: 'assistant', lines: ['ask.quotaExceeded'] },
+    ]);
+  });
 });
 
 describe('isAwaitingReply', () => {
@@ -118,5 +130,15 @@ describe('isAwaitingReply', () => {
 
   it('is false once assistant text has started streaming in', () => {
     expect(isAwaitingReply('streaming', textMessage('1', 'You spent'))).toBe(false);
+  });
+
+  it('is false once a quotaExceeded part has arrived', () => {
+    const message = {
+      id: '1',
+      role: 'assistant',
+      parts: [{ type: 'data-quotaExceeded', data: {} }],
+    } as unknown as UIMessage;
+
+    expect(isAwaitingReply('streaming', message)).toBe(false);
   });
 });

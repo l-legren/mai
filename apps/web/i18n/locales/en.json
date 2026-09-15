@@ -223,6 +223,7 @@
     "greetingSubtitle": "I can look up your recent spending and answer questions about it.",
     "thinking": "Thinking…",
     "error": "Something went wrong. Please try again.",
+    "quotaExceeded": "You've reached today's limit for Ask Mai. Please try again tomorrow.",
     "statusLine": {
       "recentSpending": "Looked at your recent spending"
     },
