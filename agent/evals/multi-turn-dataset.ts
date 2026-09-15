@@ -38,7 +38,7 @@ export const MULTI_TURN_DATASET: MultiTurnDatasetEntry[] = [
     target: {
       originalTask: 'Answer an explicit-N spending question, grounded in the tool result',
       expectedToolOrder: ['getRecentSpending'],
-      forbiddenTools: ['getSavingsTargets', 'getSpendingByCategory'],
+      forbiddenTools: ['getSavingsTargets'],
       mockToolResults: {
         getRecentSpending: JSON.stringify({
           days: 7,
@@ -76,7 +76,7 @@ export const MULTI_TURN_DATASET: MultiTurnDatasetEntry[] = [
     target: {
       originalTask: 'Infer a reasonable N for a relative period with none stated',
       expectedToolOrder: ['getRecentSpending'],
-      forbiddenTools: ['getSavingsTargets', 'getSpendingByCategory'],
+      forbiddenTools: ['getSavingsTargets'],
       mockToolResults: {
         getRecentSpending: JSON.stringify({ days: 7, totalSpent: 120, groceries: 70, dining: 50 }),
       },
@@ -98,7 +98,7 @@ export const MULTI_TURN_DATASET: MultiTurnDatasetEntry[] = [
     target: {
       originalTask: 'Report a zero-data window truthfully, without fabricating a figure',
       expectedToolOrder: ['getRecentSpending'],
-      forbiddenTools: ['getSavingsTargets', 'getSpendingByCategory'],
+      forbiddenTools: ['getSavingsTargets'],
       mockToolResults: { getRecentSpending: JSON.stringify({ days: 3, totalSpent: 0 }) },
       category: 'task-completion',
     },

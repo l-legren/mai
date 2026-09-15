@@ -8,24 +8,24 @@ import type { SingleTurnDatasetEntry } from './types.ts';
 export const SINGLE_TURN_DATASET: SingleTurnDatasetEntry[] = [
   {
     data: {
-      prompt: 'How much did I spend on groceries in March 2026?',
-      tools: ['getSpendingByCategory', 'getSavingsTargets'],
+      prompt: 'How much did I spend on groceries in the last 2 weeks?',
+      tools: ['getRecentSpending', 'getSavingsTargets'],
     },
     target: {
-      expectedTools: ['getSpendingByCategory'],
+      expectedTools: ['getRecentSpending'],
       forbiddenTools: ['getSavingsTargets'],
       category: 'golden',
     },
-    metadata: { description: 'category spend question should pick getSpendingByCategory' },
+    metadata: { description: 'category spend question should pick getRecentSpending' },
   },
   {
     data: {
       prompt: 'Am I on track for my Japan trip savings goal?',
-      tools: ['getSpendingByCategory', 'getSavingsTargets'],
+      tools: ['getRecentSpending', 'getSavingsTargets'],
     },
     target: {
       expectedTools: ['getSavingsTargets'],
-      forbiddenTools: ['getSpendingByCategory'],
+      forbiddenTools: ['getRecentSpending'],
       category: 'golden',
     },
     metadata: { description: 'savings goal question should pick getSavingsTargets' },
