@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useTheme } from 'next-themes';
 import { useTranslation } from 'react-i18next';
 import { signOut } from '@/app/actions/sign-out';
 import { cn } from '@/lib/utils';
@@ -14,6 +15,18 @@ export type SidebarAccountMenuProps = {
 // More options land here alongside sign-out.
 const SidebarAccountMenuDropdown = () => {
   const { t } = useTranslation();
+  const { resolvedTheme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  // The server can't know the theme, so the toggle only renders once mounted client-side — the
+  // next-themes-recommended pattern to avoid a hydration mismatch.
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- canonical next-themes mount guard
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) return null;
+
+  const isDark = resolvedTheme !== 'light';
+  const toggleTheme = () => setTheme(isDark ? 'light' : 'dark');
 
   return (
     <div
@@ -21,6 +34,14 @@ const SidebarAccountMenuDropdown = () => {
       aria-label={t('nav.accountMenu')}
       className="absolute bottom-[calc(100%+6px)] left-0 right-0 flex flex-col gap-0.5 rounded-mq-xl bg-hover p-1.5 shadow-mq-pop"
     >
+      <button
+        type="button"
+        role="menuitem"
+        onClick={toggleTheme}
+        className="flex h-[38px] w-full items-center gap-2.5 rounded-mq-lg px-2.5 text-left text-[13.5px] font-medium text-text hover:bg-fill"
+      >
+        {t(isDark ? 'nav.switchToLightMode' : 'nav.switchToDarkMode')}
+      </button>
       <form action={signOut}>
         <button
           type="submit"

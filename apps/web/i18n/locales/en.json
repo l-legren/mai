@@ -14,7 +14,9 @@
     "askMai": "Ask Mai",
     "collapseSidebar": "Collapse sidebar",
     "expandSidebar": "Expand sidebar",
-    "accountMenu": "Account menu"
+    "accountMenu": "Account menu",
+    "switchToLightMode": "Switch to light mode",
+    "switchToDarkMode": "Switch to dark mode"
   },
   "home": {
     "title": "Today's spending",
