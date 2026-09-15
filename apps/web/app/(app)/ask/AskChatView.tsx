@@ -142,7 +142,9 @@ const RememberFactNote = ({ part, onConfirm, onDismiss }: RememberFactNoteProps)
   }
 
   const input = RememberFactInputSchema.safeParse(part.input);
-  if (!input.success) return null;
+  if (!input.success) {
+    return <FormError message={t('ask.error')} />;
+  }
 
   return (
     <AgentNote
