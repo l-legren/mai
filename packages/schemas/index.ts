@@ -20,6 +20,17 @@ export const ExpenseRowSchema = z.object({
 
 export type ExpenseRow = z.infer<typeof ExpenseRowSchema>;
 
+/** One (month, category) spend total from the `get_expense_monthly_category_totals` RPC —
+ * `month` is `'YYYY-MM'`, `amount` is the summed spend (already positive; income/credits excluded
+ * by the RPC itself). */
+export const ExpenseMonthCategoryTotalSchema = z.object({
+  month: z.string(),
+  category: z.string(),
+  amount: z.number(),
+});
+
+export type ExpenseMonthCategoryTotal = z.infer<typeof ExpenseMonthCategoryTotalSchema>;
+
 /**
  * Persisted recurring row (`public.recurring`). `amount` is in the cadence's own unit (what the user
  * entered — monthly or yearly); the monthly-equivalent used by the allowance is derived in the

@@ -32,7 +32,6 @@
     "empty": "No transactions yet.",
     "today": "Today",
     "yesterday": "Yesterday",
-    "pageOf": "Page {{page}} of {{totalPages}}",
     "previous": "Previous",
     "next": "Next",
     "deleteLabel": "Delete transaction",
@@ -170,6 +169,11 @@
       "twelveMonths": "12 months",
       "all": "All"
     },
+    "periodLabel": {
+      "threeMonths": "Last 3 months",
+      "twelveMonths": "Last 12 months",
+      "all": "All time"
+    },
     "spendingVsIncome": {
       "title": "Spending vs income",
       "note": "Average gap of {{amount}} a month over this period.",
@@ -200,7 +204,7 @@
       "donut": "Donut",
       "everythingElse": "Everything else",
       "spentIn": "spent in {{month}}",
-      "empty": "No spending logged yet this month."
+      "empty": "No spending logged yet in {{month}}."
     },
     "netBalance": {
       "title": "Net balance",

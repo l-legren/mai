@@ -2,16 +2,17 @@ import type { NewBankImportRow } from '@mai/api';
 
 /**
  * Must match `max_rows`/`window_days` in
- * supabase/migrations/20260909130000_expenses_row_cap.sql's `enforce_expenses_row_cap()` trigger —
- * that trigger is the actual enforcement (can't be bypassed by calling PostgREST directly). These
- * constants only let the app preview/display the limit and pre-trim a batch before it ever reaches
- * the database, so a bulk CSV import doesn't just blow up with a raw DB error. No dependency on
- * node:crypto/papaparse here, so it's safe to import from a Client Component too.
+ * supabase/migrations/20260916100000_raise_expenses_row_cap.sql's `enforce_expenses_row_cap()`
+ * trigger — that trigger is the actual enforcement (can't be bypassed by calling PostgREST
+ * directly). These constants only let the app preview/display the limit and pre-trim a batch
+ * before it ever reaches the database, so a bulk CSV import doesn't just blow up with a raw DB
+ * error. No dependency on node:crypto/papaparse here, so it's safe to import from a Client
+ * Component too.
  *
  * The cap is per rolling window, not a lifetime total, so a genuine long-running demo user never
  * hits a permanent wall — only bursts (a big CSV import, a scripted flood) are capped.
  */
-export const EXPENSE_ROW_CAP = 100;
+export const EXPENSE_ROW_CAP = 5000;
 export const EXPENSE_ROW_CAP_WINDOW_DAYS = 7;
 
 /** ISO timestamp for the start of the current rolling window — pass to `getExpenseRowCount`'s
