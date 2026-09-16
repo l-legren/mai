@@ -1,20 +1,19 @@
 'use client';
 
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { Button, Input } from '@/app/components/ui';
-import { useOnboardingDraft } from '../OnboardingDraftProvider';
-import { useFocusHeading } from '../useFocusHeading';
+import { useOnboardingDraft } from './OnboardingDraftProvider';
+import { useFocusHeading } from './useFocusHeading';
 
 export type CityStepProps = {
   /** Derived server-side from Vercel edge geolocation — 'EUR' when no country was detected. */
   previewCurrency: string;
+  onBack: () => void;
+  onNext: () => void;
 };
 
-const CityStep = ({ previewCurrency }: CityStepProps) => {
+const CityStep = ({ previewCurrency, onBack, onNext }: CityStepProps) => {
   const { t } = useTranslation();
-  const router = useRouter();
   const { draft, setCity } = useOnboardingDraft();
   const canContinue = draft.city.trim().length > 0;
   const headingRef = useFocusHeading<HTMLHeadingElement>();
@@ -47,16 +46,10 @@ const CityStep = ({ previewCurrency }: CityStepProps) => {
       </p>
 
       <div className="mt-1 flex w-full gap-3">
-        <Button asChild variant="outline" size="lg" className="flex-1">
-          <Link href="/onboarding">{t('onboarding.back')}</Link>
+        <Button type="button" variant="outline" size="lg" className="flex-1" onClick={onBack}>
+          {t('onboarding.back')}
         </Button>
-        <Button
-          type="button"
-          size="lg"
-          disabled={!canContinue}
-          onClick={() => router.push('/onboarding/name')}
-          className="flex-1"
-        >
+        <Button type="button" size="lg" disabled={!canContinue} onClick={onNext} className="flex-1">
           {t('onboarding.next')}
         </Button>
       </div>

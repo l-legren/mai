@@ -18,7 +18,9 @@ function requestFor(body: unknown) {
 
 const validBody = {
   today: '2026-01-01',
-  messages: [{ role: 'user', content: 'How much did I spend this week?' }],
+  messages: [
+    { id: '0', role: 'user', parts: [{ type: 'text', text: 'How much did I spend this week?' }] },
+  ],
 };
 
 describe('POST /api/ask-mai', () => {
@@ -72,7 +74,10 @@ describe('POST /api/ask-mai', () => {
     });
     vi.mocked(createSupabaseServerClient).mockResolvedValue(client as never);
 
-    const agentResponse = new Response('{"type":"text","text":"hi"}\n', { status: 200 });
+    const agentResponse = new Response('data: {"type":"text-delta","id":"1","delta":"hi"}\n\n', {
+      status: 200,
+      headers: { 'Content-Type': 'text/event-stream' },
+    });
     globalThis.fetch = vi.fn().mockResolvedValue(agentResponse) as never;
 
     const response = await POST(requestFor(validBody));
@@ -86,6 +91,7 @@ describe('POST /api/ask-mai', () => {
       })
     );
     expect(response.status).toBe(200);
-    expect(await response.text()).toBe('{"type":"text","text":"hi"}\n');
+    expect(response.headers.get('Content-Type')).toBe('text/event-stream');
+    expect(await response.text()).toBe('data: {"type":"text-delta","id":"1","delta":"hi"}\n\n');
   });
 });

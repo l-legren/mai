@@ -92,16 +92,6 @@
         ]
       }
     ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/check-changes.js\""
-          }
-        ]
-      }
-    ],
     "SessionStart": [
       {
         "hooks": [

@@ -1,9 +1,12 @@
 /**
  * Same-origin streaming proxy for the standalone agent service's `/ask-mai` endpoint (see
  * agent/src/server.ts). Authenticates the request server-side via the cookie-based Supabase
- * client, then forwards the NDJSON reply stream straight through — the browser never sees the
+ * client, then forwards the UI Message Stream reply straight through — the browser never sees the
  * agent service's URL or a bearer token, and never needs a Supabase client of its own (see
  * CLAUDE.md's "web avoids browser Supabase client" convention).
+ *
+ * `messages` is only sanity-checked here (non-empty, minimally UIMessage-shaped) — the agent
+ * itself does the real validation via `validateUIMessages`, so this doesn't try to duplicate that.
  */
 
 import { z } from 'zod';
@@ -12,7 +15,15 @@ import { createSupabaseServerClient } from '@/lib/supabase-server';
 
 const AskMaiBodySchema = z.object({
   today: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'today must be YYYY-MM-DD'),
-  messages: z.array(z.object({ role: z.enum(['user', 'assistant']), content: z.string() })).min(1),
+  messages: z
+    .array(
+      z.object({
+        id: z.string(),
+        role: z.enum(['user', 'assistant']),
+        parts: z.array(z.record(z.string(), z.unknown())).min(1),
+      })
+    )
+    .min(1),
 });
 
 export async function POST(request: Request) {
@@ -52,8 +63,11 @@ export async function POST(request: Request) {
     return Response.json({ error: 'Agent service unreachable' }, { status: 502 });
   }
 
+  // Forward the agent's real Content-Type (text/event-stream) rather than hardcoding one — this
+  // was already slightly wrong when the wire format was NDJSON, and actively broken for SSE.
+  const contentType = agentResponse.headers.get('Content-Type');
   return new Response(agentResponse.body, {
     status: agentResponse.status,
-    headers: { 'Content-Type': 'application/json' },
+    headers: contentType ? { 'Content-Type': contentType } : undefined,
   });
 }

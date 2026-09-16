@@ -46,24 +46,29 @@ const SidebarNavItem = ({ item, collapsed }: SidebarNavItemProps) => {
       aria-label={collapsed ? label : undefined}
       className={cn(
         'group relative flex h-11 items-center gap-3 rounded-mq-sm px-3 transition-colors',
-        collapsed && 'w-11 justify-center px-0',
-        isActive ? 'bg-accent-tint text-accent' : 'text-text-2 hover:bg-white/[0.04]'
+        collapsed ? 'w-11 justify-center px-0' : 'max-lg:w-11 max-lg:justify-center max-lg:px-0',
+        isActive ? 'bg-accent-tint text-accent' : 'text-text-2 hover:bg-fill'
       )}
     >
-      <Icon className={cn('shrink-0', isActive ? 'text-accent' : 'text-[#8E888E]')} />
-      {!collapsed && (
-        <span className={cn('text-[14.5px] font-medium', isActive ? 'text-text' : 'text-text-2')}>
-          {label}
-        </span>
-      )}
-      {collapsed && (
-        <span
-          role="tooltip"
-          className="pointer-events-none absolute left-[52px] z-10 whitespace-nowrap rounded-mq-lg bg-hover px-2.5 py-1.5 text-[12.5px] font-medium text-text opacity-0 shadow-mq-tip transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
-        >
-          {label}
-        </span>
-      )}
+      <Icon className={cn('shrink-0', isActive ? 'text-accent' : 'text-text-3')} />
+      <span
+        className={cn(
+          'text-[14.5px] font-medium',
+          isActive ? 'text-text' : 'text-text-2',
+          collapsed ? 'hidden' : 'max-lg:hidden'
+        )}
+      >
+        {label}
+      </span>
+      <span
+        role="tooltip"
+        className={cn(
+          'pointer-events-none absolute left-[52px] z-10 whitespace-nowrap rounded-mq-lg bg-hover px-2.5 py-1.5 text-[12.5px] font-medium text-text opacity-0 shadow-mq-tip transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100',
+          !collapsed && 'hidden max-lg:block'
+        )}
+      >
+        {label}
+      </span>
     </Link>
   );
 };

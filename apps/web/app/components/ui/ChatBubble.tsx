@@ -9,6 +9,29 @@ export type ChatBubbleProps = {
   status?: string;
 };
 
+/** A number with a currency symbol immediately before or after it, e.g. "$50" or "50€". */
+const CURRENCY_NUMBER_PATTERN = /[$€£¥]\d[\d,.]*|\d[\d,.]*[$€£¥]/g;
+
+function highlightNumbers(text: string): ReactNode[] {
+  const segments: ReactNode[] = [];
+  let cursor = 0;
+  for (const match of text.matchAll(CURRENCY_NUMBER_PATTERN)) {
+    const index = match.index ?? 0;
+    if (index > cursor) segments.push(text.slice(cursor, index));
+    segments.push(
+      <span
+        key={index}
+        className="rounded-[4px] bg-highlight px-[3px] font-bold italic text-accent"
+      >
+        {match[0]}
+      </span>
+    );
+    cursor = index + match[0].length;
+  }
+  if (cursor < text.length) segments.push(text.slice(cursor));
+  return segments;
+}
+
 const ChatBubble = ({ from = 'agent', children, status }: ChatBubbleProps) => {
   if (from === 'user') {
     return (
@@ -22,7 +45,9 @@ const ChatBubble = ({ from = 'agent', children, status }: ChatBubbleProps) => {
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="text-pretty text-[15.5px] leading-[1.55] text-text">{children}</div>
+      <div className="text-pretty text-[15.5px] leading-[1.55] text-text">
+        {typeof children === 'string' ? highlightNumbers(children) : children}
+      </div>
       {status && (
         <div className="flex items-center gap-2">
           <span aria-hidden="true" className="h-[5px] w-[5px] rounded-full bg-text-3" />

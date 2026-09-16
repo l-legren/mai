@@ -12,6 +12,7 @@ export type HomeViewProps = {
   spentTodayValue: string;
   spentThisWeekValue: string;
   transactions: Transaction[];
+  offerSampleData: boolean;
 };
 
 type HomeHeaderProps = {
@@ -53,7 +54,12 @@ const HomeHeader = ({ onAddExpense, onImportCsv }: HomeHeaderProps) => {
   );
 };
 
-const HomeView = ({ spentTodayValue, spentThisWeekValue, transactions }: HomeViewProps) => {
+const HomeView = ({
+  spentTodayValue,
+  spentThisWeekValue,
+  transactions,
+  offerSampleData,
+}: HomeViewProps) => {
   const { t } = useTranslation();
   const [isAddExpenseOpen, setIsAddExpenseOpen] = useState(false);
   const [isImportCsvOpen, setIsImportCsvOpen] = useState(false);
@@ -65,7 +71,11 @@ const HomeView = ({ spentTodayValue, spentThisWeekValue, transactions }: HomeVie
         onImportCsv={() => setIsImportCsvOpen(true)}
       />
       <AddExpenseModal open={isAddExpenseOpen} onClose={() => setIsAddExpenseOpen(false)} />
-      <ImportCsvModal open={isImportCsvOpen} onClose={() => setIsImportCsvOpen(false)} />
+      <ImportCsvModal
+        open={isImportCsvOpen}
+        onClose={() => setIsImportCsvOpen(false)}
+        offerSampleData={offerSampleData}
+      />
 
       <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-9 pb-7">
         <div className="grid grid-cols-1 gap-3.5 md:grid-cols-2">

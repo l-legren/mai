@@ -61,6 +61,9 @@ export const singleTurnExecutor = async (data: EvalData): Promise<SingleTurnResu
     tools,
     stopWhen: stepCountIs(1),
     temperature: data.config?.temperature ?? undefined,
+    providerOptions: data.config?.effort
+      ? { anthropic: { effort: data.config.effort } }
+      : undefined,
   });
 
   const calls = toolCalls.map((call) => ({
@@ -92,6 +95,9 @@ export const multiTurnExecutor = async (data: MultiTurnEvalData): Promise<MultiT
     messages,
     tools: buildMockTools(data.mockTools),
     stopWhen: stepCountIs(data.config?.maxSteps ?? DEFAULT_MULTI_TURN_MAX_STEPS),
+    providerOptions: data.config?.effort
+      ? { anthropic: { effort: data.config.effort } }
+      : undefined,
   });
 
   const resultSteps = steps.map((step) => ({

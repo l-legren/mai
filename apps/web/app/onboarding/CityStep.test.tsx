@@ -2,19 +2,15 @@
 import '@/i18n';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
-
-const push = vi.fn();
-vi.mock('next/navigation', () => ({ useRouter: () => ({ push }) }));
-
-import { OnboardingDraftProvider } from '../OnboardingDraftProvider';
+import { OnboardingDraftProvider } from './OnboardingDraftProvider';
 import CityStep from './CityStep';
 
 afterEach(cleanup);
 
-function renderStep(initialCity = '') {
+function renderStep(initialCity = '', onNext = vi.fn(), onBack = vi.fn()) {
   render(
     <OnboardingDraftProvider initialCity={initialCity}>
-      <CityStep previewCurrency="GBP" />
+      <CityStep previewCurrency="GBP" onBack={onBack} onNext={onNext} />
     </OnboardingDraftProvider>
   );
 }
@@ -46,11 +42,21 @@ describe('CityStep', () => {
     );
   });
 
-  it('navigates to the name step on Next', () => {
-    renderStep('London');
+  it('calls onNext when Next is clicked', () => {
+    const onNext = vi.fn();
+    renderStep('London', onNext);
 
     fireEvent.click(screen.getByRole('button', { name: 'Next' }));
 
-    expect(push).toHaveBeenCalledWith('/onboarding/name');
+    expect(onNext).toHaveBeenCalled();
+  });
+
+  it('calls onBack when Back is clicked', () => {
+    const onBack = vi.fn();
+    renderStep('London', vi.fn(), onBack);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Back' }));
+
+    expect(onBack).toHaveBeenCalled();
   });
 });

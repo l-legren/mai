@@ -1,16 +1,15 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 
-const STEPS = ['/onboarding', '/onboarding/city', '/onboarding/name'];
+export type OnboardingProgressProps = {
+  step: number;
+  total: number;
+};
 
-const OnboardingProgress = () => {
-  const pathname = usePathname();
+const OnboardingProgress = ({ step, total }: OnboardingProgressProps) => {
   const { t } = useTranslation();
 
-  const step = STEPS.indexOf(pathname) + 1;
-  const total = STEPS.length;
   const percent = (step / total) * 100;
 
   return (

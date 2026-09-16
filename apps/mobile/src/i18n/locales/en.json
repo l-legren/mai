@@ -271,6 +271,7 @@
     "greeting": "Ask me anything about your spending — try \"how much have I spent this week?\"",
     "loading": "Thinking…",
     "error": "Something went wrong. Please try again.",
+    "quotaExceeded": "You've reached today's limit for Ask Mai. Please try again tomorrow.",
     "statusLine": {
       "recentSpending": "Reviewed your recent spending"
     },

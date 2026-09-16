@@ -65,7 +65,7 @@ const AuthForm = ({ mode }: AuthFormProps) => {
             <button
               type="button"
               onClick={handleForgotPassword}
-              className="text-xs font-semibold text-accent hover:text-[#FF6BB1]"
+              className="text-xs font-semibold text-accent hover:text-accent-hover"
             >
               {t('auth.forgotPassword')}
             </button>
@@ -79,7 +79,7 @@ const AuthForm = ({ mode }: AuthFormProps) => {
       {getAppEnvironment() === 'production' && <TurnstileWidget siteKey={getTurnstileSiteKey()} />}
 
       {state.confirmationPending && (
-        <p role="status" aria-live="polite" className="text-center text-sm text-[#5FBF86]">
+        <p role="status" aria-live="polite" className="text-center text-sm text-good">
           {t('auth.signUpConfirmationSent')}
         </p>
       )}

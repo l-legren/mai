@@ -3,43 +3,80 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { ExpenseRowSchema, type ExpenseRow } from '@mai/schemas';
+import {
+  ExpenseRowSchema,
+  ExpenseMonthCategoryTotalSchema,
+  type ExpenseRow,
+  type ExpenseMonthCategoryTotal,
+} from '@mai/schemas';
 
 import { ApiError, throwApiError } from './api-error';
 import { getCurrentUserId } from './auth.data';
 
-export type { ExpenseRow };
+export type { ExpenseRow, ExpenseMonthCategoryTotal };
 
 const COLUMNS = 'id, category, amount, spent_on, spent_at, note';
 
 export type ExpensePagination = { page: number; pageSize: number };
+export type ExpenseDateRange = { fromIso: string; toIso: string };
 export type PaginatedExpenseRows = { rows: ExpenseRow[]; total: number };
+
+export type ExpenseRowsOptions = { pagination?: ExpensePagination; range?: ExpenseDateRange };
 
 export async function getExpenseRows(client: SupabaseClient): Promise<ExpenseRow[]>;
 export async function getExpenseRows(
   client: SupabaseClient,
-  pagination: ExpensePagination
+  options: { pagination?: undefined; range?: ExpenseDateRange }
+): Promise<ExpenseRow[]>;
+export async function getExpenseRows(
+  client: SupabaseClient,
+  options: { pagination: ExpensePagination; range?: ExpenseDateRange }
 ): Promise<PaginatedExpenseRows>;
 export async function getExpenseRows(
   client: SupabaseClient,
-  pagination?: ExpensePagination
+  options?: ExpenseRowsOptions
 ): Promise<ExpenseRow[] | PaginatedExpenseRows> {
   const userId = await getCurrentUserId(client);
   let query = client
     .from('expenses')
-    .select(COLUMNS, pagination ? { count: 'exact' } : undefined)
+    .select(COLUMNS, options?.pagination ? { count: 'exact' } : undefined)
     .eq('user_id', userId)
     .order('spent_at', { ascending: false });
 
-  if (pagination) {
-    const from = (pagination.page - 1) * pagination.pageSize;
-    query = query.range(from, from + pagination.pageSize - 1);
+  if (options?.range) {
+    query = query.gte('spent_on', options.range.fromIso).lte('spent_on', options.range.toIso);
+  }
+
+  if (options?.pagination) {
+    const { page, pageSize } = options.pagination;
+    const from = (page - 1) * pageSize;
+    query = query.range(from, from + pageSize - 1);
   }
 
   const { data, error, count } = await query;
   if (error) throw new ApiError(error.message, error);
   const rows = ExpenseRowSchema.array().parse(data);
-  return pagination ? { rows, total: count ?? 0 } : rows;
+  return options?.pagination ? { rows, total: count ?? 0 } : rows;
+}
+
+/**
+ * Spend summed per (month, category) via the `get_expense_monthly_category_totals` RPC, instead of
+ * fetching every raw row and summing in Node — the response is at most (months × categories) rows
+ * regardless of how many expenses the user has. `fromIso` omitted means no lower bound (the "all"
+ * period). Resolves the current user server-side via `auth.uid()` inside the RPC, same as RLS —
+ * no separate getCurrentUserId round trip needed.
+ */
+export async function getExpenseMonthlyCategoryTotals(
+  client: SupabaseClient,
+  toIso: string,
+  fromIso?: string
+): Promise<ExpenseMonthCategoryTotal[]> {
+  const { data, error } = await client.rpc('get_expense_monthly_category_totals', {
+    from_date: fromIso ?? null,
+    to_date: toIso,
+  });
+  if (error) throw new ApiError(error.message, error);
+  return ExpenseMonthCategoryTotalSchema.array().parse(data);
 }
 
 /** Count only — used to check remaining capacity against the per-user row cap before a bulk write,

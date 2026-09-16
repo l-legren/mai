@@ -29,7 +29,7 @@ const KeypadKey = ({ value, onPress }: KeypadKeyProps) => {
       aria-label={label}
       className={cn(
         'flex h-14 items-center justify-center rounded-mq-md text-xl font-medium text-text',
-        'hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent'
+        'hover:bg-fill focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent'
       )}
     >
       <span aria-hidden="true">{value === 'del' ? '⌫' : value}</span>

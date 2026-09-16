@@ -58,6 +58,26 @@ regardless of which app you're working in.
 
 Only comment when necessary — most code needs none. When one is warranted, **one line, hard cap ~250 characters**. No multi-line/multi-paragraph docstrings explaining rationale, history, or comparisons to other code, even to match a neighboring file's existing verbose style.
 
+# Error handling in backend calls
+
+Any call to something outside the process that can fail at runtime — Postgres, another internal
+service, a third-party API — must be wrapped in `try`/`catch`, never left to bubble as an
+unhandled exception. An uncaught throw isn't just a worse error message: it reaches the client as
+a bare 500 with no body and leaves nothing in the logs to diagnose from. This bit us for real in
+`agent/src/server.ts`'s `/ask-mai/remember` route, which swallowed an `ENETUNREACH` from a
+misconfigured DB connection string into a content-free 500 — invisible until the call was wrapped.
+
+- `console.error` the real underlying error with a short, specific prefix naming the failing
+  operation (e.g. `'ask-mai remember: saveUserMemory failed'`), not a generic message — so the
+  actual cause is visible in the host's logs (Railway, Vercel) even though the client only gets a
+  mapped status code.
+- Return a typed/coded error response instead of letting the exception propagate. Reference
+  pattern: `apps/web/app/api/ask-mai/route.ts`'s `fetch` try/catch (logs, then `502`) and
+  `agent/src/server.ts`'s `runAskMai`/`saveUserMemory` try/catches (log, then `500`).
+- Applies to routes, Server Actions, and service calls doing real I/O — not to pure in-process
+  logic, which shouldn't grow a defensive `try`/`catch` it can never actually hit (see this file's
+  "What NOT to test" — same principle: don't handle a failure mode that can't occur here).
+
 # Testing
 
 Every new piece of functionality or logic ships with a test that would **fail if the behaviour broke** — and nothing more. Tests exist to protect behaviour worth protecting, not to inflate coverage. Runner and per-package paths live in each package's own `CLAUDE.md` (`apps/mobile/CLAUDE.md`, `apps/web/CLAUDE.md`).

@@ -9,7 +9,7 @@ import type { MultiTurnEvalData, MultiTurnResult, MultiTurnTarget } from './type
 
 // Runtime-type guarantee, not a model-behaviour question — no LLM call needed. Fails loudly (at
 // `pnpm eval` time) if `getRecentSpending`'s day cap ever regresses, without needing Jest set up
-// for this package. `getSpendingByCategory` schema below is unaffected — it has no `days` field.
+// for this package.
 const { getRecentSpending } = createMaiTools('eval-fixture-user', '2026-01-01');
 assert(
   getRecentSpending.inputSchema &&

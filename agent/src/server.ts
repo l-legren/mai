@@ -1,14 +1,22 @@
 import 'dotenv/config';
 import chalk from 'chalk';
 import { Hono, type Context } from 'hono';
-import { stream } from 'hono/streaming';
+import { logger } from 'hono/logger';
 import { serve } from '@hono/node-server';
+import {
+  createUIMessageStream,
+  createUIMessageStreamResponse,
+  toUIMessageStream,
+  validateUIMessages,
+} from 'ai';
 import { supabase } from './data/supabase.ts';
-import { AskMaiRequestSchema, RememberFactRequestSchema } from './types.ts';
+import { AskMaiRequestMetaSchema, RememberFactRequestSchema } from './types.ts';
 import { runAskMai } from './run.ts';
 import { saveUserMemory } from './tools/index.ts';
 
 const app = new Hono();
+
+app.use(logger());
 
 type AuthResult = { userId: string } | { error: string };
 
@@ -34,37 +42,47 @@ app.post('/ask-mai', async (ctx) => {
     return ctx.json({ error: 'Invalid JSON body' }, 400);
   }
 
-  const validationResult = AskMaiRequestSchema.safeParse(jsonBody);
-  if (!validationResult.success) return ctx.json({ message: 'Invalid shape of the payload' }, 400);
+  const metaResult = AskMaiRequestMetaSchema.safeParse(jsonBody);
+  if (!metaResult.success) return ctx.json({ message: 'Invalid shape of the payload' }, 400);
 
-  const result = await runAskMai(
-    auth.userId,
-    validationResult.data.messages,
-    validationResult.data.today
-  );
-  ctx.header('Content-Type', 'application/json');
+  // No `tools` option here — generic tool call input/output is only validated against a schema
+  // if one's provided, and the loop itself is what actually runs/rejects tool calls, not this.
+  let messages;
+  try {
+    messages = await validateUIMessages({
+      messages: (jsonBody as { messages?: unknown }).messages,
+    });
+  } catch {
+    return ctx.json({ message: 'Invalid shape of the payload' }, 400);
+  }
 
-  return stream(ctx, async (s) => {
-    try {
-      for await (const part of result.stream) {
-        if (part.type === 'text-delta') {
-          await s.writeln(JSON.stringify({ type: 'text', text: part.text }));
-        } else if (part.type === 'tool-call') {
-          // rememberFact is a pending proposal, not a run tool — its own event, not 'tool'.
-          if (part.toolName === 'rememberFact') {
-            const { content } = part.input as { content: string };
-            await s.writeln(JSON.stringify({ type: 'confirm', content }));
-          } else {
-            await s.writeln(JSON.stringify({ type: 'tool', toolName: part.toolName }));
-          }
-        } else if (part.type === 'error') {
-          await s.writeln(JSON.stringify({ type: 'error' }));
-        }
-      }
-    } catch (e) {
-      console.error(`Error during stream call: ${e}`);
-      throw new Error('An error occured during the stream');
-    }
+  // Awaits the memories DB read (see run.ts) before any streaming starts, so a failure there
+  // (or a model-setup error) is still a normal exception at this point, not a stream error —
+  // caught here so it reaches the client as a real error instead of an opaque connection drop.
+  let runResult: Awaited<ReturnType<typeof runAskMai>>;
+  try {
+    runResult = await runAskMai(auth.userId, messages, metaResult.data.today);
+  } catch (error) {
+    console.error('ask-mai: runAskMai failed', error);
+    return ctx.json({ error: 'Failed to generate a reply' }, 500);
+  }
+
+  // Delivered as a normal assistant turn (a `data-quotaExceeded` part, no text) rather than an
+  // HTTP error, so the client renders it through the same message-list UI as any other reply —
+  // see apps/web/app/(app)/ask/AskChatView.tsx and apps/mobile/src/hooks/ask-turns.ts.
+  if (runResult.type === 'blocked') {
+    const stream = createUIMessageStream({
+      execute: ({ writer }) => {
+        writer.write({ type: 'data-quotaExceeded', data: {} });
+      },
+    });
+    return createUIMessageStreamResponse({ stream });
+  }
+
+  // rememberFact's tool call (no `execute`, see tools/index.ts) streams out as a native
+  // `tool-input-available` part here — no more manual re-encoding into a custom 'confirm' event.
+  return createUIMessageStreamResponse({
+    stream: toUIMessageStream({ stream: runResult.result.stream }),
   });
 });
 
@@ -82,7 +100,13 @@ app.post('/ask-mai/remember', async (ctx) => {
   const validationResult = RememberFactRequestSchema.safeParse(jsonBody);
   if (!validationResult.success) return ctx.json({ message: 'Invalid shape of the payload' }, 400);
 
-  await saveUserMemory(auth.userId, validationResult.data.content);
+  try {
+    await saveUserMemory(auth.userId, validationResult.data.content);
+  } catch (error) {
+    console.error('ask-mai remember: saveUserMemory failed', error);
+    return ctx.json({ error: 'Failed to save memory' }, 500);
+  }
+
   return ctx.json({ saved: true });
 });
 

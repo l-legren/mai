@@ -3,11 +3,9 @@ import type { PropsWithChildren } from 'react';
 import { Logo } from '@/app/components/ui';
 import { getCurrentUser } from '@/lib/dal/current-user';
 import { getCurrentProfile } from '@/lib/dal/profile';
-import { getDetectedLocation } from '@/lib/geo';
-import { OnboardingDraftProvider } from './OnboardingDraftProvider';
-import OnboardingProgress from './OnboardingProgress';
 
-// Signed-in + not-yet-onboarded gate for every step under /onboarding.
+// Signed-in + not-yet-onboarded gate for the onboarding flow — the whole flow is a single route
+// (see page.tsx/OnboardingFlow.tsx), so this only ever runs once per visit, not per step.
 const OnboardingLayout = async ({ children }: PropsWithChildren) => {
   const user = await getCurrentUser();
 
@@ -17,14 +15,11 @@ const OnboardingLayout = async ({ children }: PropsWithChildren) => {
 
   if (profile) redirect('/');
 
-  const { city } = await getDetectedLocation();
-
   return (
     <div className="flex min-h-svh flex-col items-center justify-center bg-bg px-6 py-16">
       <div className="flex w-full max-w-sm flex-col items-center gap-9">
         <Logo />
-        <OnboardingProgress />
-        <OnboardingDraftProvider initialCity={city ?? ''}>{children}</OnboardingDraftProvider>
+        {children}
       </div>
     </div>
   );

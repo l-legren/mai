@@ -30,7 +30,7 @@ const Input = ({ label, labelRight, error, id, className, ref, ...props }: Input
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? errorId : undefined}
         className={cn(
-          'h-12 rounded-mq-xl border border-white/15 bg-white/5 px-4 text-[15px] text-text outline-none transition-colors placeholder:text-text-4 focus-visible:border-accent',
+          'h-12 rounded-mq-xl border border-border bg-field px-4 text-[15px] text-text outline-none transition-colors placeholder:text-text-4 focus-visible:border-accent',
           className
         )}
         {...props}

@@ -10,6 +10,7 @@ export { default as Modal, type ModalProps } from './Modal';
 export { default as Pagination, type PaginationProps } from './Pagination';
 export { showErrorSnackbar, DEFAULT_SNACKBAR_DURATION_MS } from './Snackbar';
 export { Slider, type SliderProps } from './Slider';
+export { default as AmountSlider, type AmountSliderProps } from './primitives/AmountSlider';
 export { CATEGORY_ICONS, type CategoryIconProps } from './primitives/category-icons';
 export { getCategoryIcon, type CategoryIconComponent, type CategoryKind } from './getCategoryIcon';
 export { default as Logo, type LogoProps } from './primitives/Logo';

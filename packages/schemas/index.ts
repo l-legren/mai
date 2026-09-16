@@ -20,6 +20,17 @@ export const ExpenseRowSchema = z.object({
 
 export type ExpenseRow = z.infer<typeof ExpenseRowSchema>;
 
+/** One (month, category) spend total from the `get_expense_monthly_category_totals` RPC —
+ * `month` is `'YYYY-MM'`, `amount` is the summed spend (already positive; income/credits excluded
+ * by the RPC itself). */
+export const ExpenseMonthCategoryTotalSchema = z.object({
+  month: z.string(),
+  category: z.string(),
+  amount: z.number(),
+});
+
+export type ExpenseMonthCategoryTotal = z.infer<typeof ExpenseMonthCategoryTotalSchema>;
+
 /**
  * Persisted recurring row (`public.recurring`). `amount` is in the cadence's own unit (what the user
  * entered — monthly or yearly); the monthly-equivalent used by the allowance is derived in the
@@ -54,6 +65,17 @@ export const SavingsTargetRowSchema = z.object({
 });
 
 export type SavingsTargetRow = z.infer<typeof SavingsTargetRowSchema>;
+
+/** Persisted category budget row (`public.category_budgets`). One row per user/category/month —
+ * `period_month` is `'YYYY-MM'`, matching the mobile app's `monthKey` convention. */
+export const CategoryBudgetRowSchema = z.object({
+  id: z.string(),
+  category: z.string(),
+  period_month: z.string(),
+  amount: z.number(),
+});
+
+export type CategoryBudgetRow = z.infer<typeof CategoryBudgetRowSchema>;
 
 /** Persisted onboarding profile row (`public.profile_onboarding`). A missing row means the user
  * hasn't completed onboarding yet — there is no "empty" row state. */

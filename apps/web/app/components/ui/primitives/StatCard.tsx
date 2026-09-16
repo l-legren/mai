@@ -20,7 +20,7 @@ const VALUE_SIZE_CLASSES = {
 // below instead, differentiated by case/weight rather than color.
 const StatCard = ({ label, value, note, size = 'md' }: StatCardProps) => {
   return (
-    <div className="rounded-mq-lg border border-border bg-surface-raised px-6 py-[22px]">
+    <div className="rounded-mq-lg border border-border bg-surface-raised px-6 py-[22px] shadow-mq-card">
       <div className="text-[11px] font-semibold tracking-[0.8px] text-text-2 uppercase">
         {label}
       </div>

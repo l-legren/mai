@@ -1,10 +1,28 @@
 @import 'tailwindcss';
 
 :root {
-  /* mai design tokens — from design-system/styles.css (Claude design export). Single dark
-     theme only: every component here is already dark-only, there's no light variant to preserve. */
+  /* mai design tokens — from design-system/styles.css (Claude design export). Theme-independent:
+     shared by both :root[data-theme='dark'] and :root[data-theme='light'] below. */
   --mq-font: var(--font-plus-jakarta-sans), system-ui, sans-serif;
 
+  --mq-r-xs: 8px;
+  --mq-r-sm: 11px;
+  --mq-r-md: 13px;
+  --mq-r-lg: 16px;
+  --mq-r-xl: 20px;
+  --mq-r-pill: 999px;
+
+  /* Not in design-system/styles.css (layout, not a visual token) — single source of truth for
+     Sidebar.tsx's expanded/collapsed width so the CSS breakpoint and the manual-toggle classes
+     can't drift out of sync with each other. */
+  --mq-sidebar-w-expanded: 252px;
+  --mq-sidebar-w-collapsed: 68px;
+}
+
+/* Bare :root is the dark fallback (matches next-themes' attribute not being set yet, e.g. before
+   hydration) — ThemeProvider in app/theme-provider.tsx defaults to 'dark' for the same reason. */
+:root,
+:root[data-theme='dark'] {
   --mq-bg: #171316;
   --mq-surface: #1c171c;
   --mq-surface-raised: #1e191e;
@@ -15,6 +33,7 @@
   --mq-bubble: #2b2229;
 
   --mq-accent: #ff4fa3;
+  --mq-accent-hover: #ff6bb1;
   --mq-accent-ink: #2a0a19;
   --mq-accent-tint: rgba(255, 79, 163, 0.12);
   --mq-accent-tint-strong: rgba(255, 79, 163, 0.16);
@@ -50,16 +69,81 @@
   --mq-fill: rgba(240, 225, 235, 0.06);
   --mq-track: rgba(240, 225, 235, 0.08);
 
-  --mq-r-xs: 8px;
-  --mq-r-sm: 11px;
-  --mq-r-md: 13px;
-  --mq-r-lg: 16px;
-  --mq-r-xl: 20px;
-  --mq-r-pill: 999px;
-
   --mq-shadow-window: 0 24px 70px rgba(0, 0, 0, 0.22);
   --mq-shadow-pop: 0 14px 34px rgba(0, 0, 0, 0.5);
   --mq-shadow-tip: 0 8px 22px rgba(0, 0, 0, 0.4);
+  /* Not in design-system/styles.css — window/pop/tip are all sized for overlays (modals,
+     dropdowns, tooltips), too heavy for an inline content card. A separate, much softer shadow
+     for Card/StatCard/AgentNote/EquationCard/SavingsSlider's flat panels. */
+  --mq-shadow-card: 0 4px 16px rgba(0, 0, 0, 0.18);
+
+  /* Not in design-system/styles.css — background chip behind a currency amount in ChatBubble's
+     agent text (ask-mai). Dark theme reuses hover rather than a new literal — surface-raised sat
+     too close to bg/surface to read as a highlight. */
+  --mq-highlight: var(--mq-hover);
+}
+
+/* Light theme. Bg/text/border/accent/good/bubble/fill are ported from the same warm palette
+   already shipped in apps/mobile/src/constants/theme.ts's Palettes.light (WCAG-checked there).
+   text-2, good, over are darkened slightly further than mobile's literal values — this app leans
+   on them for small (~12-15px) body text more than mobile does, and mobile's own figures fell
+   short of WCAG AA 4.5:1 at that size (this file's Accessibility rule flags text-2 as "the usual
+   offender"). Surface/surface-raised deliberately don't use mobile's literal white card — a very
+   subtle bg-tinted pink instead, so cards don't read as a stark white cutout against the pink
+   page background. surface-raised/field/field-focus/surface-accent/hover/accent-hover/
+   savings/category/shadow tokens have no mobile counterpart (mobile doesn't have that many
+   elevation tiers or a savings/category palette) and are derived from the dark values' own hue + a
+   consistent lightness/alpha delta, then contrast-checked against both bg and surface — a
+   reasonable first pass, not a full CVD-safe validation like the dark categorical set had. */
+:root[data-theme='light'] {
+  --mq-bg: #fbf1f4;
+  --mq-surface: #fdf8fa;
+  --mq-surface-raised: #fdf8fa;
+  --mq-field: #eee5e8;
+  --mq-field-focus: #e6dcdf;
+  --mq-surface-accent: #fae4f0;
+  --mq-hover: #f4f4f4;
+  --mq-bubble: #f5cde5;
+
+  --mq-accent: #d91e85;
+  --mq-accent-hover: #c01b76;
+  --mq-accent-ink: #ffffff;
+  --mq-accent-tint: rgba(217, 30, 133, 0.12);
+  --mq-accent-tint-strong: rgba(217, 30, 133, 0.16);
+  --mq-accent-border: rgba(217, 30, 133, 0.14);
+  --mq-over: #d22d45;
+  --mq-good: #327d51;
+  --mq-good-tint: rgba(62, 154, 100, 0.14);
+  --mq-good-border: rgba(62, 154, 100, 0.4);
+  --mq-savings: #6750a7;
+
+  --mq-category-groceries: #1e77e1;
+  --mq-category-drinks: #bf4e21;
+  --mq-category-restaurants: #15845e;
+  --mq-category-clothing: #aa7100;
+  --mq-category-transport: #cf386f;
+  --mq-category-other: #009900;
+  --mq-category-everything-else: #4f4a4f;
+
+  --mq-text: #2a2126;
+  --mq-text-2: #776d73;
+  --mq-text-3: #6e676c;
+  --mq-text-4: #7c7579;
+  --mq-text-5: #938b90;
+  --mq-text-6: #a79ea3;
+
+  --mq-border: rgba(60, 30, 45, 0.09);
+  --mq-border-2: rgba(60, 30, 45, 0.15);
+  --mq-border-3: rgba(60, 30, 45, 0.2);
+  --mq-fill: rgba(60, 30, 45, 0.06);
+  --mq-track: rgba(60, 30, 45, 0.1);
+
+  --mq-shadow-window: 0 24px 70px rgba(120, 48, 80, 0.1);
+  --mq-shadow-pop: 0 14px 34px rgba(120, 48, 80, 0.16);
+  --mq-shadow-tip: 0 8px 22px rgba(120, 48, 80, 0.14);
+  --mq-shadow-card: 0 4px 16px rgba(120, 48, 80, 0.08);
+
+  --mq-highlight: #ffffff;
 }
 
 @theme inline {
@@ -75,6 +159,7 @@
   --color-bubble: var(--mq-bubble);
 
   --color-accent: var(--mq-accent);
+  --color-accent-hover: var(--mq-accent-hover);
   --color-accent-ink: var(--mq-accent-ink);
   --color-accent-tint: var(--mq-accent-tint);
   --color-accent-tint-strong: var(--mq-accent-tint-strong);
@@ -110,6 +195,12 @@
   --shadow-mq-window: var(--mq-shadow-window);
   --shadow-mq-pop: var(--mq-shadow-pop);
   --shadow-mq-tip: var(--mq-shadow-tip);
+  --shadow-mq-card: var(--mq-shadow-card);
+
+  --color-highlight: var(--mq-highlight);
+
+  --width-mq-sidebar-expanded: var(--mq-sidebar-w-expanded);
+  --width-mq-sidebar-collapsed: var(--mq-sidebar-w-collapsed);
 }
 
 body {
@@ -129,6 +220,6 @@ body {
   }
 
   a:hover {
-    color: #ff7bbb;
+    color: var(--mq-accent-hover);
   }
 }

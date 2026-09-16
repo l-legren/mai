@@ -1,7 +1,9 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
+import type { CategoryBudgetRow } from '@mai/api';
 import {
   BudgetVsActualCard,
   NetBalanceCard,
@@ -15,34 +17,35 @@ import type {
   CategoryTotal,
   MonthlyTotal,
   NetBalancePoint,
+  Period,
 } from '@/lib/insights';
 
 export type InsightsViewProps = {
-  /** Ascending, spans the full available history — sliced client-side by the period toggle. */
+  /** Already scoped server-side to the selected period — no client-side slicing needed. */
   series: MonthlyTotal[];
   netBalance: NetBalancePoint[];
   categoryTotals: CategoryTotal[];
   budgetRows: BudgetVsActualRow[];
-  currentMonthLabel: string;
+  categoryBudgets: CategoryBudgetRow[];
+  currentMonthKey: string;
+  period: Period;
 };
 
-type Period = '3' | '12' | 'all';
-
-const PERIOD_MONTHS: Record<Period, number | null> = {
-  '3': 3,
-  '12': 12,
-  all: null,
-};
+function hrefForPeriod(period: Period): string {
+  return period === '12' ? '/insights' : `/insights?period=${period}`;
+}
 
 const InsightsView = ({
   series,
   netBalance,
   categoryTotals,
   budgetRows,
-  currentMonthLabel,
+  categoryBudgets,
+  currentMonthKey,
+  period,
 }: InsightsViewProps) => {
   const { t } = useTranslation();
-  const [period, setPeriod] = useState<Period>('12');
+  const router = useRouter();
 
   const periodOptions: readonly PeriodOption<Period>[] = useMemo(
     () => [
@@ -53,9 +56,13 @@ const InsightsView = ({
     [t]
   );
 
-  const monthsToShow = PERIOD_MONTHS[period];
-  const visibleSeries = monthsToShow ? series.slice(-monthsToShow) : series;
-  const visibleNetBalance = monthsToShow ? netBalance.slice(-monthsToShow) : netBalance;
+  // Aggregation-period phrasing for the budget/category cards' captions — distinct from the
+  // toggle's terse chip labels above (e.g. "3 months" vs "Last 3 months").
+  const periodLabels: Record<Period, string> = {
+    '3': t('insights.periodLabel.threeMonths'),
+    '12': t('insights.periodLabel.twelveMonths'),
+    all: t('insights.periodLabel.all'),
+  };
 
   return (
     <div className="flex min-h-svh flex-col">
@@ -66,18 +73,27 @@ const InsightsView = ({
           </h1>
           <p className="mt-1 text-[13.5px] text-text-2">{t('insights.subtitle')}</p>
         </div>
-        <PeriodToggle options={periodOptions} value={period} onChange={setPeriod} />
+        <PeriodToggle
+          options={periodOptions}
+          value={period}
+          onChange={(value) => router.replace(hrefForPeriod(value))}
+        />
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col gap-3.5 overflow-y-auto px-9 pb-7">
-        <SpendingVsIncomeCard series={visibleSeries} />
+        <SpendingVsIncomeCard series={series} />
 
         <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-2">
-          <BudgetVsActualCard rows={budgetRows} monthLabel={currentMonthLabel} />
-          <WhereItWentCard totals={categoryTotals} monthLabel={currentMonthLabel} />
+          <BudgetVsActualCard
+            rows={budgetRows}
+            monthLabel={periodLabels[period]}
+            periodMonth={currentMonthKey}
+            currentBudgets={categoryBudgets}
+          />
+          <WhereItWentCard totals={categoryTotals} monthLabel={periodLabels[period]} />
         </div>
 
-        <NetBalanceCard series={visibleNetBalance} />
+        <NetBalanceCard series={netBalance} />
       </div>
     </div>
   );
