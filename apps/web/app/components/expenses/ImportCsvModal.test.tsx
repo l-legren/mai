@@ -34,6 +34,12 @@ const fetchMock = vi.fn();
 vi.stubGlobal('fetch', fetchMock);
 
 describe('ImportCsvModal', () => {
+  it('hides the sample-data button when offerSampleData is false', () => {
+    render(<ImportCsvModal open onClose={vi.fn()} offerSampleData={false} />);
+
+    expect(screen.queryByRole('button', { name: 'Try with sample data' })).toBeNull();
+  });
+
   it('shows a preview with the transaction count once parsing succeeds', async () => {
     vi.mocked(previewBankCsvAction).mockResolvedValue({
       success: true,
@@ -42,7 +48,7 @@ describe('ImportCsvModal', () => {
       overCapCount: 0,
       currentCount: 3,
     });
-    const { container } = render(<ImportCsvModal open onClose={vi.fn()} />);
+    const { container } = render(<ImportCsvModal open onClose={vi.fn()} offerSampleData />);
 
     selectFile(container);
 
@@ -51,7 +57,7 @@ describe('ImportCsvModal', () => {
 
   it('shows the translated error and stays on the file picker when parsing fails', async () => {
     vi.mocked(previewBankCsvAction).mockResolvedValue({ success: false, errorCode: 'empty' });
-    const { container } = render(<ImportCsvModal open onClose={vi.fn()} />);
+    const { container } = render(<ImportCsvModal open onClose={vi.fn()} offerSampleData />);
 
     selectFile(container);
 
@@ -61,11 +67,11 @@ describe('ImportCsvModal', () => {
 
   it('shows the demo limit reached message instead of a preview when the account is already at the cap', async () => {
     vi.mocked(previewBankCsvAction).mockResolvedValue({ success: false, errorCode: 'capReached' });
-    const { container } = render(<ImportCsvModal open onClose={vi.fn()} />);
+    const { container } = render(<ImportCsvModal open onClose={vi.fn()} offerSampleData />);
 
     selectFile(container);
 
-    await screen.findByText('This demo allows up to 100 saved transactions per week.');
+    await screen.findByText('This demo allows up to 5000 saved transactions per week.');
   });
 
   it('shows how many will import vs. skip due to the cap when the batch overflows it', async () => {
@@ -76,12 +82,12 @@ describe('ImportCsvModal', () => {
       overCapCount: 4,
       currentCount: 99,
     });
-    const { container } = render(<ImportCsvModal open onClose={vi.fn()} />);
+    const { container } = render(<ImportCsvModal open onClose={vi.fn()} offerSampleData />);
 
     selectFile(container);
 
     await screen.findByText(
-      'You have 99/100 transactions saved this week. Only 1 of the 5 found will be imported (0 unreadable, 4 over the limit).'
+      'You have 99/5000 transactions saved this week. Only 1 of the 5 found will be imported (0 unreadable, 4 over the limit).'
     );
   });
 
@@ -94,7 +100,7 @@ describe('ImportCsvModal', () => {
       overCapCount: 0,
       currentCount: 0,
     });
-    render(<ImportCsvModal open onClose={vi.fn()} />);
+    render(<ImportCsvModal open onClose={vi.fn()} offerSampleData />);
 
     fireEvent.click(screen.getByRole('button', { name: 'Try with sample data' }));
 
@@ -106,7 +112,7 @@ describe('ImportCsvModal', () => {
 
   it('shows unknown instead of throwing when fetching the sample CSV fails', async () => {
     fetchMock.mockResolvedValue({ ok: false, status: 404 });
-    render(<ImportCsvModal open onClose={vi.fn()} />);
+    render(<ImportCsvModal open onClose={vi.fn()} offerSampleData />);
 
     fireEvent.click(screen.getByRole('button', { name: 'Try with sample data' }));
 
@@ -124,7 +130,7 @@ describe('ImportCsvModal', () => {
     });
     vi.mocked(importBankCsvAction).mockResolvedValue({ success: true, imported: 1 });
     const onClose = vi.fn();
-    const { container } = render(<ImportCsvModal open onClose={onClose} />);
+    const { container } = render(<ImportCsvModal open onClose={onClose} offerSampleData />);
 
     selectFile(container);
     fireEvent.click(await screen.findByRole('button', { name: 'Import' }));
@@ -146,7 +152,7 @@ describe('ImportCsvModal', () => {
       errorCode: 'rowLimitExceeded',
     });
     const onClose = vi.fn();
-    const { container } = render(<ImportCsvModal open onClose={onClose} />);
+    const { container } = render(<ImportCsvModal open onClose={onClose} offerSampleData />);
 
     selectFile(container);
     fireEvent.click(await screen.findByRole('button', { name: 'Import' }));

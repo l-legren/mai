@@ -12,6 +12,7 @@ import type { NewBankImportRow } from '@mai/api';
 export type ImportCsvModalProps = {
   open: boolean;
   onClose: () => void;
+  offerSampleData: boolean;
 };
 
 // Served from apps/web/public — lets a demo user try the feature without a real bank export.
@@ -24,7 +25,7 @@ type Preview = {
   currentCount: number;
 };
 
-const ImportCsvModal = ({ open, onClose }: ImportCsvModalProps) => {
+const ImportCsvModal = ({ open, onClose, offerSampleData }: ImportCsvModalProps) => {
   const { t } = useTranslation();
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -151,11 +152,13 @@ const ImportCsvModal = ({ open, onClose }: ImportCsvModalProps) => {
                 ? t('importCsv.reading')
                 : t('importCsv.chooseFile')}
             </Button>
-            <Button variant="quiet" disabled={isPending} onClick={handleUseSampleData}>
-              {isPending && pendingSource === 'sample'
-                ? t('importCsv.loadingSample')
-                : t('importCsv.useSampleData')}
-            </Button>
+            {offerSampleData && (
+              <Button variant="quiet" disabled={isPending} onClick={handleUseSampleData}>
+                {isPending && pendingSource === 'sample'
+                  ? t('importCsv.loadingSample')
+                  : t('importCsv.useSampleData')}
+              </Button>
+            )}
             <Button variant="quiet" onClick={handleClose}>
               {t('common.cancel')}
             </Button>
