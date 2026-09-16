@@ -87,10 +87,10 @@ describe('AskChatView', () => {
   });
 
   it('renders assistant text in a bubble', () => {
-    mockUseChat({ messages: [textMessage('1', 'assistant', 'You spent €80 this week.')] });
+    mockUseChat({ messages: [textMessage('1', 'assistant', 'You spent less this week.')] });
     render(<AskChatView />);
 
-    expect(screen.getByText('You spent €80 this week.')).not.toBeNull();
+    expect(screen.getByText('You spent less this week.')).not.toBeNull();
   });
 
   it('shows the thinking row while a reply is streaming with no content yet', () => {

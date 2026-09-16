@@ -27,4 +27,11 @@ describe('ChatBubble', () => {
     rerender(<ChatBubble />);
     expect(screen.queryByText("Looked at this week's transactions")).toBeNull();
   });
+
+  it('highlights a number only when a currency symbol sits right next to it', () => {
+    render(<ChatBubble from="agent">You spent $80 across 3 categories.</ChatBubble>);
+
+    expect(screen.getByText('$80').tagName).toBe('SPAN');
+    expect(screen.queryByText('3')).toBeNull();
+  });
 });
