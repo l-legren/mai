@@ -77,21 +77,14 @@ const TransactionsView = ({ transactions, currentPage, totalPages }: Transaction
           )}
         </Card>
 
-        <div className="flex flex-col items-center gap-2">
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            basePath="/transactions"
-            navLabel={t('transactions.title')}
-            previousLabel={t('transactions.previous')}
-            nextLabel={t('transactions.next')}
-          />
-          {totalPages > 1 && (
-            <p className="text-[12.5px] text-text-2">
-              {t('transactions.pageOf', { page: currentPage, totalPages })}
-            </p>
-          )}
-        </div>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          basePath="/transactions"
+          navLabel={t('transactions.title')}
+          previousLabel={t('transactions.previous')}
+          nextLabel={t('transactions.next')}
+        />
       </div>
 
       <Modal
