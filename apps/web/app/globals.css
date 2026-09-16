@@ -76,6 +76,11 @@
      dropdowns, tooltips), too heavy for an inline content card. A separate, much softer shadow
      for Card/StatCard/AgentNote/EquationCard/SavingsSlider's flat panels. */
   --mq-shadow-card: 0 4px 16px rgba(0, 0, 0, 0.18);
+
+  /* Not in design-system/styles.css — background chip behind a currency amount in ChatBubble's
+     agent text (ask-mai). Dark theme reuses hover rather than a new literal — surface-raised sat
+     too close to bg/surface to read as a highlight. */
+  --mq-highlight: var(--mq-hover);
 }
 
 /* Light theme. Bg/text/border/accent/good/bubble/fill are ported from the same warm palette
@@ -137,6 +142,8 @@
   --mq-shadow-pop: 0 14px 34px rgba(120, 48, 80, 0.16);
   --mq-shadow-tip: 0 8px 22px rgba(120, 48, 80, 0.14);
   --mq-shadow-card: 0 4px 16px rgba(120, 48, 80, 0.08);
+
+  --mq-highlight: #ffffff;
 }
 
 @theme inline {
@@ -189,6 +196,8 @@
   --shadow-mq-pop: var(--mq-shadow-pop);
   --shadow-mq-tip: var(--mq-shadow-tip);
   --shadow-mq-card: var(--mq-shadow-card);
+
+  --color-highlight: var(--mq-highlight);
 
   --width-mq-sidebar-expanded: var(--mq-sidebar-w-expanded);
   --width-mq-sidebar-collapsed: var(--mq-sidebar-w-collapsed);
