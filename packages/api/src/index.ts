@@ -15,12 +15,15 @@ export { insertBankImportRows, type NewBankImportRow } from './bank-import.data'
 
 export {
   getExpenseRows,
+  getExpenseMonthlyCategoryTotals,
   getExpenseRowCount,
   insertExpenseRow,
   deleteExpenseRow,
   type ExpenseRow,
+  type ExpenseMonthCategoryTotal,
   type NewExpenseRow,
   type ExpensePagination,
+  type ExpenseDateRange,
   type PaginatedExpenseRows,
 } from './expenses.data';
 

@@ -73,7 +73,9 @@ const WhereItWentCard = ({ totals, monthLabel }: WhereItWentCardProps) => {
       </div>
 
       {totals.length === 0 ? (
-        <p className="mt-4 text-[13.5px] text-text-3">{t('insights.whereItWent.empty')}</p>
+        <p className="mt-4 text-[13.5px] text-text-3">
+          {t('insights.whereItWent.empty', { month: monthLabel })}
+        </p>
       ) : chartType === 'bars' ? (
         <div className="mt-4 flex flex-col gap-2.5">
           {totals.map((row) => (
