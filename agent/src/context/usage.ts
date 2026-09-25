@@ -16,6 +16,27 @@ export async function getDailyTokensUsed(userId: string): Promise<number> {
   }
 }
 
+/**
+ * Total tokens used today across all users. Reads via `mai_global_daily_tokens_used()`, a
+ * security definer function (see its migration) — mcp_readonly's own RLS policy on
+ * mai_daily_usage is scoped to one user, so a plain select here would silently undercount to just
+ * the caller's own usage instead of the true global total. Fails open to 0, same as
+ * `getDailyTokensUsed`.
+ */
+export async function getGlobalDailyTokensUsed(userId: string): Promise<number> {
+  try {
+    return await withScopedRead(userId, async (tx) => {
+      const rows = await tx<{ total: number }[]>`
+        select public.mai_global_daily_tokens_used() as total
+      `;
+      return rows[0]?.total ?? 0;
+    });
+  } catch (error) {
+    console.error('usage: getGlobalDailyTokensUsed failed', error);
+    return 0;
+  }
+}
+
 /** Best-effort: a failure here only affects tomorrow's bookkeeping, not this reply. */
 export async function addDailyTokensUsed(userId: string, tokens: number): Promise<void> {
   try {
