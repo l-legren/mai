@@ -312,6 +312,12 @@
       "title": "Set a few budgets",
       "subtitle": "Optional, but a great way to get better control of your finances — you can always change these later."
     },
+    "sampleData": {
+      "title": "See mai in action",
+      "subtitle": "Load a few weeks of sample transactions to explore your budgets right away — you can clear them later.",
+      "loadSample": "Load sample data",
+      "skip": "Skip for now"
+    },
     "errors": {
       "invalidInput": "Enter your first name and city.",
       "unknown": "Something went wrong. Please try again."

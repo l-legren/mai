@@ -7,6 +7,7 @@ import { previewBankCsvAction } from '@/app/actions/preview-bank-csv';
 import { importBankCsvAction } from '@/app/actions/import-bank-csv';
 import { Button, ConfirmPrompt, FormError, Modal } from '@/app/components/ui';
 import { EXPENSE_ROW_CAP } from '@/lib/expense-row-cap';
+import { fetchSampleCsvFile } from '@/lib/sample-csv';
 import type { NewBankImportRow } from '@mai/api';
 
 export type ImportCsvModalProps = {
@@ -14,9 +15,6 @@ export type ImportCsvModalProps = {
   onClose: () => void;
   offerSampleData: boolean;
 };
-
-// Served from apps/web/public — lets a demo user try the feature without a real bank export.
-const SAMPLE_CSV_URL = '/sample-bank-statement.csv';
 
 type Preview = {
   rows: NewBankImportRow[];
@@ -77,10 +75,7 @@ const ImportCsvModal = ({ open, onClose, offerSampleData }: ImportCsvModalProps)
     setPendingSource('sample');
     startTransition(async () => {
       try {
-        const response = await fetch(SAMPLE_CSV_URL);
-        if (!response.ok) throw new Error(`sample fetch failed: ${response.status}`);
-        const blob = await response.blob();
-        await runPreview(new File([blob], 'sample-bank-statement.csv', { type: 'text/csv' }));
+        await runPreview(await fetchSampleCsvFile());
       } catch {
         setErrorCode('unknown');
       }

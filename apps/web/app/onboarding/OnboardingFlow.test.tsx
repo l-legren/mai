@@ -14,14 +14,14 @@ function renderFlow() {
 }
 
 describe('OnboardingFlow', () => {
-  it('starts on the welcome step, step 1 of 4', () => {
+  it('starts on the welcome step, step 1 of 5', () => {
     renderFlow();
 
     expect(screen.getByRole('button', { name: 'Get started' })).toBeTruthy();
     expect(screen.getByRole('progressbar').getAttribute('aria-valuenow')).toBe('1');
   });
 
-  it('walks welcome → city → budgets → name, skipping the optional budgets step', () => {
+  it('walks welcome → city → budgets → sampleData → name, skipping the optional steps', () => {
     renderFlow();
 
     fireEvent.click(screen.getByRole('button', { name: 'Get started' }));
@@ -34,6 +34,10 @@ describe('OnboardingFlow', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Next' }));
     expect(screen.getByRole('progressbar').getAttribute('aria-valuenow')).toBe('4');
+    expect(screen.getByText('See mai in action')).toBeTruthy();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Skip for now' }));
+    expect(screen.getByRole('progressbar').getAttribute('aria-valuenow')).toBe('5');
     expect(screen.getByText('What should we call you?')).toBeTruthy();
   });
 
