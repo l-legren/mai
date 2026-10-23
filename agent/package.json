@@ -20,7 +20,9 @@
     "test": "jest",
     "eval": "npx lmnr eval",
     "start:dev": "tsx watch src/server.ts",
-    "start": "tsx src/server.ts"
+    "start": "tsx src/server.ts",
+    "build": "tsc -p tsconfig.build.json",
+    "start:prod": "node dist/server.js"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.39",
