@@ -11,6 +11,7 @@
 
 import { z } from 'zod';
 import { getAgentServiceUrl } from '@/lib/env';
+import { getAgentIdToken } from '@/lib/gcp-auth';
 import { createSupabaseServerClient } from '@/lib/supabase-server';
 
 const AskMaiBodySchema = z.object({
@@ -43,22 +44,36 @@ export async function POST(request: Request) {
   const parsed = AskMaiBodySchema.safeParse(json);
   if (!parsed.success) return Response.json({ error: 'Invalid payload' }, { status: 400 });
 
+  // Cloud Run's own IAM check consumes the `Authorization` header for the Google ID token below,
+  // so the end user's Supabase token (the agent's own auth check) travels in a separate header.
+  // Covers getAgentServiceUrl()/getAgentIdToken() throwing (missing env var, WIF failure) — without
+  // this, either becomes an unhandled exception that Next.js turns into an opaque 500 with no body.
+  let agentServiceUrl: string;
+  let idToken: string | null;
+  try {
+    agentServiceUrl = getAgentServiceUrl();
+    idToken = await getAgentIdToken(agentServiceUrl);
+  } catch (error) {
+    console.error('ask-mai proxy: could not mint Cloud Run ID token', error);
+    return Response.json({ error: 'Agent service unreachable' }, { status: 502 });
+  }
+
   let agentResponse: Response;
   try {
-    agentResponse = await fetch(`${getAgentServiceUrl()}/ask-mai`, {
+    agentResponse = await fetch(`${agentServiceUrl}/ask-mai`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${session.access_token}`,
+        ...(idToken ? { Authorization: `Bearer ${idToken}` } : {}),
+        'X-Supabase-Authorization': `Bearer ${session.access_token}`,
       },
       body: JSON.stringify(parsed.data),
       signal: request.signal,
     });
   } catch (error) {
-    // Covers both `getAgentServiceUrl()` throwing (missing env var) and the fetch itself failing
-    // (agent service down/unreachable) — without this, either one becomes an unhandled exception
-    // that Next.js turns into an opaque 500 with no body, which `consumeAskMaiStream` then
-    // reports as a generic "request failed" with nothing to debug from.
+    // Covers the fetch itself failing (agent service down/unreachable) — without this, it becomes
+    // an unhandled exception that Next.js turns into an opaque 500 with no body, which
+    // `consumeAskMaiStream` then reports as a generic "request failed" with nothing to debug from.
     console.error('ask-mai proxy: could not reach the agent service', error);
     return Response.json({ error: 'Agent service unreachable' }, { status: 502 });
   }

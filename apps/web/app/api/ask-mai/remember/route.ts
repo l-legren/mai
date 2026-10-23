@@ -2,6 +2,7 @@
 
 import { z } from 'zod';
 import { getAgentServiceUrl } from '@/lib/env';
+import { getAgentIdToken } from '@/lib/gcp-auth';
 import { createSupabaseServerClient } from '@/lib/supabase-server';
 
 const RememberBodySchema = z.object({
@@ -25,13 +26,24 @@ export async function POST(request: Request) {
   const parsed = RememberBodySchema.safeParse(json);
   if (!parsed.success) return Response.json({ error: 'Invalid payload' }, { status: 400 });
 
+  let agentServiceUrl: string;
+  let idToken: string | null;
+  try {
+    agentServiceUrl = getAgentServiceUrl();
+    idToken = await getAgentIdToken(agentServiceUrl);
+  } catch (error) {
+    console.error('ask-mai remember proxy: could not mint Cloud Run ID token', error);
+    return Response.json({ error: 'Agent service unreachable' }, { status: 502 });
+  }
+
   let agentResponse: Response;
   try {
-    agentResponse = await fetch(`${getAgentServiceUrl()}/ask-mai/remember`, {
+    agentResponse = await fetch(`${agentServiceUrl}/ask-mai/remember`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${session.access_token}`,
+        ...(idToken ? { Authorization: `Bearer ${idToken}` } : {}),
+        'X-Supabase-Authorization': `Bearer ${session.access_token}`,
       },
       body: JSON.stringify(parsed.data),
       signal: request.signal,

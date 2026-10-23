@@ -20,9 +20,10 @@ app.use(logger());
 
 type AuthResult = { userId: string } | { error: string };
 
-/** Shared auth check for both routes below. */
+/** Shared auth check for both routes below. `X-Supabase-Authorization`, not `Authorization` — the
+ * latter is consumed by Cloud Run's own IAM check (Google ID token) before the request reaches here. */
 async function authenticate(ctx: Context): Promise<AuthResult> {
-  const authHeader = ctx.req.header('Authorization');
+  const authHeader = ctx.req.header('X-Supabase-Authorization');
   if (!authHeader) return { error: 'Missing authentication' };
 
   const { data, error } = await supabase.auth.getUser(authHeader.replace('Bearer ', ''));
@@ -110,7 +111,7 @@ app.post('/ask-mai/remember', async (ctx) => {
   return ctx.json({ saved: true });
 });
 
-const port = Number(process.env.HONO_SERVER_LOCAL_PORT ?? 3060);
+const port = Number(process.env.PORT ?? process.env.HONO_SERVER_LOCAL_PORT ?? 3060);
 const railwayEnv = process.env.RAILWAY_ENVIRONMENT_NAME;
 
 serve({ fetch: app.fetch, port }, () => {
