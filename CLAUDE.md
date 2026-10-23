@@ -73,7 +73,7 @@ misconfigured DB connection string into a content-free 500 — invisible until t
 
 - `console.error` the real underlying error with a short, specific prefix naming the failing
   operation (e.g. `'ask-mai remember: saveUserMemory failed'`), not a generic message — so the
-  actual cause is visible in the host's logs (Railway, Vercel) even though the client only gets a
+  actual cause is visible in the host's logs (Cloud Run, Vercel) even though the client only gets a
   mapped status code.
 - Return a typed/coded error response instead of letting the exception propagate. Reference
   pattern: `apps/web/app/api/ask-mai/route.ts`'s `fetch` try/catch (logs, then `502`) and
