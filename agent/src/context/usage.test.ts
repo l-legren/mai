@@ -1,5 +1,5 @@
 import { withScopedRead, withScopedWrite } from '../db.ts';
-import { addDailyTokensUsed, getDailyTokensUsed } from './usage.ts';
+import { addDailyTokensUsed, getDailyTokensUsed, getGlobalDailyTokensUsed } from './usage.ts';
 
 jest.mock('../db.ts');
 
@@ -33,6 +33,26 @@ describe('getDailyTokensUsed', () => {
     mockedWithScopedRead.mockRejectedValue(new Error('connection refused'));
 
     await expect(getDailyTokensUsed('user-1')).resolves.toBe(0);
+  });
+});
+
+describe('getGlobalDailyTokensUsed', () => {
+  it('returns the global total for today', async () => {
+    mockedWithScopedRead.mockImplementation((_userId, fn) => fn(fakeTx([{ total: 84000 }])));
+
+    await expect(getGlobalDailyTokensUsed('user-1')).resolves.toBe(84000);
+  });
+
+  it('returns 0 when there is no usage yet today', async () => {
+    mockedWithScopedRead.mockImplementation((_userId, fn) => fn(fakeTx([])));
+
+    await expect(getGlobalDailyTokensUsed('user-1')).resolves.toBe(0);
+  });
+
+  it('fails open to 0 when the read throws', async () => {
+    mockedWithScopedRead.mockRejectedValue(new Error('connection refused'));
+
+    await expect(getGlobalDailyTokensUsed('user-1')).resolves.toBe(0);
   });
 });
 

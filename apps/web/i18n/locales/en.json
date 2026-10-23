@@ -281,8 +281,8 @@
     }
   },
   "pendingApproval": {
-    "title": "Your account is pending approval",
-    "message": "Thanks for signing up. An admin needs to approve your account before you can start using Mai — check back soon."
+    "title": "Your account isn't approved yet",
+    "message": "Something's not right with your account access. Try confirming your email again, or contact us if this keeps happening."
   },
   "onboarding": {
     "progress": "Step {{step}} of {{total}}",
@@ -311,6 +311,12 @@
     "budgets": {
       "title": "Set a few budgets",
       "subtitle": "Optional, but a great way to get better control of your finances — you can always change these later."
+    },
+    "sampleData": {
+      "title": "See mai in action",
+      "subtitle": "Load a few weeks of sample transactions to explore your budgets right away — you can clear them later.",
+      "loadSample": "Load sample data",
+      "skip": "Skip for now"
     },
     "errors": {
       "invalidInput": "Enter your first name and city.",

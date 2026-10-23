@@ -1,8 +1,17 @@
 import { createAnthropic } from '@ai-sdk/anthropic';
 import { convertToModelMessages, stepCountIs, streamText, type UIMessage } from 'ai';
 
-import { HAIKU_MODEL_ID, SONNET_MODEL_ID, selectModelTier } from './context/modelLimits.ts';
-import { addDailyTokensUsed, getDailyTokensUsed } from './context/usage.ts';
+import {
+  GLOBAL_DAILY_TOKEN_LIMIT,
+  HAIKU_MODEL_ID,
+  SONNET_MODEL_ID,
+  selectModelTier,
+} from './context/modelLimits.ts';
+import {
+  addDailyTokensUsed,
+  getDailyTokensUsed,
+  getGlobalDailyTokensUsed,
+} from './context/usage.ts';
 import { DEFAULT_CURRENCY, buildAskMaiSystemPrompt } from './prompts.ts';
 import { createMaiTools, getUserMemories } from './tools/index.ts';
 
@@ -40,11 +49,16 @@ export async function runAskMai(
   today: string,
   currency: string = DEFAULT_CURRENCY
 ): Promise<RunAskMaiResult> {
-  const [memories, modelMessages, tokensUsedToday] = await Promise.all([
+  const [memories, modelMessages, tokensUsedToday, globalTokensUsedToday] = await Promise.all([
     getUserMemories(userId),
     convertToModelMessages(messages),
     getDailyTokensUsed(userId),
+    getGlobalDailyTokensUsed(userId),
   ]);
+
+  if (globalTokensUsedToday >= GLOBAL_DAILY_TOKEN_LIMIT) {
+    return { type: 'blocked' };
+  }
 
   const tier = selectModelTier(tokensUsedToday);
   if (tier === 'blocked') {

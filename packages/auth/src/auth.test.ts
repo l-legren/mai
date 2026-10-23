@@ -118,6 +118,29 @@ describe('signUp', () => {
     );
   });
 
+  it('forwards the confirmation email redirect URL to Supabase', async () => {
+    const client = createMockClient();
+    client.auth.signUp.mockResolvedValue({
+      data: { session: null },
+      error: null,
+    });
+
+    await signUp(
+      client as never,
+      'Mara',
+      'user@example.com',
+      'password',
+      undefined,
+      'https://example.com/auth/callback'
+    );
+
+    expect(client.auth.signUp).toHaveBeenCalledWith(
+      expect.objectContaining({
+        options: expect.objectContaining({ emailRedirectTo: 'https://example.com/auth/callback' }),
+      })
+    );
+  });
+
   it('resolves to null when email confirmation is required', async () => {
     const client = createMockClient();
     client.auth.signUp.mockResolvedValue({

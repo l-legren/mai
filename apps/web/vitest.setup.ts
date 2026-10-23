@@ -21,6 +21,7 @@ export function createMockClient() {
     auth: {
       signInWithPassword: vi.fn(),
       signUp: vi.fn(),
+      exchangeCodeForSession: vi.fn(),
       getSession: vi.fn(),
       getUser: vi.fn().mockResolvedValue({ data: { user: null }, error: null }),
     },
