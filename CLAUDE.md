@@ -26,6 +26,10 @@ design-system/ → reference-only design export for apps/web UI work — see app
                       (apps/mobile, apps/web, packages/api, packages/auth), cached independently per package.
 ```
 
+# Mobile is not under active development
+
+`apps/mobile` is not being developed further. Do not factor its impact into backend/infra/architecture decisions elsewhere in the repo (e.g. shared services like `agent/`) — design for the apps that are actively developed, not for keeping mobile working.
+
 # Shared packages
 
 `@mai/api` and `@mai/auth` are consumed by both `apps/mobile` and `apps/web` — rules here apply
