@@ -128,6 +128,59 @@ Each subgraph runs independently and in parallel (turbo caps concurrency by CPU,
 - **TypeScript** (strict mode) — throughout.
 - **Jest / jest-expo** — unit testing, focused on the `services`/`data` layers.
 
+## Agent service authorization (apps/web ↔ Cloud Run)
+
+`agent/` is a standalone service (deployed on Cloud Run) that `apps/web` calls through a
+same-origin proxy (`apps/web/app/api/ask-mai/*`). Every request crosses two independent
+authorization layers, plus a third, unrelated grant that only concerns the agent's own startup:
+
+1. **GCP layer — "is this caller allowed to invoke the agent at all?"** Cloud Run's own IAM check,
+   enforced before the container even runs. `apps/web` has no static credential for this — it
+   mints a short-lived Google ID token at request time via Workload Identity Federation (WIF),
+   using Vercel's own OIDC token as proof of identity (`lib/gcp-auth.ts`). No GCP key ever exists
+   on either side.
+2. **App layer — "which user is this request for?"** The end user's Supabase session JWT, carried
+   in `X-Supabase-Authorization` (not `Authorization` — that header is reserved for #1, consumed by
+   Cloud Run's front door before the request reaches the agent). The agent verifies it directly
+   against Supabase (`agent/src/server.ts`'s `authenticate()`), independent of whatever GCP identity
+   called it.
+
+```mermaid
+sequenceDiagram
+    participant Web as apps/web (Vercel)
+    participant STS as Google STS
+    participant IAM as IAM Credentials API
+    participant Run as Cloud Run (mai-agent)
+    participant Auth as Supabase
+
+    Web->>Web: getVercelOidcToken() (Vercel's own OIDC token)
+    Web->>STS: exchange OIDC token for a federated token<br/>(workload identity pool + provider)
+    STS->>IAM: impersonate mai-web-invoker<br/>(generateAccessToken)
+    IAM-->>Web: access token, as mai-web-invoker
+    Web->>IAM: generateIdToken(audience = Cloud Run URL)
+    IAM-->>Web: Google ID token
+    Web->>Run: POST /ask-mai<br/>Authorization: Bearer (Google ID token)<br/>X-Supabase-Authorization: Bearer (user session JWT)
+    Run->>Run: Cloud Run IAM check (roles/run.invoker)
+    Run->>Auth: getUser(user session JWT)
+    Auth-->>Run: user id
+    Run-->>Web: response
+```
+
+Three separate IAM grants, each scoped to a different identity/purpose — conflating any two of
+these during setup is the most common way this breaks:
+
+| Grant                                        | On                                | To                            | Why                                                                                                                         |
+| -------------------------------------------- | --------------------------------- | ----------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `roles/iam.workloadIdentityUser`             | `mai-web-invoker` service account | the Vercel WIF pool principal | lets Vercel's OIDC identity impersonate `mai-web-invoker`                                                                   |
+| `roles/iam.serviceAccountOpenIdTokenCreator` | `mai-web-invoker`                 | `mai-web-invoker` itself      | the impersonated access token needs this (self-referential) to mint an ID token, a separate check from impersonation itself |
+| `roles/run.invoker`                          | `mai-agent` Cloud Run service     | `mai-web-invoker`             | lets that identity actually call the service, once past the IAM front door                                                  |
+
+**Unrelated third thing:** Cloud Run's own _runtime_ identity (the default compute service
+account, since `mai-agent` doesn't use a custom one) needs `roles/secretmanager.secretAccessor`
+— granted at the project level — to resolve its `--set-secrets` env vars (`ANTHROPIC_API_KEY`,
+`SUPABASE_ANON_KEY`, `LMNR_PROJECT_API_KEY`, the `MCP_*_DATABASE_URL`s) at container startup. This
+is a different service account, solving a different problem, from the two layers above.
+
 ## Accessibility
 
 The app targets full screen-reader support (VoiceOver/TalkBack): every interactive element has an `accessibilityRole` and meaningful label, stateful controls expose `accessibilityState`, decorative elements are hidden from assistive tech, color contrast meets WCAG AA, and dynamic content (errors, live totals) is announced via live regions. See `CLAUDE.md` for the full ruleset.
@@ -177,4 +230,4 @@ Tests live next to the code they cover (`<name>.test.ts`) and target the `servic
 
 ## Project conventions
 
-Full contributor guidelines — layering rules, component conventions, i18n, accessibility, and testing philosophy — live in [`CLAUDE.md`](./CLAUDE.md) and [`AGENTS.md`](./AGENTS.md).
+Full contributor guidelines — layering rules, component conventions, i18n, accessibility, and testing philosophy — live in [`CLAUDE.md`](./CLAUDE.md) (plus `apps/mobile/CLAUDE.md` and `apps/web/CLAUDE.md` for app-scoped rules).

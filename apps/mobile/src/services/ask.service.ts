@@ -22,7 +22,7 @@ import { todayISO } from '@/utils/date';
  */
 export function createAskTransport() {
   return new DefaultChatTransport({
-    api: `${process.env.EXPO_PUBLIC_RAILWAY_AGENT_SERVICE_URL}/ask-mai`,
+    api: `${process.env.EXPO_PUBLIC_AGENT_SERVICE_URL}/ask-mai`,
     prepareSendMessagesRequest: async ({ messages }) => {
       const {
         data: { session },
@@ -44,17 +44,14 @@ export async function saveMemory(content: string): Promise<void> {
   } = await supabase.auth.getSession();
   if (!session) throw new Error('Not signed in');
 
-  const response = await fetch(
-    `${process.env.EXPO_PUBLIC_RAILWAY_AGENT_SERVICE_URL}/ask-mai/remember`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${session.access_token}`,
-      },
-      body: JSON.stringify({ content }),
-    }
-  );
+  const response = await fetch(`${process.env.EXPO_PUBLIC_AGENT_SERVICE_URL}/ask-mai/remember`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${session.access_token}`,
+    },
+    body: JSON.stringify({ content }),
+  });
 
   if (!response.ok) throw new Error(`ask-mai remember request failed (${response.status})`);
 }

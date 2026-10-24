@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // `pnpm start -- --localAgent` / `pnpm ios -- --localAgent` / `pnpm android -- --localAgent` also
 // spawn the agent's own dev server (agent/src/server.ts) and point
-// EXPO_PUBLIC_RAILWAY_AGENT_SERVICE_URL at it instead of the deployed one — mirrors
+// EXPO_PUBLIC_AGENT_SERVICE_URL at it instead of the deployed one — mirrors
 // apps/web/scripts/dev.mjs's --localAgent, see agent/.env.example for the env vars the agent
 // process itself still needs (ANTHROPIC_API_KEY, etc).
 //
@@ -44,7 +44,7 @@ function run(command, args, options = {}) {
 if (useLocalAgent) {
   run('pnpm', ['--dir', agentDir, 'start:dev']);
   run('expo', [expoCommand], {
-    env: { ...process.env, EXPO_PUBLIC_RAILWAY_AGENT_SERVICE_URL: localAgentUrl },
+    env: { ...process.env, EXPO_PUBLIC_AGENT_SERVICE_URL: localAgentUrl },
   });
 } else {
   run('expo', [expoCommand]);

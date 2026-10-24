@@ -26,6 +26,10 @@ design-system/ → reference-only design export for apps/web UI work — see app
                       (apps/mobile, apps/web, packages/api, packages/auth), cached independently per package.
 ```
 
+# Mobile is not under active development
+
+`apps/mobile` is not being developed further. Do not factor its impact into backend/infra/architecture decisions elsewhere in the repo (e.g. shared services like `agent/`) — design for the apps that are actively developed, not for keeping mobile working.
+
 # Shared packages
 
 `@mai/api` and `@mai/auth` are consumed by both `apps/mobile` and `apps/web` — rules here apply
@@ -69,7 +73,7 @@ misconfigured DB connection string into a content-free 500 — invisible until t
 
 - `console.error` the real underlying error with a short, specific prefix naming the failing
   operation (e.g. `'ask-mai remember: saveUserMemory failed'`), not a generic message — so the
-  actual cause is visible in the host's logs (Railway, Vercel) even though the client only gets a
+  actual cause is visible in the host's logs (Cloud Run, Vercel) even though the client only gets a
   mapped status code.
 - Return a typed/coded error response instead of letting the exception propagate. Reference
   pattern: `apps/web/app/api/ask-mai/route.ts`'s `fetch` try/catch (logs, then `502`) and

@@ -20,9 +20,10 @@ app.use(logger());
 
 type AuthResult = { userId: string } | { error: string };
 
-/** Shared auth check for both routes below. */
+/** Shared auth check for both routes below. `X-Supabase-Authorization`, not `Authorization` — the
+ * latter is consumed by Cloud Run's own IAM check (Google ID token) before the request reaches here. */
 async function authenticate(ctx: Context): Promise<AuthResult> {
-  const authHeader = ctx.req.header('Authorization');
+  const authHeader = ctx.req.header('X-Supabase-Authorization');
   if (!authHeader) return { error: 'Missing authentication' };
 
   const { data, error } = await supabase.auth.getUser(authHeader.replace('Bearer ', ''));
@@ -110,13 +111,16 @@ app.post('/ask-mai/remember', async (ctx) => {
   return ctx.json({ saved: true });
 });
 
-const port = Number(process.env.HONO_SERVER_LOCAL_PORT ?? 3060);
-const railwayEnv = process.env.RAILWAY_ENVIRONMENT_NAME;
+/** K_SERVICE is set automatically by Cloud Run — unset locally, so it falls through to local-dev. */
+function resolveServerLocation(port: number): string {
+  const cloudRunService = process.env.K_SERVICE;
+  if (cloudRunService) return chalk.cyan(`Cloud Run (${cloudRunService})`);
+
+  return chalk.yellow(`local — http://localhost:${port}`);
+}
+
+const port = Number(process.env.PORT ?? process.env.HONO_SERVER_LOCAL_PORT ?? 3060);
 
 serve({ fetch: app.fetch, port }, () => {
-  const location = railwayEnv
-    ? chalk.cyan(`Railway (${railwayEnv})`) +
-      (process.env.RAILWAY_PUBLIC_DOMAIN ? ` — https://${process.env.RAILWAY_PUBLIC_DOMAIN}` : '')
-    : chalk.yellow(`local — http://localhost:${port}`);
-  console.log(`${chalk.green('✓')} mai agent server running on ${location}`);
+  console.log(`${chalk.green('✓')} mai agent server running on ${resolveServerLocation(port)}`);
 });
