@@ -10,9 +10,9 @@ export type StatCardProps = {
 };
 
 const VALUE_SIZE_CLASSES = {
-  sm: 'text-[34px]',
-  md: 'text-[42px]',
-  lg: 'text-[46px]',
+  sm: 'text-[2.125rem]',
+  md: 'text-mq-figure',
+  lg: 'text-[2.875rem]',
 };
 
 // text-4/text-3 (design-system's reference colors here) compute to ~3.2:1/~3.9:1 against
@@ -21,13 +21,13 @@ const VALUE_SIZE_CLASSES = {
 const StatCard = ({ label, value, note, size = 'md' }: StatCardProps) => {
   return (
     <div className="rounded-mq-lg border border-border bg-surface-raised px-6 py-[22px] shadow-mq-card">
-      <div className="text-[11px] font-semibold tracking-[0.8px] text-text-2 uppercase">
+      <div className="text-mq-eyebrow font-semibold tracking-[0.05rem] text-text-2 uppercase">
         {label}
       </div>
       <div className={cn('mt-2 font-bold tracking-[-1.3px] text-text', VALUE_SIZE_CLASSES[size])}>
         {value}
       </div>
-      {note && <div className="mt-1 text-[13.5px] text-text-2">{note}</div>}
+      {note && <div className="mt-1 text-mq-sm text-text-2">{note}</div>}
     </div>
   );
 };

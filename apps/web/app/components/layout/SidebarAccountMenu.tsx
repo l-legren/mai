@@ -38,7 +38,7 @@ const SidebarAccountMenuDropdown = () => {
         type="button"
         role="menuitem"
         onClick={toggleTheme}
-        className="flex h-[38px] w-full items-center gap-2.5 rounded-mq-lg px-2.5 text-left text-[13.5px] font-medium text-text hover:bg-fill"
+        className="flex h-[38px] w-full items-center gap-2.5 rounded-mq-lg px-2.5 text-left text-mq-sm font-medium text-text hover:bg-fill"
       >
         {t(isDark ? 'nav.switchToLightMode' : 'nav.switchToDarkMode')}
       </button>
@@ -46,7 +46,7 @@ const SidebarAccountMenuDropdown = () => {
         <button
           type="submit"
           role="menuitem"
-          className="flex h-[38px] w-full items-center gap-2.5 rounded-mq-lg px-2.5 text-left text-[13.5px] font-medium text-text hover:bg-fill"
+          className="flex h-[38px] w-full items-center gap-2.5 rounded-mq-lg px-2.5 text-left text-mq-sm font-medium text-text hover:bg-fill"
         >
           {t('auth.signOut')}
         </button>
@@ -112,7 +112,7 @@ const SidebarAccountMenu = ({ profile, collapsed }: SidebarAccountMenuProps) => 
           <span className="min-w-0 flex-1 truncate text-left text-sm font-medium text-text">
             {profile?.first_name}
           </span>
-          <span aria-hidden="true" className="text-[13px] text-text-5">
+          <span aria-hidden="true" className="text-mq-sm text-text-5">
             •••
           </span>
         </span>

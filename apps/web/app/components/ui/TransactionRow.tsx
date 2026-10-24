@@ -46,12 +46,12 @@ const TransactionRow = ({
         {categoryIcon}
       </div>
       <div className="min-w-0 flex-1">
-        <div className="truncate text-[15px] font-medium text-text">{name}</div>
+        <div className="truncate text-mq-body font-medium text-text">{name}</div>
         {/* meta is data (category/time), not copy — see CLAUDE.md's i18n rules — but its
             text-4 in the reference fails contrast against this card's surface; text-2 passes. */}
-        {meta && <div className="mt-0.5 truncate text-[12.5px] text-text-2">{meta}</div>}
+        {meta && <div className="mt-0.5 truncate text-mq-xs text-text-2">{meta}</div>}
       </div>
-      <div className="shrink-0 text-[15px] font-semibold text-text">{amount}</div>
+      <div className="shrink-0 text-mq-body font-semibold text-text">{amount}</div>
       {onDelete && (
         <button
           type="button"

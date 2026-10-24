@@ -33,7 +33,7 @@ const ChatInputBar = ({ value, onChangeText, onSubmit, disabled }: ChatInputBarP
         disabled={disabled}
         placeholder={disabled ? t('ask.workingPlaceholder') : t('ask.inputPlaceholder')}
         aria-label={t('ask.inputPlaceholder')}
-        className="min-w-0 flex-1 bg-transparent text-[15.5px] text-text placeholder:text-text-5 focus:outline-none disabled:cursor-not-allowed"
+        className="min-w-0 flex-1 bg-transparent text-mq-body text-text placeholder:text-text-5 focus:outline-none disabled:cursor-not-allowed"
       />
       <button
         type="submit"

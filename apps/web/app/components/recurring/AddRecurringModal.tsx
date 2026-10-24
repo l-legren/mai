@@ -36,7 +36,7 @@ type FieldProps = {
 
 const Field = ({ label, children }: FieldProps) => (
   <div className="flex flex-col gap-2">
-    <span className="text-[12px] font-semibold tracking-[0.6px] text-text-3 uppercase">
+    <span className="text-mq-xs font-semibold tracking-[0.0375rem] text-text-3 uppercase">
       {label}
     </span>
     {children}
@@ -121,7 +121,7 @@ const AddRecurringModal = ({
   return (
     <Modal open={open} onClose={handleClose} ariaLabel={t('addRecurring.title')} size="lg">
       <div className="flex flex-col gap-5">
-        <h2 className="text-[17px] font-bold text-text">{t('addRecurring.title')}</h2>
+        <h2 className="text-[1.0625rem] font-bold text-text">{t('addRecurring.title')}</h2>
 
         <SegmentedToggle
           options={[

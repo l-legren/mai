@@ -31,11 +31,11 @@ const BudgetRow = ({ row }: BudgetRowProps) => {
     <div className="flex flex-col gap-1.5">
       <div className="flex items-baseline justify-between gap-3">
         <div className="flex min-w-0 items-baseline gap-2">
-          <span className="truncate text-[13.5px] font-medium text-text">
+          <span className="truncate text-mq-sm font-medium text-text">
             {t(`categories.${row.category}`)}
           </span>
           <span
-            className={cn('text-[11.5px] whitespace-nowrap', over ? 'text-over' : 'text-text-3')}
+            className={cn('text-mq-eyebrow whitespace-nowrap', over ? 'text-over' : 'text-text-3')}
           >
             {over
               ? t('insights.budgetVsActual.over', { amount: formatCurrency(row.spent - row.limit) })
@@ -44,7 +44,7 @@ const BudgetRow = ({ row }: BudgetRowProps) => {
                 })}
           </span>
         </div>
-        <div className="flex-none text-right text-[13.5px] font-semibold whitespace-nowrap text-text">
+        <div className="flex-none text-right text-mq-sm font-semibold whitespace-nowrap text-text">
           {formatCurrency(row.spent)}
           <span className="font-normal text-text-4"> / {row.limit}</span>
         </div>
@@ -75,17 +75,17 @@ const BudgetVsActualCard = ({
     <Card>
       <div className="flex items-start justify-between gap-4">
         <div>
-          <div className="text-[15px] font-semibold text-text">
+          <div className="text-mq-body font-semibold text-text">
             {t('insights.budgetVsActual.title')}
           </div>
-          <div className="mt-1 text-[13px] text-text-3">
+          <div className="mt-1 text-mq-sm text-text-3">
             {t('insights.budgetVsActual.summary', { overCount, underCount, month: monthLabel })}
           </div>
         </div>
         <button
           type="button"
           onClick={() => setIsEditOpen(true)}
-          className="shrink-0 text-[13px] font-medium text-text-2 hover:text-text"
+          className="shrink-0 text-mq-sm font-medium text-text-2 hover:text-text"
         >
           {t('insights.budgetVsActual.editBudgets')}
         </button>
@@ -99,7 +99,7 @@ const BudgetVsActualCard = ({
       />
 
       {rows.length === 0 ? (
-        <p className="mt-4 text-[13.5px] text-text-3">{t('insights.budgetVsActual.empty')}</p>
+        <p className="mt-4 text-mq-sm text-text-3">{t('insights.budgetVsActual.empty')}</p>
       ) : (
         <div className="mt-4 flex flex-col gap-4">
           {rows.map((row) => (

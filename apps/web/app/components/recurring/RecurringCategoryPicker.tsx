@@ -48,7 +48,7 @@ const CategoryTile = ({ type, id, selected, onSelect }: CategoryTileProps) => {
       >
         {icon}
       </span>
-      <span className={cn('text-[11px] font-medium', selected ? 'text-accent' : 'text-text-2')}>
+      <span className={cn('text-mq-eyebrow font-medium', selected ? 'text-accent' : 'text-text-2')}>
         {label}
       </span>
     </button>

@@ -33,7 +33,7 @@ const PaginationLink = ({ page, basePath, isActive, className, ...props }: Pagin
     aria-current={isActive ? 'page' : undefined}
     className={cn(
       buttonVariants({ variant: isActive ? 'solid' : 'ghost' }),
-      'h-8 w-8 rounded-full p-0 text-[13px]',
+      'h-8 w-8 rounded-full p-0 text-mq-sm',
       className
     )}
     {...props}
@@ -54,7 +54,7 @@ const PaginationEdgeLink = ({ page, basePath, disabled, children }: PaginationEd
     tabIndex={disabled ? -1 : undefined}
     className={cn(
       buttonVariants({ variant: 'ghost' }),
-      'h-8 rounded-full px-3 text-[13px]',
+      'h-8 rounded-full px-3 text-mq-sm',
       disabled && 'pointer-events-none opacity-40'
     )}
   >
@@ -68,7 +68,7 @@ const PaginationNext = (props: PaginationEdgeLinkProps) => <PaginationEdgeLink {
 const PaginationEllipsis = () => (
   <span
     aria-hidden="true"
-    className="flex h-8 w-8 items-center justify-center text-[13px] text-text-2"
+    className="flex h-8 w-8 items-center justify-center text-mq-sm text-text-2"
   >
     …
   </span>

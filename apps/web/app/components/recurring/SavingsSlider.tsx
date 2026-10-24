@@ -45,10 +45,10 @@ const SavingsSlider = ({ value, breakEven }: SavingsSliderProps) => {
     <div className="rounded-mq-lg border border-border bg-surface-raised px-6 py-5 shadow-mq-card">
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <div className="flex flex-wrap items-baseline gap-3">
-          <span className="text-[15px] font-semibold text-text">
+          <span className="text-mq-body font-semibold text-text">
             {t('recurring.savingsTarget')}
           </span>
-          <span className={cn('text-[13px]', isOverBudget ? 'text-over' : 'text-text-2')}>
+          <span className={cn('text-mq-sm', isOverBudget ? 'text-over' : 'text-text-2')}>
             {isOverBudget
               ? t('recurring.onlyLeftPerMonth', {
                   amount: formatCurrency(Math.max(breakEven - draft, 0)),
@@ -57,10 +57,10 @@ const SavingsSlider = ({ value, breakEven }: SavingsSliderProps) => {
           </span>
         </div>
         <div className="flex items-baseline gap-1.5">
-          <span className="text-[20px] font-bold tracking-[-0.4px] text-text">
+          <span className="text-[1.25rem] font-bold tracking-[-0.4px] text-text">
             {formatCurrency(draft)}
           </span>
-          <span className="text-[13px] font-medium text-text-2">{t('recurring.perMonth')}</span>
+          <span className="text-mq-sm font-medium text-text-2">{t('recurring.perMonth')}</span>
         </div>
       </div>
 
@@ -85,7 +85,7 @@ const SavingsSlider = ({ value, breakEven }: SavingsSliderProps) => {
         />
       </div>
 
-      <div className="mt-1 flex justify-between text-[11.5px] font-medium text-text-4">
+      <div className="mt-1 flex justify-between text-mq-eyebrow font-medium text-text-4">
         <span>{formatCurrency(MIN)}</span>
         <span className={cn(isOverBudget && 'text-over')}>
           {t('recurring.breakEven', { amount: formatCurrency(breakEven) })}
