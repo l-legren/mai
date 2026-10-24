@@ -45,7 +45,7 @@ const RecurringListView = ({
   return (
     <div className="flex min-h-svh flex-col">
       <div className="flex flex-none items-end justify-between gap-4 px-9 pt-[30px] pb-5">
-        <h1 className="text-[27px] font-bold tracking-[-0.7px] text-text">
+        <h1 className="text-mq-page-title font-bold tracking-[-0.7px] text-text">
           {t(isIncome ? 'recurring.income' : 'recurring.fixedCosts')}
         </h1>
         <Button size="sm" onClick={() => setIsAddOpen(true)}>
@@ -64,7 +64,7 @@ const RecurringListView = ({
       <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-9 pb-7">
         <Card flush>
           {items.length === 0 ? (
-            <p className="px-6 py-8 text-center text-[13.5px] text-text-2">
+            <p className="px-6 py-8 text-center text-mq-sm text-text-2">
               {t(isIncome ? 'recurring.emptyIncome' : 'recurring.emptyCosts')}
             </p>
           ) : (

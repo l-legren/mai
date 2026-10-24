@@ -72,11 +72,13 @@ const AddExpenseModal = ({ open, onClose }: AddExpenseModalProps) => {
   return (
     <Modal open={open} onClose={handleClose} ariaLabel={t('addExpense.title')}>
       <div className="flex flex-col gap-4">
-        <h2 className="text-center text-[15px] font-semibold text-text">{t('addExpense.title')}</h2>
+        <h2 className="text-center text-mq-body font-semibold text-text">
+          {t('addExpense.title')}
+        </h2>
 
         <p
           aria-label={amountLabel}
-          className="text-center text-[40px] font-bold tracking-[-1px] text-text"
+          className="text-center text-[2.5rem] font-bold tracking-[-1px] text-text"
         >
           <span aria-hidden="true">{displayAmount}</span>
         </p>

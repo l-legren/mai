@@ -32,10 +32,10 @@ const AgentNote = ({
               <path d="M11.1 3.4a.6.6 0 0 1 1.13 0l1.1 2.94a3 3 0 0 0 1.77 1.77l2.94 1.1a.6.6 0 0 1 0 1.13l-2.94 1.1a3 3 0 0 0-1.77 1.77l-1.1 2.94a.6.6 0 0 1-1.13 0l-1.1-2.94a3 3 0 0 0-1.77-1.77l-2.94-1.1a.6.6 0 0 1 0-1.13l2.94-1.1a3 3 0 0 0 1.77-1.77z" />
             </svg>
           </span>
-          <span className="text-[12.5px] font-semibold text-text-2">{bylineLabel}</span>
+          <span className="text-mq-xs font-semibold text-text-2">{bylineLabel}</span>
         </div>
       )}
-      <p className="text-pretty text-[14.5px] leading-normal text-text">{message}</p>
+      <p className="text-pretty text-mq-body leading-normal text-text">{message}</p>
       {showActions && (
         <div className="flex gap-2">
           <Button variant="solid" size="sm" onClick={onPrimaryAction}>

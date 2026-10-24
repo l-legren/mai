@@ -17,7 +17,7 @@ const ThinkingRow = ({ onStop }: ThinkingRowProps) => {
         aria-hidden="true"
         className="h-4 w-4 animate-spin rounded-full border-2 border-accent-tint-strong border-t-accent"
       />
-      <span className="text-[15px] font-medium text-text-2">{t('ask.thinking')}</span>
+      <span className="text-mq-body font-medium text-text-2">{t('ask.thinking')}</span>
       <Button variant="outline" size="sm" className="ml-auto" onClick={onStop}>
         {t('ask.stop')}
       </Button>

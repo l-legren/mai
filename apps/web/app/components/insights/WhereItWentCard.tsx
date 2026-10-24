@@ -23,14 +23,14 @@ type BarRowProps = {
 
 const BarRow = ({ label, amount, widthPct, color }: BarRowProps) => (
   <div className="flex items-center gap-3.5">
-    <div className="w-[106px] flex-none truncate text-[13.5px] font-medium text-text">{label}</div>
+    <div className="w-[106px] flex-none truncate text-mq-sm font-medium text-text">{label}</div>
     <div className="h-3 min-w-0 flex-1">
       <div
         style={{ width: `${widthPct}%`, backgroundColor: color }}
         className="h-full rounded-mq-xs"
       />
     </div>
-    <div className="w-[84px] flex-none text-right text-[13.5px] font-semibold text-text">
+    <div className="w-[84px] flex-none text-right text-mq-sm font-semibold text-text">
       {formatCurrency(amount)}
     </div>
   </div>
@@ -53,10 +53,10 @@ const WhereItWentCard = ({ totals, monthLabel }: WhereItWentCardProps) => {
     <Card>
       <div className="flex items-start justify-between gap-4">
         <div>
-          <div className="text-[15px] font-semibold text-text">
+          <div className="text-mq-body font-semibold text-text">
             {t('insights.whereItWent.title')}
           </div>
-          <div className="mt-1 text-[13px] text-text-3">
+          <div className="mt-1 text-mq-sm text-text-3">
             {t('insights.whereItWent.note', {
               amount: formatCurrency(total),
               count: totals.length,
@@ -73,7 +73,7 @@ const WhereItWentCard = ({ totals, monthLabel }: WhereItWentCardProps) => {
       </div>
 
       {totals.length === 0 ? (
-        <p className="mt-4 text-[13.5px] text-text-3">
+        <p className="mt-4 text-mq-sm text-text-3">
           {t('insights.whereItWent.empty', { month: monthLabel })}
         </p>
       ) : chartType === 'bars' ? (
@@ -118,10 +118,10 @@ const WhereItWentCard = ({ totals, monthLabel }: WhereItWentCardProps) => {
               </PieChart>
             </ResponsiveContainer>
             <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-0.5">
-              <span className="text-[24px] font-bold tracking-[-0.8px] text-text">
+              <span className="text-[1.5rem] font-bold tracking-[-0.8px] text-text">
                 {formatCurrency(total)}
               </span>
-              <span className="text-[12px] font-medium text-text-4">
+              <span className="text-mq-xs font-medium text-text-4">
                 {t('insights.whereItWent.spentIn', { month: monthLabel })}
               </span>
             </div>
@@ -135,13 +135,13 @@ const WhereItWentCard = ({ totals, monthLabel }: WhereItWentCardProps) => {
                   style={{ backgroundColor: chartColorFor(slice.category) }}
                   className="h-[9px] w-[9px] flex-none rounded-full"
                 />
-                <span className="flex-1 truncate text-[13.5px] font-medium text-text">
+                <span className="flex-1 truncate text-mq-sm font-medium text-text">
                   {categoryLabel(slice.category)}
                 </span>
-                <span className="w-9 flex-none text-right text-[13px] text-text-3">
+                <span className="w-9 flex-none text-right text-mq-sm text-text-3">
                   {total > 0 ? Math.round((slice.amount / total) * 100) : 0}%
                 </span>
-                <span className="w-14 flex-none text-right text-[13.5px] font-semibold text-text">
+                <span className="w-14 flex-none text-right text-mq-sm font-semibold text-text">
                   {formatCurrency(slice.amount)}
                 </span>
               </div>

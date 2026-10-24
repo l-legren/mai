@@ -35,9 +35,11 @@ const HomeHeader = ({ onAddExpense, onImportCsv }: HomeHeaderProps) => {
   return (
     <div className="flex flex-none items-end justify-between gap-4 px-9 pt-[30px] pb-5">
       <div>
-        <h1 className="text-[27px] font-bold tracking-[-0.7px] text-text">{t('home.title')}</h1>
+        <h1 className="text-mq-page-title font-bold tracking-[-0.7px] text-text">
+          {t('home.title')}
+        </h1>
         {/* text-3 computes to ~4.15:1 on bg-bg, below WCAG AA — text-2 is ~7.4:1 */}
-        <p className="mt-1 text-[13.5px] text-text-2">{date}</p>
+        <p className="mt-1 text-mq-sm text-text-2">{date}</p>
       </div>
       <div className="flex gap-2.5">
         <Button variant="outline" size="sm" onClick={handleFilterByWeek}>
@@ -99,7 +101,7 @@ const HomeView = ({
           >
             <Link
               href="/transactions"
-              className="text-[13px] font-medium text-text-2 hover:text-text"
+              className="text-mq-sm font-medium text-text-2 hover:text-text"
             >
               {t('home.showMore')}
             </Link>

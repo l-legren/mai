@@ -74,7 +74,7 @@ const EditBudgetsModal = ({
       size="sm"
     >
       <div className="flex flex-col gap-5">
-        <h2 className="text-[17px] font-bold text-text">
+        <h2 className="text-[1.0625rem] font-bold text-text">
           {t('insights.budgetVsActual.editModal.title')}
         </h2>
 

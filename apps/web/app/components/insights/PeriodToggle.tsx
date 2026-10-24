@@ -23,7 +23,7 @@ const PeriodToggle = <T extends string>({ options, value, onChange }: PeriodTogg
             onClick={() => onChange(option.value)}
             aria-pressed={selected}
             className={cn(
-              'h-[30px] rounded-mq-pill px-3.5 text-[13px] font-medium',
+              'h-[30px] rounded-mq-pill px-3.5 text-mq-sm font-medium',
               selected ? 'bg-accent/14 font-semibold text-accent' : 'text-text-3'
             )}
           >

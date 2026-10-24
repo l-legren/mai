@@ -13,8 +13,8 @@ const BudgetBar = ({ category, spent, limit, currency = '€' }: BudgetBarProps)
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex justify-between">
-        <span className="text-[13.5px] font-medium text-text-2">{category}</span>
-        <span className="text-[13.5px] font-medium text-text">
+        <span className="text-mq-sm font-medium text-text-2">{category}</span>
+        <span className="text-mq-sm font-medium text-text">
           {currency}
           {spent} / {limit}
         </span>

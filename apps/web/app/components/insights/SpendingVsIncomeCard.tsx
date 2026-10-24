@@ -37,7 +37,7 @@ const LegendItem = ({ swatch, className, label }: LegendItemProps) => (
     ) : (
       <span aria-hidden="true" className={`h-0.5 w-3.5 ${className}`} />
     )}
-    <span className="text-[12.5px] font-medium text-text-2">{label}</span>
+    <span className="text-mq-xs font-medium text-text-2">{label}</span>
   </div>
 );
 
@@ -53,10 +53,10 @@ const SpendingVsIncomeCard = ({ series }: SpendingVsIncomeCardProps) => {
     <Card>
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <div className="text-[15px] font-semibold text-text">
+          <div className="text-mq-body font-semibold text-text">
             {t('insights.spendingVsIncome.title')}
           </div>
-          <div className="mt-1 text-[13px] text-text-3">
+          <div className="mt-1 text-mq-sm text-text-3">
             {t('insights.spendingVsIncome.note', { amount: formatCurrency(averageGap) })}
           </div>
         </div>

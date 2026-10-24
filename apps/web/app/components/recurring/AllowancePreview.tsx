@@ -11,8 +11,8 @@ const AllowancePreview = ({ amount }: AllowancePreviewProps) => {
 
   return (
     <div className="flex items-center justify-between gap-3 rounded-mq-md bg-field px-4 py-3">
-      <span className="flex-1 text-[13px] text-text-2">{t('addRecurring.previewLabel')}</span>
-      <span className="text-[14.5px] font-semibold text-text">{amount}</span>
+      <span className="flex-1 text-mq-sm text-text-2">{t('addRecurring.previewLabel')}</span>
+      <span className="text-mq-body font-semibold text-text">{amount}</span>
     </div>
   );
 };

@@ -40,7 +40,7 @@ const CategoryTile = ({ id, selected, onSelect }: CategoryTileProps) => {
       </span>
       <span
         aria-hidden="true"
-        className={cn('text-[11.5px] font-medium', selected ? 'text-accent' : 'text-text-2')}
+        className={cn('text-mq-eyebrow font-medium', selected ? 'text-accent' : 'text-text-2')}
       >
         {label}
       </span>

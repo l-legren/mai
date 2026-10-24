@@ -46,10 +46,10 @@ const BreakdownColumn = ({
   <div className="flex min-w-0 flex-1 flex-col gap-0.5">
     <div className="flex items-center gap-2">
       <span aria-hidden="true" className={cn('h-2.5 w-2.5 shrink-0 rounded-sm', swatchClassName)} />
-      <span className="truncate text-[12.5px] font-medium text-text-2">{label}</span>
+      <span className="truncate text-mq-xs font-medium text-text-2">{label}</span>
     </div>
-    <span className="text-[19px] font-bold tracking-[-0.4px] text-text">{amount}</span>
-    <span className={cn('text-[12px]', noteClassName ?? 'text-text-4')}>{note}</span>
+    <span className="text-mq-h font-bold tracking-[-0.4px] text-text">{amount}</span>
+    <span className={cn('text-mq-xs', noteClassName ?? 'text-text-4')}>{note}</span>
   </div>
 );
 
@@ -62,13 +62,13 @@ const EquationCard = ({ income, costs, costsItemCount, savingsGoal }: EquationCa
     <div className="flex flex-col gap-4 rounded-mq-lg border border-border bg-surface-raised px-6 py-5 shadow-mq-card md:flex-row md:gap-8">
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-baseline justify-between gap-3">
-          <span className="text-[15px] font-semibold text-text">
+          <span className="text-mq-body font-semibold text-text">
             {t('recurring.equationTitle', { amount: formatCurrency(income) })}
           </span>
-          <span className="text-[13px] text-text-2">{t('recurring.incomeMonthly')}</span>
+          <span className="text-mq-sm text-text-2">{t('recurring.incomeMonthly')}</span>
         </div>
 
-        <div className="mt-4 flex h-[22px] gap-0.5 overflow-hidden rounded-[8px]">
+        <div className="mt-4 flex h-[22px] gap-0.5 overflow-hidden rounded-mq-xs">
           <BarSegment widthPct={breakdown.costsPct} className="bg-accent/50" roundedStart />
           <BarSegment
             widthPct={breakdown.savingsPct}
@@ -111,18 +111,18 @@ const EquationCard = ({ income, costs, costsItemCount, savingsGoal }: EquationCa
       <div className="h-px w-full bg-border md:h-auto md:w-px" aria-hidden="true" />
 
       <div className="flex shrink-0 flex-col justify-center gap-0.5 md:w-[200px]">
-        <div className="text-[12.5px] font-semibold tracking-[0.4px] text-text-2 uppercase">
+        <div className="text-mq-xs font-semibold tracking-[0.025rem] text-text-2 uppercase">
           {t('recurring.dailyAllowance')}
         </div>
         <div
           className={cn(
-            'text-[42px] leading-[1.1] font-bold tracking-[-1.4px]',
+            'text-mq-figure leading-[1.1] font-bold tracking-[-1.4px]',
             breakdown.isOverBudget ? 'text-over' : 'text-text'
           )}
         >
           {formatCurrency(Math.round(allowance))}
         </div>
-        <div className="text-[12.5px] text-text-4">
+        <div className="text-mq-xs text-text-4">
           {t('recurring.perDays', { days: DAYS_PER_MONTH })}
         </div>
       </div>

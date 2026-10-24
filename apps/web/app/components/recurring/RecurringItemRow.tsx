@@ -34,11 +34,11 @@ const RecurringItemRow = ({ item, divider = true, onDelete }: RecurringItemRowPr
         {categoryIcon}
       </div>
       <div className="min-w-0 flex-1">
-        <div className="truncate text-[15px] font-medium text-text">{item.name}</div>
-        <div className="mt-0.5 truncate text-[12.5px] text-text-2">{subtitle}</div>
+        <div className="truncate text-mq-body font-medium text-text">{item.name}</div>
+        <div className="mt-0.5 truncate text-mq-xs text-text-2">{subtitle}</div>
       </div>
       <div
-        className={cn('shrink-0 text-[15px] font-semibold', isIncome ? 'text-good' : 'text-text')}
+        className={cn('shrink-0 text-mq-body font-semibold', isIncome ? 'text-good' : 'text-text')}
       >
         {amount}
       </div>

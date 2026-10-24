@@ -118,7 +118,7 @@ const ImportCsvModal = ({ open, onClose, offerSampleData }: ImportCsvModalProps)
   return (
     <Modal open={open} onClose={handleClose} ariaLabel={t('importCsv.title')}>
       <div className="flex flex-col gap-4">
-        <h2 className="text-center text-[15px] font-semibold text-text">{t('importCsv.title')}</h2>
+        <h2 className="text-center text-mq-body font-semibold text-text">{t('importCsv.title')}</h2>
 
         <input
           ref={fileInputRef}
