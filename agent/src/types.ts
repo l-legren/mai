@@ -1,7 +1,5 @@
 import { z } from 'zod';
 
-import { MAX_MEMORY_CONTENT_LENGTH } from './tools/index.ts';
-
 // `messages` is a UIMessage[] (the AI SDK's own client-facing shape) validated separately via
 // `validateUIMessages` in server.ts — its parts-array structure isn't hand-written here as zod,
 // only the app-specific `today` field is.
@@ -15,9 +13,3 @@ export const AskMaiRequestMetaSchema = z.object({
 });
 
 export type AskMaiRequestMeta = z.infer<typeof AskMaiRequestMetaSchema>;
-
-/** Body for POST /ask-mai/remember — persists a rememberFact proposal once the user confirms it. */
-export const RememberFactRequestSchema = z.object({
-  content: z.string().min(1).max(MAX_MEMORY_CONTENT_LENGTH),
-});
-export type RememberFactRequest = z.infer<typeof RememberFactRequestSchema>;

@@ -238,11 +238,7 @@
       "biggestCategoryThisWeek": "What's my biggest spending category this week?"
     },
     "remember": {
-      "byline": "Mai suggests",
-      "primaryLabel": "Remember",
-      "secondaryLabel": "Not now",
-      "saved": "Saved to memory.",
-      "dismissed": "Okay, I won't remember that."
+      "saved": "Saved to memory."
     }
   },
   "landing": {

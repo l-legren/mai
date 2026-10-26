@@ -1,7 +1,9 @@
 import { tool, type ToolSet } from 'ai';
 import { z } from 'zod';
+import { Annotation, StateGraph, START, END } from '@langchain/langgraph';
+import { PostgresSaver } from '@langchain/langgraph-checkpoint-postgres';
 
-import { withScopedRead, withScopedWrite } from '../db.ts';
+import { withScopedRead } from '../db.ts';
 
 /** Hard ceiling on how far back `getRecentSpending` can look — enforced before any DB call. */
 export const MAX_RECENT_SPENDING_DAYS = 30;
@@ -87,15 +89,14 @@ export function createMaiTools(userId: string, today: string): ToolSet {
 
     rememberFact: tool({
       description:
-        'Propose a finance-related fact to remember. Only use this when the user expresses ' +
-        'concern about a spending routine or category, a future plan or financial goal, or ' +
-        'explicitly asks you to remember something about their finances (e.g. "saving for a ' +
-        'house down payment", "worried about takeout spending", "count coffee as dining out"). ' +
-        'Never use for anything unrelated to their finances, or for a one-off detail only ' +
-        `relevant to the current message. Write it as concisely as possible — max ` +
-        `${MAX_MEMORY_CONTENT_LENGTH} characters, one fact per call. This only proposes the ` +
-        'fact — the user still has to confirm it before it is actually saved, so do not tell ' +
-        'the user it has been remembered yet.',
+        'Remember a finance-related fact. Only use this when the user expresses concern about ' +
+        'a spending routine or category, a future plan or financial goal, or explicitly asks ' +
+        'you to remember something about their finances (e.g. "saving for a house down ' +
+        'payment", "worried about takeout spending", "count coffee as dining out"). Never use ' +
+        'for anything unrelated to their finances, or for a one-off detail only relevant to ' +
+        `the current message. Write it as concisely as possible — max ` +
+        `${MAX_MEMORY_CONTENT_LENGTH} characters, one fact per call. Saves immediately — tell ` +
+        'the user you will remember it.',
       inputSchema: z.object({
         content: z
           .string()
@@ -105,24 +106,86 @@ export function createMaiTools(userId: string, today: string): ToolSet {
             `The fact to remember, written as concise plain prose. Max ${MAX_MEMORY_CONTENT_LENGTH} characters.`
           ),
       }),
-      // No execute — proposal only; saveUserMemory runs after the client's confirm gate.
+      execute: async ({ content }) => {
+        await saveUserMemory(userId, content);
+        return { saved: true };
+      },
     }),
   };
 }
 
-/** Persists a fact once the user confirms it — called directly, bypassing the model. */
+// LEG-171: memory lives in LangGraph's Postgres checkpointer (LEG-170), one thread per user — not the old mai_memories table. Clear a user's memory with `pnpm langgraph:clear-memory -- <userId>`.
+const MemoryState = Annotation.Root({
+  facts: Annotation<string[]>({
+    reducer: (prev, next) => [...prev, ...next],
+    default: () => [],
+  }),
+});
+
+let memoryCheckpointer: PostgresSaver | undefined;
+function getMemoryCheckpointer(): PostgresSaver {
+  if (!memoryCheckpointer) {
+    const connectionString = process.env.LANGGRAPH_DATABASE_URL;
+    if (!connectionString) {
+      throw new Error('Missing LANGGRAPH_DATABASE_URL');
+    }
+    memoryCheckpointer = PostgresSaver.fromConnString(connectionString);
+  }
+  return memoryCheckpointer;
+}
+
+function buildMemoryGraph() {
+  return (
+    new StateGraph(MemoryState)
+      // An empty return — not `(state) => state` — so this writes nothing; the `facts` reducer
+      // already appended the new content when the input merged in at START, before this node ran.
+      .addNode('record', () => ({}))
+      .addEdge(START, 'record')
+      .addEdge('record', END)
+      .compile({ checkpointer: getMemoryCheckpointer() })
+  );
+}
+
+const MEMORY_DB_TIMEOUT_MS = 10_000;
+
+/** A hung Postgres connection has no built-in timeout here — without this, a stalled write/read never settles, so the caller (an AI SDK tool execute) never resolves either. */
+function withTimeout<T>(promise: Promise<T>, label: string): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) =>
+      setTimeout(
+        () => reject(new Error(`${label} timed out after ${MEMORY_DB_TIMEOUT_MS}ms`)),
+        MEMORY_DB_TIMEOUT_MS
+      )
+    ),
+  ]);
+}
+
+/** Called from rememberFact's execute — saves immediately, no confirm step. */
 export async function saveUserMemory(userId: string, content: string): Promise<void> {
-  await withScopedWrite(userId, async (tx) => {
-    await tx`insert into public.mai_memories (user_id, content) values (${userId}, ${content})`;
-  });
+  try {
+    const graph = buildMemoryGraph();
+    await withTimeout(
+      graph.invoke({ facts: [content] }, { configurable: { thread_id: userId } }),
+      'saveUserMemory'
+    );
+  } catch (error) {
+    console.error('rememberFact: saveUserMemory failed', error);
+    throw error;
+  }
 }
 
 /** Not a tool — called directly in runAskMai so memories are already in the prompt every turn. */
 export async function getUserMemories(userId: string): Promise<string[]> {
-  return withScopedRead(userId, async (tx) => {
-    const rows = await tx<{ content: string }[]>`
-      select content from public.mai_memories where user_id = ${userId} order by created_at
-    `;
-    return rows.map((row) => row.content);
-  });
+  try {
+    const graph = buildMemoryGraph();
+    const state = await withTimeout(
+      graph.getState({ configurable: { thread_id: userId } }),
+      'getUserMemories'
+    );
+    return state.values?.facts ?? [];
+  } catch (error) {
+    console.error('runAskMai: getUserMemories failed', error);
+    throw error;
+  }
 }
