@@ -11,6 +11,7 @@ import { getGcpWorkloadIdentityEnv } from '@/lib/env';
  * Cloud Run IAM check to satisfy when talking to a local agent process, and requiring real GCP/
  * Vercel OIDC credentials just to run that flow would defeat its point.
  */
+/** `audience` is the Cloud Run agent service's own URL — not a GCP resource path. */
 export async function getAgentIdToken(audience: string): Promise<string | null> {
   if (audience.startsWith('http://localhost')) return null;
 
