@@ -22,11 +22,17 @@
     "start:dev": "tsx watch src/server.ts",
     "start": "tsx src/server.ts",
     "build": "tsc -p tsconfig.build.json",
-    "start:prod": "node dist/server.js"
+    "start:prod": "node dist/server.js",
+    "langgraph:setup": "tsx src/scripts/langgraph-setup.ts",
+    "langgraph:verify-write": "tsx src/scripts/langgraph-checkpoint-verify.ts write",
+    "langgraph:verify-read": "tsx src/scripts/langgraph-checkpoint-verify.ts read",
+    "langgraph:clear-memory": "tsx src/scripts/langgraph-clear-memory.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.39",
     "@hono/node-server": "^2.1.1",
+    "@langchain/langgraph": "^1.5.2",
+    "@langchain/langgraph-checkpoint-postgres": "^1.1.2",
     "@supabase/supabase-js": "^2.112.3",
     "ai": "^7.0.66",
     "chalk": "^6.0.0",

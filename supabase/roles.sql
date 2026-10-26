@@ -20,3 +20,13 @@ begin
   end if;
 end
 $$;
+
+-- LEG-170: owns LangGraph's own checkpoint/store tables (agent/src/scripts/langgraph-setup.ts
+-- creates them and grants this role CRUD on exactly those tables, nothing else in the schema).
+do $$
+begin
+  if not exists (select from pg_catalog.pg_roles where rolname = 'mcp_langgraph') then
+    create role mcp_langgraph login password 'mcp_langgraph_local_dev_only';
+  end if;
+end
+$$;
