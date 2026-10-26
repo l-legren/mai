@@ -10,9 +10,8 @@ import {
   validateUIMessages,
 } from 'ai';
 import { supabase } from './data/supabase.ts';
-import { AskMaiRequestMetaSchema, RememberFactRequestSchema } from './types.ts';
+import { AskMaiRequestMetaSchema } from './types.ts';
 import { runAskMai } from './run.ts';
-import { saveUserMemory } from './tools/index.ts';
 
 const app = new Hono();
 
@@ -80,35 +79,10 @@ app.post('/ask-mai', async (ctx) => {
     return createUIMessageStreamResponse({ stream });
   }
 
-  // rememberFact's tool call (no `execute`, see tools/index.ts) streams out as a native
-  // `tool-input-available` part here — no more manual re-encoding into a custom 'confirm' event.
+  // rememberFact (tools/index.ts) saves immediately via its own execute — no separate confirm route.
   return createUIMessageStreamResponse({
     stream: toUIMessageStream({ stream: runResult.result.stream }),
   });
-});
-
-app.post('/ask-mai/remember', async (ctx) => {
-  const auth = await authenticate(ctx);
-  if ('error' in auth) return ctx.json({ error: auth.error }, 401);
-
-  let jsonBody: unknown;
-  try {
-    jsonBody = await ctx.req.json();
-  } catch {
-    return ctx.json({ error: 'Invalid JSON body' }, 400);
-  }
-
-  const validationResult = RememberFactRequestSchema.safeParse(jsonBody);
-  if (!validationResult.success) return ctx.json({ message: 'Invalid shape of the payload' }, 400);
-
-  try {
-    await saveUserMemory(auth.userId, validationResult.data.content);
-  } catch (error) {
-    console.error('ask-mai remember: saveUserMemory failed', error);
-    return ctx.json({ error: 'Failed to save memory' }, 500);
-  }
-
-  return ctx.json({ saved: true });
 });
 
 /** K_SERVICE is set automatically by Cloud Run — unset locally, so it falls through to local-dev. */

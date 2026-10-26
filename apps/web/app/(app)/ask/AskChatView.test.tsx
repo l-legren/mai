@@ -7,13 +7,9 @@ const sendMessage = vi.fn();
 const stop = vi.fn();
 const setMessages = vi.fn();
 const clearError = vi.fn();
-const addToolOutput = vi.fn();
-
 vi.mock('@ai-sdk/react', () => ({ useChat: vi.fn() }));
-vi.mock('@/lib/ask', () => ({ confirmMemory: vi.fn() }));
 
 import { useChat } from '@ai-sdk/react';
-import { confirmMemory } from '@/lib/ask';
 import AskChatView from './AskChatView';
 
 afterEach(cleanup);
@@ -33,7 +29,6 @@ function mockUseChat({ messages = [], status = 'ready', error }: MockUseChatOpti
     stop,
     setMessages,
     clearError,
-    addToolOutput,
   } as never);
 }
 
@@ -104,56 +99,21 @@ describe('AskChatView', () => {
     );
   });
 
-  it('shows the confirm gate for a pending rememberFact proposal and confirms it', async () => {
-    mockUseChat({ messages: [rememberFactMessage('1', 'input-available')] });
-    vi.mocked(confirmMemory).mockResolvedValue(undefined);
-    render(<AskChatView />);
-
-    expect(screen.getByText('Wants to cut back on dining out')).not.toBeNull();
-
-    fireEvent.click(screen.getByRole('button', { name: 'Remember' }));
-
-    await vi.waitFor(() =>
-      expect(confirmMemory).toHaveBeenCalledWith('Wants to cut back on dining out')
-    );
-    expect(addToolOutput).toHaveBeenCalledWith({
-      tool: 'rememberFact',
-      toolCallId: 'call-1',
-      output: { saved: true },
-    });
-  });
-
-  it('dismisses a pending rememberFact proposal without calling confirmMemory', () => {
+  it('renders nothing for a rememberFact call still in flight', () => {
     mockUseChat({ messages: [rememberFactMessage('1', 'input-available')] });
     render(<AskChatView />);
 
-    fireEvent.click(screen.getByRole('button', { name: 'Not now' }));
-
-    expect(confirmMemory).not.toHaveBeenCalled();
-    expect(addToolOutput).toHaveBeenCalledWith({
-      tool: 'rememberFact',
-      toolCallId: 'call-1',
-      output: { saved: false },
-    });
+    expect(screen.queryByText('Saved to memory.')).toBeNull();
+    expect(screen.queryByRole('alert')).toBeNull();
   });
 
-  it('renders a saved note once the tool output resolves to saved', () => {
+  it('renders a saved note once rememberFact resolves — it saves immediately, no confirm step', () => {
     mockUseChat({
       messages: [rememberFactMessage('1', 'output-available', { output: { saved: true } })],
     });
     render(<AskChatView />);
 
     expect(screen.getByText('Saved to memory.')).not.toBeNull();
-    expect(screen.queryByRole('button', { name: 'Remember' })).toBeNull();
-  });
-
-  it('renders a dismissed note once the tool output resolves to not saved', () => {
-    mockUseChat({
-      messages: [rememberFactMessage('1', 'output-available', { output: { saved: false } })],
-    });
-    render(<AskChatView />);
-
-    expect(screen.getByText("Okay, I won't remember that.")).not.toBeNull();
   });
 
   it('renders an error line when saving the memory failed', () => {

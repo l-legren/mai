@@ -4,10 +4,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport, type ChatStatus, type UIMessage } from 'ai';
-import { z } from 'zod';
 import { ChatHeader, ChatInputBar, EmptyState, ThinkingRow } from '@/app/components/ask';
-import { AgentNote, ChatBubble, FormError } from '@/app/components/ui';
-import { confirmMemory } from '@/lib/ask';
+import { ChatBubble, FormError } from '@/app/components/ui';
 import { localDateIso } from '@/lib/utils/local-date';
 import { cn } from '@/lib/utils';
 
@@ -28,8 +26,6 @@ type RememberFactPart = {
   type: 'tool-rememberFact';
   toolCallId: string;
   state: 'input-streaming' | 'input-available' | 'output-available' | 'output-error';
-  input?: unknown;
-  output?: unknown;
   errorText?: string;
 };
 
@@ -44,9 +40,6 @@ function isRememberFactPart(part: UIMessagePart): boolean {
 function isQuotaExceededPart(part: UIMessagePart): boolean {
   return part.type === 'data-quotaExceeded';
 }
-
-const RememberFactInputSchema = z.object({ content: z.string() });
-const RememberFactOutputSchema = z.object({ saved: z.boolean() });
 
 function textOf(message: UIMessage): string {
   return message.parts
@@ -70,17 +63,13 @@ function statusLineFor(toolNames: string[], t: (key: string) => string): string 
 type AskTurnProps = {
   message: UIMessage;
   isFinished: boolean;
-  onConfirmMemory: (part: RememberFactPart) => void;
-  onDismissMemory: (part: RememberFactPart) => void;
 };
 
 /**
- * One message's worth of UI. `rememberFact` is a pending proposal, not a run tool (see
- * agent/src/tools/index.ts) — its own confirm gate, driven by the tool part's own state
- * (`input-available` while pending, `output-available`/`output-error` once resolved via
- * `addToolOutput`) rather than a separate turn kind.
+ * One message's worth of UI. `rememberFact` (agent/src/tools/index.ts) saves immediately
+ * server-side — `RememberFactNote` just reflects the tool part's resolved state, not a gate.
  */
-const AskTurn = ({ message, isFinished, onConfirmMemory, onDismissMemory }: AskTurnProps) => {
+const AskTurn = ({ message, isFinished }: AskTurnProps) => {
   const { t } = useTranslation();
 
   if (message.role === 'user') {
@@ -107,24 +96,17 @@ const AskTurn = ({ message, isFinished, onConfirmMemory, onDismissMemory }: AskT
           {text}
         </ChatBubble>
       )}
-      {rememberPart && (
-        <RememberFactNote
-          part={rememberPart}
-          onConfirm={() => onConfirmMemory(rememberPart)}
-          onDismiss={() => onDismissMemory(rememberPart)}
-        />
-      )}
+      {rememberPart && <RememberFactNote part={rememberPart} />}
     </>
   );
 };
 
 type RememberFactNoteProps = {
   part: RememberFactPart;
-  onConfirm: () => void;
-  onDismiss: () => void;
 };
 
-const RememberFactNote = ({ part, onConfirm, onDismiss }: RememberFactNoteProps) => {
+/** rememberFact has no pending state worth rendering — execute runs before this streams to the client. */
+const RememberFactNote = ({ part }: RememberFactNoteProps) => {
   const { t } = useTranslation();
 
   if (part.state === 'output-error') {
@@ -132,30 +114,10 @@ const RememberFactNote = ({ part, onConfirm, onDismiss }: RememberFactNoteProps)
   }
 
   if (part.state === 'output-available') {
-    const output = RememberFactOutputSchema.safeParse(part.output);
-    const saved = output.success && output.data.saved;
-    return (
-      <ChatBubble from="agent">
-        {t(saved ? 'ask.remember.saved' : 'ask.remember.dismissed')}
-      </ChatBubble>
-    );
+    return <ChatBubble from="agent">{t('ask.remember.saved')}</ChatBubble>;
   }
 
-  const input = RememberFactInputSchema.safeParse(part.input);
-  if (!input.success) {
-    return <FormError message={t('ask.error')} />;
-  }
-
-  return (
-    <AgentNote
-      message={input.data.content}
-      primaryLabel={t('ask.remember.primaryLabel')}
-      secondaryLabel={t('ask.remember.secondaryLabel')}
-      onPrimaryAction={onConfirm}
-      onSecondaryAction={onDismiss}
-      bylineLabel={t('ask.remember.byline')}
-    />
-  );
+  return null;
 };
 
 function isAwaitingReply(status: ChatStatus, lastMessage: UIMessage | undefined): boolean {
@@ -171,8 +133,8 @@ function isAwaitingReply(status: ChatStatus, lastMessage: UIMessage | undefined)
 /**
  * Ask Mai, desktop/tablet (design frames 7a/7b/7c) — a stateless-per-request tool-calling agent
  * loop (see agent/src/run.ts) behind a plain-text chat UI, mirroring the mobile Ask tab's scope
- * (LEG-129): streaming text, one status line, plus a confirm gate before saving an agent-proposed
- * memory. Built directly on `useChat` (LEG-155) rather than a hand-rolled conversation hook.
+ * (LEG-129): streaming text, one status line, plus a note once an agent-proposed memory is saved.
+ * Built directly on `useChat` (LEG-155) rather than a hand-rolled conversation hook.
  */
 const AskChatView = () => {
   const { t } = useTranslation();
@@ -186,8 +148,9 @@ const AskChatView = () => {
         }),
       })
   );
-  const { messages, status, error, sendMessage, stop, setMessages, clearError, addToolOutput } =
-    useChat({ transport });
+  const { messages, status, error, sendMessage, stop, setMessages, clearError } = useChat({
+    transport,
+  });
 
   const lastMessage = messages[messages.length - 1];
   const awaitingReply = isAwaitingReply(status, lastMessage);
@@ -207,33 +170,6 @@ const AskChatView = () => {
   const handleEndChat = () => {
     stop();
     setMessages([]);
-  };
-
-  const handleConfirmMemory = (part: RememberFactPart) => {
-    const input = RememberFactInputSchema.safeParse(part.input);
-    if (!input.success) return;
-
-    void (async () => {
-      try {
-        await confirmMemory(input.data.content);
-        addToolOutput({
-          tool: 'rememberFact',
-          toolCallId: part.toolCallId,
-          output: { saved: true },
-        });
-      } catch {
-        addToolOutput({
-          tool: 'rememberFact',
-          toolCallId: part.toolCallId,
-          state: 'output-error',
-          errorText: 'ask-mai remember request failed',
-        });
-      }
-    })();
-  };
-
-  const handleDismissMemory = (part: RememberFactPart) => {
-    addToolOutput({ tool: 'rememberFact', toolCallId: part.toolCallId, output: { saved: false } });
   };
 
   return (
@@ -256,8 +192,6 @@ const AskChatView = () => {
                   key={message.id}
                   message={message}
                   isFinished={message.id !== lastMessage?.id || !isBusy}
-                  onConfirmMemory={handleConfirmMemory}
-                  onDismissMemory={handleDismissMemory}
                 />
               ))}
               {awaitingReply && <ThinkingRow onStop={stop} />}
