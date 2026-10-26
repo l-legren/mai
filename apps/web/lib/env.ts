@@ -10,6 +10,7 @@
  * validation identical.
  */
 
+/** Reads the project's URL and publishable key for the Supabase client. */
 export function getSupabaseEnv(): { supabaseUrl: string; supabaseAnonKey: string } {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   // Supabase's new publishable key — same drop-in slot `createClient()` used to take the legacy
