@@ -1,0 +1,62 @@
+name: Deploy agent to Cloud Run
+
+# LEG-175: builds agent/Dockerfile and deploys it to the existing `mai-agent` Cloud Run service.
+# Auth is Workload Identity Federation (no GCP key) — see agent/deploy/provision-github-actions-wif.sh
+# for the one-time setup this depends on (a dedicated service account + WIF pool/provider trusting
+# GitHub's OIDC issuer, scoped to this repo only).
+on:
+  push:
+    branches: [develop]
+    paths:
+      - 'agent/**'
+      - '.github/workflows/deploy-agent.yml'
+
+concurrency:
+  group: deploy-agent
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  PROJECT_ID: mai-agent-512512
+  REGION: europe-west3
+  SERVICE: mai-agent
+  REPOSITORY: mai-agent
+
+jobs:
+  deploy:
+    name: Build and deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - id: auth
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_DEPLOY_SERVICE_ACCOUNT }}
+
+      - uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker "${REGION}-docker.pkg.dev" --quiet
+
+      - name: Build and push image
+        run: |
+          IMAGE="${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/agent:${{ github.sha }}"
+          docker build -f agent/Dockerfile -t "$IMAGE" .
+          docker push "$IMAGE"
+          echo "IMAGE=$IMAGE" >> "$GITHUB_ENV"
+
+      # No --set-env-vars/--set-secrets here — `gcloud run deploy` carries forward the existing
+      # revision's env/secret config when only --image is given; this workflow only ever updates
+      # the image, never touches what's already configured on the service.
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy "$SERVICE" \
+            --project="$PROJECT_ID" \
+            --region="$REGION" \
+            --image="$IMAGE" \
+            --quiet
