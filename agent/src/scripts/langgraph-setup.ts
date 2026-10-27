@@ -1,6 +1,9 @@
 import 'dotenv/config';
 import { PostgresSaver } from '@langchain/langgraph-checkpoint-postgres';
+import { PostgresStore } from '@langchain/langgraph-checkpoint-postgres/store';
 import postgres from 'postgres';
+
+import { embedTexts, EMBEDDING_DIMS } from '../memory/embeddings.ts';
 
 // LEG-170: one-off setup, run by hand. Least privilege via a dedicated role, not RLS — LangGraph's own generated SQL has no set_config predicate for an RLS policy to key off.
 async function main(): Promise<void> {
@@ -41,6 +44,17 @@ async function main(): Promise<void> {
     await saver.end();
     console.log('Checkpoint tables are set up.');
 
+    // Requires OPENAI_API_KEY — PostgresStore needs a real embed reference even though setup() never calls it.
+    console.log(
+      'Running PostgresStore.setup() (creates store/store_vectors/store_migrations, enables pgvector)...'
+    );
+    const store = PostgresStore.fromConnString(setupConnectionString, {
+      index: { dims: EMBEDDING_DIMS, embed: embedTexts, fields: ['content'] },
+    });
+    await store.setup();
+    await store.stop();
+    console.log('Store tables are set up.');
+
     console.log('Granting mcp_langgraph CRUD on the new tables...');
     await sql`grant connect on database postgres to mcp_langgraph`;
     await sql`grant usage on schema public to mcp_langgraph`;
@@ -48,6 +62,9 @@ async function main(): Promise<void> {
     await sql`grant select, insert, update, delete on public.checkpoint_blobs to mcp_langgraph`;
     await sql`grant select, insert, update, delete on public.checkpoint_writes to mcp_langgraph`;
     await sql`grant select on public.checkpoint_migrations to mcp_langgraph`;
+    await sql`grant select, insert, update, delete on public.store to mcp_langgraph`;
+    await sql`grant select, insert, update, delete on public.store_vectors to mcp_langgraph`;
+    await sql`grant select on public.store_migrations to mcp_langgraph`;
   } finally {
     await sql.end();
   }

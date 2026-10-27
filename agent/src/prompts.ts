@@ -22,6 +22,10 @@ export function buildAskMaiSystemPrompt(currency: string, memories: string[] = [
   if (memories.length === 0) return base;
 
   return (
-    base + ' Known facts about this user from past conversations: ' + memories.join('; ') + '.'
+    base +
+    ' Facts remembered about this user, retrieved as relevant to their current message (this ' +
+    'may not be everything known about them): ' +
+    memories.join('; ') +
+    '.'
   );
 }
