@@ -26,10 +26,12 @@
     "langgraph:setup": "tsx src/scripts/langgraph-setup.ts",
     "langgraph:verify-write": "tsx src/scripts/langgraph-checkpoint-verify.ts write",
     "langgraph:verify-read": "tsx src/scripts/langgraph-checkpoint-verify.ts read",
-    "langgraph:clear-memory": "tsx src/scripts/langgraph-clear-memory.ts"
+    "langgraph:clear-memory": "tsx src/scripts/langgraph-clear-memory.ts",
+    "langgraph:backfill-memory-index": "tsx src/scripts/langgraph-backfill-memory-index.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.39",
+    "@ai-sdk/openai": "4.0.39",
     "@hono/node-server": "^2.1.1",
     "@langchain/langgraph": "^1.5.2",
     "@langchain/langgraph-checkpoint-postgres": "^1.1.2",

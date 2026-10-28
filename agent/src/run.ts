@@ -12,8 +12,10 @@ import {
   getDailyTokensUsed,
   getGlobalDailyTokensUsed,
 } from './context/usage.ts';
+import { searchUserMemories } from './memory/store.ts';
 import { DEFAULT_CURRENCY, buildAskMaiSystemPrompt } from './prompts.ts';
-import { createMaiTools, getUserMemories } from './tools/index.ts';
+import { createMaiTools } from './tools/index.ts';
+import { latestUserMessageText } from './utils/latestUserMessageText.ts';
 
 const anthropicWorkspaceId = process.env.ANTHROPIC_WORKSPACE_ID;
 if (!anthropicWorkspaceId) {
@@ -40,8 +42,8 @@ export type RunAskMaiResult =
  * Tools are scoped to `userId` via `createMaiTools`, so the model can only ever read that one
  * user's data.
  *
- * Awaits fetching saved memories first, then returns the `streamText` result unawaited (still
- * streams token-by-token).
+ * Awaits a semantic search over saved memories (query = the latest user message) first, then
+ * returns the `streamText` result unawaited (still streams token-by-token).
  */
 export async function runAskMai(
   userId: string,
@@ -49,8 +51,9 @@ export async function runAskMai(
   today: string,
   currency: string = DEFAULT_CURRENCY
 ): Promise<RunAskMaiResult> {
+  const query = latestUserMessageText(messages);
   const [memories, modelMessages, tokensUsedToday, globalTokensUsedToday] = await Promise.all([
-    getUserMemories(userId),
+    query ? searchUserMemories(userId, query) : Promise.resolve([]),
     convertToModelMessages(messages),
     getDailyTokensUsed(userId),
     getGlobalDailyTokensUsed(userId),

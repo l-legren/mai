@@ -4,6 +4,8 @@ import { Annotation, StateGraph, START, END } from '@langchain/langgraph';
 import { PostgresSaver } from '@langchain/langgraph-checkpoint-postgres';
 
 import { withScopedRead } from '../db.ts';
+import { indexUserMemory } from '../memory/store.ts';
+import { withTimeout } from '../utils/withTimeout.ts';
 
 /** Hard ceiling on how far back `getRecentSpending` can look — enforced before any DB call. */
 export const MAX_RECENT_SPENDING_DAYS = 30;
@@ -107,7 +109,8 @@ export function createMaiTools(userId: string, today: string): ToolSet {
           ),
       }),
       execute: async ({ content }) => {
-        await saveUserMemory(userId, content);
+        await saveUserMemory(userId, content); // writes to the checkpointer
+        await indexUserMemory(userId, content); // embeds content, best effort
         return { saved: true };
       },
     }),
@@ -148,26 +151,14 @@ function buildMemoryGraph() {
 
 const MEMORY_DB_TIMEOUT_MS = 10_000;
 
-/** A hung Postgres connection has no built-in timeout here — without this, a stalled write/read never settles, so the caller (an AI SDK tool execute) never resolves either. */
-function withTimeout<T>(promise: Promise<T>, label: string): Promise<T> {
-  return Promise.race([
-    promise,
-    new Promise<T>((_, reject) =>
-      setTimeout(
-        () => reject(new Error(`${label} timed out after ${MEMORY_DB_TIMEOUT_MS}ms`)),
-        MEMORY_DB_TIMEOUT_MS
-      )
-    ),
-  ]);
-}
-
 /** Called from rememberFact's execute — saves immediately, no confirm step. */
 export async function saveUserMemory(userId: string, content: string): Promise<void> {
   try {
     const graph = buildMemoryGraph();
     await withTimeout(
       graph.invoke({ facts: [content] }, { configurable: { thread_id: userId } }),
-      'saveUserMemory'
+      'saveUserMemory',
+      MEMORY_DB_TIMEOUT_MS
     );
   } catch (error) {
     console.error('rememberFact: saveUserMemory failed', error);
@@ -181,7 +172,8 @@ export async function getUserMemories(userId: string): Promise<string[]> {
     const graph = buildMemoryGraph();
     const state = await withTimeout(
       graph.getState({ configurable: { thread_id: userId } }),
-      'getUserMemories'
+      'getUserMemories',
+      MEMORY_DB_TIMEOUT_MS
     );
     return state.values?.facts ?? [];
   } catch (error) {
