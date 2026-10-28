@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import './observability.ts';
 import chalk from 'chalk';
 import { Hono, type Context } from 'hono';
 import { logger } from 'hono/logger';
