@@ -1,34 +1,34 @@
 name: Deploy agent to Cloud Run
 
-# LEG-175: builds agent/Dockerfile and deploys it to the existing `mai-agent` Cloud Run service.
-# Auth is Workload Identity Federation (no GCP key) — see agent/deploy/provision-github-actions-wif.sh
-# for the one-time setup this depends on (a dedicated service account + WIF pool/provider trusting
-# GitHub's OIDC issuer, scoped to this repo only).
+# Builds agent/Dockerfile and deploys it to Cloud Run — staging (mai-agent-512512) on push to
+# develop, production (mai-agent-prod) on push to main. Auth is Workload Identity Federation (no
+# GCP key); infra (service accounts, WIF, Cloud Run service, Artifact Registry repo) is managed by
+# Terraform under infra/terraform/environments/{staging,prod}, not by this workflow.
 on:
   push:
-    branches: [develop]
+    branches: [develop, main]
     paths:
       - 'agent/**'
       - '.github/workflows/deploy-agent.yml'
 
 concurrency:
-  group: deploy-agent
+  group: deploy-agent-${{ github.ref_name }}
   cancel-in-progress: false
 
 permissions:
   contents: read
   id-token: write
 
-env:
-  PROJECT_ID: mai-agent-512512
-  REGION: europe-west3
-  SERVICE: mai-agent
-  REPOSITORY: mai-agent
-
 jobs:
   deploy:
     name: Build and deploy
     runs-on: ubuntu-latest
+    environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+    env:
+      PROJECT_ID: ${{ github.ref == 'refs/heads/main' && 'mai-agent-prod' || 'mai-agent-512512' }}
+      REGION: europe-west3
+      SERVICE: mai-agent
+      REPOSITORY: ${{ github.ref == 'refs/heads/main' && 'mai-agent-prod' || 'mai-agent' }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
