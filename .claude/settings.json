@@ -26,12 +26,8 @@
       "Bash(pnpm *)",
       "Bash(npx *)",
       "Bash(node *)",
-      "Bash(supabase status *)",
-      "Bash(supabase link *)",
-      "Bash(gh pr *)",
-      "Bash(gh api *)",
-      "Bash(gh repo *)",
-      "Bash(gh search *)",
+      "Bash(supabase *)",
+      "Bash(gh *)",
       "Bash(echo)",
       "Bash(echo *)",
       "mcp__linear-server__get_user",
@@ -62,6 +58,9 @@
       "Read(//**/.env)",
       "Edit(~/.ssh/**)",
       "Edit(//**/.env)"
+    ],
+    "ask": [
+      "Bash(supabase db *)"
     ]
   },
   "hooks": {
