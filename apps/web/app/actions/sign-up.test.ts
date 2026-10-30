@@ -1,8 +1,10 @@
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('next/navigation', () => ({ redirect: vi.fn() }));
+vi.mock('next/headers', () => ({ headers: vi.fn() }));
 vi.mock('@/lib/supabase-server', () => ({ createSupabaseServerClient: vi.fn() }));
 
+import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { createSupabaseServerClient } from '@/lib/supabase-server';
 import { createMockClient } from '../../vitest.setup';
@@ -16,6 +18,12 @@ function formDataFor(name: string, email: string, password: string) {
   formData.set('password', password);
   return formData;
 }
+
+beforeEach(() => {
+  vi.mocked(headers).mockResolvedValue({
+    get: (name: string) => (name === 'origin' ? 'https://example.com' : null),
+  } as never);
+});
 
 describe('signUpAction', () => {
   it('returns invalidInput without reaching Supabase when a field is empty', async () => {
@@ -73,6 +81,22 @@ describe('signUpAction', () => {
 
     expect(state).toEqual({ errorCode: null, confirmationPending: true });
     expect(redirect).not.toHaveBeenCalled();
+  });
+
+  it('sends the request origin as the confirmation email redirect URL', async () => {
+    const client = createMockClient();
+    client.auth.signUp.mockResolvedValue({ data: { session: null }, error: null });
+    vi.mocked(createSupabaseServerClient).mockResolvedValue(client as never);
+
+    await signUpAction(initialAuthFormState, formDataFor('Mara', 'user@example.com', 'password'));
+
+    expect(client.auth.signUp).toHaveBeenCalledWith(
+      expect.objectContaining({
+        options: expect.objectContaining({
+          emailRedirectTo: 'https://example.com/auth/callback',
+        }),
+      })
+    );
   });
 
   it('redirects to / when a session is created immediately', async () => {

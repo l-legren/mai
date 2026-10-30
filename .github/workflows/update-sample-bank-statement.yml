@@ -1,0 +1,43 @@
+name: Update sample bank statement
+
+# Keeps apps/web/public/sample-bank-statement.csv (the once-off demo import) current: appends a
+# day of synthetic transactions through yesterday (UTC) and trims the oldest rows to stay under
+# the 5,000-row cap. See apps/web/scripts/generate-bank-statement.mjs for the generation logic.
+on:
+  schedule:
+    - cron: '0 4 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: update-sample-bank-statement
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    name: Generate and commit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: develop
+
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 26
+
+      - run: node apps/web/scripts/generate-bank-statement.mjs
+
+      - name: Commit if changed
+        run: |
+          if git diff --quiet -- apps/web/public/sample-bank-statement.csv; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add apps/web/public/sample-bank-statement.csv
+          git commit -m "chore(web): refresh sample bank statement"
+          git push origin develop

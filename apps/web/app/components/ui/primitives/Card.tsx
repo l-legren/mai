@@ -24,14 +24,14 @@ const Card = ({ title, action, onAction, accent = false, flush = false, children
     >
       {(title || action) && (
         <div className="flex items-center justify-between px-6 pt-[18px] pb-3.5">
-          {title && <span className="text-[15px] font-semibold text-text">{title}</span>}
+          {title && <span className="text-mq-body font-semibold text-text">{title}</span>}
           {/* text-3 (design-system's reference color here) computes to ~3.9:1 against
               surface-raised — below WCAG AA. text-2 is ~7:1; text is used on hover for emphasis. */}
           {action && (
             <button
               type="button"
               onClick={onAction}
-              className="text-[13px] font-medium text-text-2 hover:text-text"
+              className="text-mq-sm font-medium text-text-2 hover:text-text"
             >
               {action}
             </button>

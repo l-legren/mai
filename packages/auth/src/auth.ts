@@ -79,7 +79,8 @@ export async function signUp(
   name: string,
   email: string,
   password: string,
-  captchaToken?: string
+  captchaToken?: string,
+  emailRedirectTo?: string
 ): Promise<AuthUser | null> {
   const trimmedName = name.trim();
   const trimmedEmail = email.trim();
@@ -90,7 +91,7 @@ export async function signUp(
   const { data, error } = await client.auth.signUp({
     email: trimmedEmail,
     password,
-    options: { data: { name: trimmedName }, captchaToken },
+    options: { data: { name: trimmedName }, captchaToken, emailRedirectTo },
   });
 
   if (error) {

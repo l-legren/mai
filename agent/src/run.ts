@@ -1,10 +1,21 @@
 import { createAnthropic } from '@ai-sdk/anthropic';
 import { convertToModelMessages, stepCountIs, streamText, type UIMessage } from 'ai';
 
-import { HAIKU_MODEL_ID, SONNET_MODEL_ID, selectModelTier } from './context/modelLimits.ts';
-import { addDailyTokensUsed, getDailyTokensUsed } from './context/usage.ts';
+import {
+  GLOBAL_DAILY_TOKEN_LIMIT,
+  HAIKU_MODEL_ID,
+  SONNET_MODEL_ID,
+  selectModelTier,
+} from './context/modelLimits.ts';
+import {
+  addDailyTokensUsed,
+  getDailyTokensUsed,
+  getGlobalDailyTokensUsed,
+} from './context/usage.ts';
+import { searchUserMemories } from './memory/store.ts';
 import { DEFAULT_CURRENCY, buildAskMaiSystemPrompt } from './prompts.ts';
-import { createMaiTools, getUserMemories } from './tools/index.ts';
+import { createMaiTools } from './tools/index.ts';
+import { latestUserMessageText } from './utils/latestUserMessageText.ts';
 
 const anthropicWorkspaceId = process.env.ANTHROPIC_WORKSPACE_ID;
 if (!anthropicWorkspaceId) {
@@ -31,8 +42,8 @@ export type RunAskMaiResult =
  * Tools are scoped to `userId` via `createMaiTools`, so the model can only ever read that one
  * user's data.
  *
- * Awaits fetching saved memories first, then returns the `streamText` result unawaited (still
- * streams token-by-token).
+ * Awaits a semantic search over saved memories (query = the latest user message) first, then
+ * returns the `streamText` result unawaited (still streams token-by-token).
  */
 export async function runAskMai(
   userId: string,
@@ -40,11 +51,17 @@ export async function runAskMai(
   today: string,
   currency: string = DEFAULT_CURRENCY
 ): Promise<RunAskMaiResult> {
-  const [memories, modelMessages, tokensUsedToday] = await Promise.all([
-    getUserMemories(userId),
+  const query = latestUserMessageText(messages);
+  const [memories, modelMessages, tokensUsedToday, globalTokensUsedToday] = await Promise.all([
+    query ? searchUserMemories(userId, query) : Promise.resolve([]),
     convertToModelMessages(messages),
     getDailyTokensUsed(userId),
+    getGlobalDailyTokensUsed(userId),
   ]);
+
+  if (globalTokensUsedToday >= GLOBAL_DAILY_TOKEN_LIMIT) {
+    return { type: 'blocked' };
+  }
 
   const tier = selectModelTier(tokensUsedToday);
   if (tier === 'blocked') {

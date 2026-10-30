@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import './observability.ts';
 import chalk from 'chalk';
 import { Hono, type Context } from 'hono';
 import { logger } from 'hono/logger';
@@ -10,9 +11,8 @@ import {
   validateUIMessages,
 } from 'ai';
 import { supabase } from './data/supabase.ts';
-import { AskMaiRequestMetaSchema, RememberFactRequestSchema } from './types.ts';
+import { AskMaiRequestMetaSchema } from './types.ts';
 import { runAskMai } from './run.ts';
-import { saveUserMemory } from './tools/index.ts';
 
 const app = new Hono();
 
@@ -20,9 +20,10 @@ app.use(logger());
 
 type AuthResult = { userId: string } | { error: string };
 
-/** Shared auth check for both routes below. */
+/** Shared auth check for both routes below. `X-Supabase-Authorization`, not `Authorization` — the
+ * latter is consumed by Cloud Run's own IAM check (Google ID token) before the request reaches here. */
 async function authenticate(ctx: Context): Promise<AuthResult> {
-  const authHeader = ctx.req.header('Authorization');
+  const authHeader = ctx.req.header('X-Supabase-Authorization');
   if (!authHeader) return { error: 'Missing authentication' };
 
   const { data, error } = await supabase.auth.getUser(authHeader.replace('Bearer ', ''));
@@ -79,44 +80,22 @@ app.post('/ask-mai', async (ctx) => {
     return createUIMessageStreamResponse({ stream });
   }
 
-  // rememberFact's tool call (no `execute`, see tools/index.ts) streams out as a native
-  // `tool-input-available` part here — no more manual re-encoding into a custom 'confirm' event.
+  // rememberFact (tools/index.ts) saves immediately via its own execute — no separate confirm route.
   return createUIMessageStreamResponse({
     stream: toUIMessageStream({ stream: runResult.result.stream }),
   });
 });
 
-app.post('/ask-mai/remember', async (ctx) => {
-  const auth = await authenticate(ctx);
-  if ('error' in auth) return ctx.json({ error: auth.error }, 401);
+/** K_SERVICE is set automatically by Cloud Run — unset locally, so it falls through to local-dev. */
+function resolveServerLocation(port: number): string {
+  const cloudRunService = process.env.K_SERVICE;
+  if (cloudRunService) return chalk.cyan(`Cloud Run (${cloudRunService})`);
 
-  let jsonBody: unknown;
-  try {
-    jsonBody = await ctx.req.json();
-  } catch {
-    return ctx.json({ error: 'Invalid JSON body' }, 400);
-  }
+  return chalk.yellow(`local — http://localhost:${port}`);
+}
 
-  const validationResult = RememberFactRequestSchema.safeParse(jsonBody);
-  if (!validationResult.success) return ctx.json({ message: 'Invalid shape of the payload' }, 400);
-
-  try {
-    await saveUserMemory(auth.userId, validationResult.data.content);
-  } catch (error) {
-    console.error('ask-mai remember: saveUserMemory failed', error);
-    return ctx.json({ error: 'Failed to save memory' }, 500);
-  }
-
-  return ctx.json({ saved: true });
-});
-
-const port = Number(process.env.HONO_SERVER_LOCAL_PORT ?? 3060);
-const railwayEnv = process.env.RAILWAY_ENVIRONMENT_NAME;
+const port = Number(process.env.PORT ?? process.env.HONO_SERVER_LOCAL_PORT ?? 3060);
 
 serve({ fetch: app.fetch, port }, () => {
-  const location = railwayEnv
-    ? chalk.cyan(`Railway (${railwayEnv})`) +
-      (process.env.RAILWAY_PUBLIC_DOMAIN ? ` — https://${process.env.RAILWAY_PUBLIC_DOMAIN}` : '')
-    : chalk.yellow(`local — http://localhost:${port}`);
-  console.log(`${chalk.green('✓')} mai agent server running on ${location}`);
+  console.log(`${chalk.green('✓')} mai agent server running on ${resolveServerLocation(port)}`);
 });

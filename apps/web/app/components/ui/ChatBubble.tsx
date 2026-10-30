@@ -36,7 +36,7 @@ const ChatBubble = ({ from = 'agent', children, status }: ChatBubbleProps) => {
   if (from === 'user') {
     return (
       <div className="flex justify-end">
-        <div className="max-w-[70%] rounded-[18px_18px_6px_18px] bg-bubble px-[17px] py-[13px] text-[15.5px] leading-[1.45] text-text">
+        <div className="max-w-[70%] rounded-[18px_18px_6px_18px] bg-bubble px-[17px] py-[13px] text-mq-body leading-[1.45] text-text">
           {children}
         </div>
       </div>
@@ -45,13 +45,13 @@ const ChatBubble = ({ from = 'agent', children, status }: ChatBubbleProps) => {
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="text-pretty text-[15.5px] leading-[1.55] text-text">
+      <div className="text-pretty text-mq-body leading-[1.55] text-text">
         {typeof children === 'string' ? highlightNumbers(children) : children}
       </div>
       {status && (
         <div className="flex items-center gap-2">
           <span aria-hidden="true" className="h-[5px] w-[5px] rounded-full bg-text-3" />
-          <span className="text-[13px] text-text-3">{status}</span>
+          <span className="text-mq-sm text-text-3">{status}</span>
         </div>
       )}
     </div>

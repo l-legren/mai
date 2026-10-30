@@ -58,11 +58,13 @@ const memoryRoot = path.join(
   root.replace(/[/\\]/g, '-'),
   'memory',
 );
+const plansRoot = path.join(os.homedir(), '.claude', 'plans');
 
 const abs = path.resolve(root, file);
 const isInRepo = abs === root || abs.startsWith(root + path.sep);
 const isInMemoryDir = abs === memoryRoot || abs.startsWith(memoryRoot + path.sep);
-if (!isInRepo && !isInMemoryDir) {
+const isInPlansDir = abs === plansRoot || abs.startsWith(plansRoot + path.sep);
+if (!isInRepo && !isInMemoryDir && !isInPlansDir) {
   console.error(`BLOCKED: '${file}' resolves outside the monorepo (${root}).`);
   process.exit(2);
 }

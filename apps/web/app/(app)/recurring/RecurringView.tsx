@@ -36,10 +36,10 @@ const RecurringHeader = ({ onAddRecurring }: RecurringHeaderProps) => {
   return (
     <div className="flex flex-none items-end justify-between gap-4 px-9 pt-[30px] pb-5">
       <div>
-        <h1 className="text-[27px] font-bold tracking-[-0.7px] text-text">
+        <h1 className="text-mq-page-title font-bold tracking-[-0.7px] text-text">
           {t('recurring.title')}
         </h1>
-        <p className="mt-1 text-[13.5px] text-text-2">{t('recurring.subtitle')}</p>
+        <p className="mt-1 text-mq-sm text-text-2">{t('recurring.subtitle')}</p>
       </div>
       <Button size="sm" onClick={onAddRecurring}>
         {t('recurring.addRecurring')}
@@ -70,14 +70,14 @@ const RecurringListCard = ({
   return (
     <Card flush>
       <div className="flex items-center justify-between px-6 pt-[18px] pb-3">
-        <span className="text-[12.5px] font-semibold tracking-[0.5px] text-text-2 uppercase">
+        <span className="text-mq-xs font-semibold tracking-[0.03125rem] text-text-2 uppercase">
           {title}
         </span>
-        <span className={cn('text-[14.5px] font-bold', totalClassName)}>{totalLabel}</span>
+        <span className={cn('text-mq-body font-bold', totalClassName)}>{totalLabel}</span>
       </div>
       <div className="flex-1">
         {items.length === 0 ? (
-          <p className="border-t border-white/[0.06] px-6 py-8 text-center text-[13.5px] text-text-2">
+          <p className="border-t border-white/[0.06] px-6 py-8 text-center text-mq-sm text-text-2">
             {emptyLabel}
           </p>
         ) : (
@@ -87,7 +87,7 @@ const RecurringListCard = ({
         )}
       </div>
       <div className="mt-auto border-t border-white/[0.06] px-6 py-3.5">
-        <Link href={seeMoreHref} className="text-[13px] font-medium text-text-2 hover:text-text">
+        <Link href={seeMoreHref} className="text-mq-sm font-medium text-text-2 hover:text-text">
           {t('recurring.seeMore')}
         </Link>
       </div>

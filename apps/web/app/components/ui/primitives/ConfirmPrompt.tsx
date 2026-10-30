@@ -17,7 +17,7 @@ const ConfirmPrompt = ({
 }: ConfirmPromptProps) => {
   return (
     <div className="flex flex-col gap-4">
-      <p className="text-pretty text-[14.5px] leading-normal text-text">{message}</p>
+      <p className="text-pretty text-mq-body leading-normal text-text">{message}</p>
       <div className="flex gap-2">
         <Button variant="solid" size="sm" onClick={onPrimaryAction}>
           {primaryLabel}

@@ -68,10 +68,10 @@ const InsightsView = ({
     <div className="flex min-h-svh flex-col">
       <div className="flex flex-none items-end justify-between gap-4 px-9 pt-[30px] pb-5">
         <div>
-          <h1 className="text-[27px] font-bold tracking-[-0.7px] text-text">
+          <h1 className="text-mq-page-title font-bold tracking-[-0.7px] text-text">
             {t('insights.title')}
           </h1>
-          <p className="mt-1 text-[13.5px] text-text-2">{t('insights.subtitle')}</p>
+          <p className="mt-1 text-mq-sm text-text-2">{t('insights.subtitle')}</p>
         </div>
         <PeriodToggle
           options={periodOptions}

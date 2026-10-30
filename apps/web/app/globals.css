@@ -12,6 +12,18 @@
   --mq-r-xl: 20px;
   --mq-r-pill: 999px;
 
+  --mq-hero: 4.75rem;
+  --mq-title: 1.875rem;
+  --mq-figure: 2.625rem;
+  --mq-h: 1.1875rem;
+  --mq-body: 0.9375rem;
+  --mq-sm: 0.84375rem;
+  --mq-xs: 0.78125rem;
+  --mq-eyebrow: 0.6875rem;
+  /* Not in design-system/styles.css — repeated page-title size (HomeView/InsightsView/
+     TransactionsView), frequent enough across the app to warrant its own token. */
+  --mq-page-title: 1.6875rem;
+
   /* Not in design-system/styles.css (layout, not a visual token) — single source of truth for
      Sidebar.tsx's expanded/collapsed width so the CSS breakpoint and the manual-toggle classes
      can't drift out of sync with each other. */
@@ -191,6 +203,18 @@
   --radius-mq-lg: var(--mq-r-lg);
   --radius-mq-xl: var(--mq-r-xl);
   --radius-mq-pill: var(--mq-r-pill);
+
+  /* Prefixed (mq-) rather than Tailwind's own text keys (--text-sm, --text-xs, …) for the same
+     reason as radius above — this doesn't silently redefine bare text-sm/text-xs elsewhere. */
+  --text-mq-hero: var(--mq-hero);
+  --text-mq-title: var(--mq-title);
+  --text-mq-figure: var(--mq-figure);
+  --text-mq-h: var(--mq-h);
+  --text-mq-body: var(--mq-body);
+  --text-mq-sm: var(--mq-sm);
+  --text-mq-xs: var(--mq-xs);
+  --text-mq-eyebrow: var(--mq-eyebrow);
+  --text-mq-page-title: var(--mq-page-title);
 
   --shadow-mq-window: var(--mq-shadow-window);
   --shadow-mq-pop: var(--mq-shadow-pop);

@@ -53,7 +53,7 @@ const SidebarNavItem = ({ item, collapsed }: SidebarNavItemProps) => {
       <Icon className={cn('shrink-0', isActive ? 'text-accent' : 'text-text-3')} />
       <span
         className={cn(
-          'text-[14.5px] font-medium',
+          'text-mq-body font-medium',
           isActive ? 'text-text' : 'text-text-2',
           collapsed ? 'hidden' : 'max-lg:hidden'
         )}
@@ -63,7 +63,7 @@ const SidebarNavItem = ({ item, collapsed }: SidebarNavItemProps) => {
       <span
         role="tooltip"
         className={cn(
-          'pointer-events-none absolute left-[52px] z-10 whitespace-nowrap rounded-mq-lg bg-hover px-2.5 py-1.5 text-[12.5px] font-medium text-text opacity-0 shadow-mq-tip transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100',
+          'pointer-events-none absolute left-[52px] z-10 whitespace-nowrap rounded-mq-lg bg-hover px-2.5 py-1.5 text-mq-xs font-medium text-text opacity-0 shadow-mq-tip transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100',
           !collapsed && 'hidden max-lg:block'
         )}
       >

@@ -32,6 +32,13 @@ const MODEL_LIMITS: Record<string, ModelLimits> = {
   },
 };
 
+/**
+ * Cross-user cap for a single day, on top of each user's own `dailyLimitPerUser` above — 5x a
+ * single user's hard-block threshold, so a handful of users maxing out their own daily allowance
+ * is the ceiling for the whole app, not just for any one of them.
+ */
+export const GLOBAL_DAILY_TOKEN_LIMIT = MODEL_LIMITS[HAIKU_MODEL_ID].dailyLimitPerUser * 5;
+
 /** Default limits used when the model is not found in the registry. */
 const DEFAULT_LIMITS: ModelLimits = {
   inputLimit: 10000,

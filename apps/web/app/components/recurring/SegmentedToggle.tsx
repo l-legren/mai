@@ -30,7 +30,7 @@ const SegmentedToggle = <T extends string>({
             onClick={() => onChange(option.value)}
             aria-pressed={selected}
             className={cn(
-              'h-[42px] flex-1 rounded-full border text-[13.5px] font-semibold',
+              'h-[42px] flex-1 rounded-full border text-mq-sm font-semibold',
               selected ? selectedClassName : 'border-border text-text-2'
             )}
           >

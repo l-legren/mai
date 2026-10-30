@@ -12,17 +12,17 @@ const Hero = () => {
       <div className="mx-auto flex w-full max-w-3xl flex-col items-start gap-6 text-left">
         <div className="inline-flex items-center gap-2.5 rounded-full border border-border-3 px-3.5 py-1.5">
           <span className="h-1.5 w-1.5 rounded-full bg-accent" aria-hidden="true" />
-          <span className="text-xs font-medium text-text-2 sm:text-[12.5px]">
+          <span className="text-xs font-medium text-text-2 sm:text-mq-xs">
             {t('landing.badge')}
           </span>
         </div>
 
-        <h1 className="text-[2.375rem] leading-[1.08] font-extrabold tracking-tight text-text text-pretty sm:text-5xl md:text-6xl lg:text-[4.75rem] lg:leading-[1.02] lg:tracking-[-0.06em]">
+        <h1 className="text-[2.375rem] leading-[1.08] font-extrabold tracking-tight text-text text-pretty sm:text-5xl md:text-6xl lg:text-mq-hero lg:leading-[1.02] lg:tracking-[-0.06em]">
           {t('landing.headline')}{' '}
           <span className="block text-accent">{t('landing.headlineAccent')}</span>
         </h1>
 
-        <p className="max-w-lg text-[17px] leading-relaxed text-text-2 text-pretty lg:text-[19px]">
+        <p className="max-w-lg text-[1.0625rem] leading-relaxed text-text-2 text-pretty lg:text-mq-h">
           {t('landing.subline')}
         </p>
 

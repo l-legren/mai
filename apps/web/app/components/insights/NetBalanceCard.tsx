@@ -27,17 +27,17 @@ const NetBalanceCard = ({ series }: NetBalanceCardProps) => {
     <Card>
       <div className="flex flex-wrap items-end justify-between gap-6">
         <div>
-          <div className="text-[15px] font-semibold text-text">
+          <div className="text-mq-body font-semibold text-text">
             {t('insights.netBalance.title')}
           </div>
           <div className="mt-1.5 flex items-baseline gap-3">
-            <span className="text-[28px] font-bold tracking-[-0.9px] text-text">
+            <span className="text-[1.75rem] font-bold tracking-[-0.9px] text-text">
               {formatCurrency(latest?.balance ?? 0)}
             </span>
             {previous && (
               <span
                 className={cn(
-                  'text-[13.5px] font-medium',
+                  'text-mq-sm font-medium',
                   monthDelta >= 0 ? 'text-good' : 'text-over'
                 )}
               >
@@ -47,7 +47,7 @@ const NetBalanceCard = ({ series }: NetBalanceCardProps) => {
             )}
           </div>
         </div>
-        <p className="max-w-[280px] text-right text-[13px] text-text-3 text-pretty">
+        <p className="max-w-[280px] text-right text-mq-sm text-text-3 text-pretty">
           {t('insights.netBalance.note', {
             month: series[0] ? monthLabel(series[0].monthKey) : '',
           })}
@@ -83,10 +83,10 @@ const NetBalanceCard = ({ series }: NetBalanceCardProps) => {
         </ResponsiveContainer>
       </div>
       <div className="mt-1.5 flex justify-between">
-        <span className="text-[11.5px] font-medium text-text-4">
+        <span className="text-mq-eyebrow font-medium text-text-4">
           {series[0] ? monthLabel(series[0].monthKey) : ''}
         </span>
-        <span className="text-[11.5px] font-semibold text-text-2">
+        <span className="text-mq-eyebrow font-semibold text-text-2">
           {latest ? monthLabel(latest.monthKey) : ''}
         </span>
       </div>

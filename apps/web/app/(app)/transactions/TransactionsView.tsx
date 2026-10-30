@@ -38,7 +38,7 @@ const TransactionsView = ({ transactions, currentPage, totalPages }: Transaction
   return (
     <div className="flex min-h-svh flex-col">
       <div className="flex flex-none items-end justify-between gap-4 px-9 pt-[30px] pb-5">
-        <h1 className="text-[27px] font-bold tracking-[-0.7px] text-text">
+        <h1 className="text-mq-page-title font-bold tracking-[-0.7px] text-text">
           {t('transactions.title')}
         </h1>
       </div>
@@ -46,7 +46,7 @@ const TransactionsView = ({ transactions, currentPage, totalPages }: Transaction
       <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-9 pb-7">
         <Card flush>
           {dayGroups.length === 0 ? (
-            <p className="px-6 py-8 text-center text-[13.5px] text-text-2">
+            <p className="px-6 py-8 text-center text-mq-sm text-text-2">
               {t('transactions.empty')}
             </p>
           ) : (
@@ -54,7 +54,7 @@ const TransactionsView = ({ transactions, currentPage, totalPages }: Transaction
               <div key={group.date}>
                 <div
                   className={cn(
-                    'px-6 pt-4 pb-1.5 text-[11px] font-semibold tracking-[0.8px] text-accent uppercase',
+                    'px-6 pt-4 pb-1.5 text-mq-eyebrow font-semibold tracking-[0.05rem] text-accent uppercase',
                     groupIndex > 0 && 'border-t border-white/[0.06]'
                   )}
                 >

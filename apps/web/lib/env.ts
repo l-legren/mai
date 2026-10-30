@@ -10,12 +10,15 @@
  * validation identical.
  */
 
+/** Reads the project's URL and publishable key for the Supabase client. */
 export function getSupabaseEnv(): { supabaseUrl: string; supabaseAnonKey: string } {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  // Supabase's new publishable key — same drop-in slot `createClient()` used to take the legacy
+  // anon key in; that project's legacy keys are now disabled, so this is the only one that works.
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
   if (!supabaseUrl || !supabaseAnonKey) {
     throw new Error(
-      'Missing NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY. Copy .env.example to .env.local and fill them in.'
+      'Missing NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY. Copy .env.example to .env.local and fill them in.'
     );
   }
   return { supabaseUrl, supabaseAnonKey };
@@ -40,13 +43,34 @@ export function getTurnstileSiteKey(): string {
  * ever talks to our own same-origin proxy route, never the agent service directly.
  */
 export function getAgentServiceUrl(): string {
-  const agentServiceUrl = process.env.RAILWAY_AGENT_SERVICE_URL;
+  const agentServiceUrl = process.env.AGENT_SERVICE_URL;
   if (!agentServiceUrl) {
-    throw new Error(
-      'Missing RAILWAY_AGENT_SERVICE_URL. Copy .env.example to .env.local and fill it in.'
-    );
+    throw new Error('Missing AGENT_SERVICE_URL. Copy .env.example to .env.local and fill it in.');
   }
   return agentServiceUrl;
+}
+
+/**
+ * Identifies the Workload Identity Federation pool/provider and the service account `apps/web`
+ * impersonates to call the Cloud Run agent service — see `lib/gcp-auth.ts`. No GCP key ever exists
+ * for this: Vercel's own OIDC token is the credential, federated via these values.
+ */
+export function getGcpWorkloadIdentityEnv(): {
+  projectNumber: string;
+  serviceAccountEmail: string;
+  poolId: string;
+  providerId: string;
+} {
+  const projectNumber = process.env.GCP_PROJECT_NUMBER;
+  const serviceAccountEmail = process.env.GCP_SERVICE_ACCOUNT_EMAIL;
+  const poolId = process.env.GCP_WORKLOAD_IDENTITY_POOL_ID;
+  const providerId = process.env.GCP_WORKLOAD_IDENTITY_POOL_PROVIDER_ID;
+  if (!projectNumber || !serviceAccountEmail || !poolId || !providerId) {
+    throw new Error(
+      'Missing GCP_PROJECT_NUMBER / GCP_SERVICE_ACCOUNT_EMAIL / GCP_WORKLOAD_IDENTITY_POOL_ID / GCP_WORKLOAD_IDENTITY_POOL_PROVIDER_ID. Copy .env.example to .env.local and fill them in.'
+    );
+  }
+  return { projectNumber, serviceAccountEmail, poolId, providerId };
 }
 
 export type AppEnvironment = 'development' | 'preview' | 'production';

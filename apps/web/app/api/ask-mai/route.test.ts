@@ -4,7 +4,11 @@ vi.mock('@/lib/supabase-server', () => ({ createSupabaseServerClient: vi.fn() })
 vi.mock('@/lib/env', () => ({
   getAgentServiceUrl: vi.fn(() => 'https://agent.example.com'),
 }));
+vi.mock('@/lib/gcp-auth', () => ({
+  getAgentIdToken: vi.fn(() => Promise.resolve('test-id-token')),
+}));
 
+import { getAgentIdToken } from '@/lib/gcp-auth';
 import { createSupabaseServerClient } from '@/lib/supabase-server';
 import { createMockClient } from '../../../vitest.setup';
 import { POST } from './route';
@@ -66,7 +70,24 @@ describe('POST /api/ask-mai', () => {
     expect(response.status).toBe(502);
   });
 
-  it('forwards the session token to the agent service and streams its response back', async () => {
+  it('returns 502 without calling fetch when minting the Cloud Run ID token fails', async () => {
+    const client = createMockClient();
+    client.auth.getSession.mockResolvedValue({
+      data: { session: { access_token: 'test-token' } },
+      error: null,
+    });
+    vi.mocked(createSupabaseServerClient).mockResolvedValue(client as never);
+    vi.mocked(getAgentIdToken).mockRejectedValueOnce(new Error('WIF exchange failed'));
+    globalThis.fetch = vi.fn();
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    const response = await POST(requestFor(validBody));
+
+    expect(response.status).toBe(502);
+    expect(globalThis.fetch).not.toHaveBeenCalled();
+  });
+
+  it('forwards the Google ID token and the session token as separate headers, and streams the response back', async () => {
     const client = createMockClient();
     client.auth.getSession.mockResolvedValue({
       data: { session: { access_token: 'test-token' } },
@@ -86,7 +107,10 @@ describe('POST /api/ask-mai', () => {
       'https://agent.example.com/ask-mai',
       expect.objectContaining({
         method: 'POST',
-        headers: expect.objectContaining({ Authorization: 'Bearer test-token' }),
+        headers: expect.objectContaining({
+          Authorization: 'Bearer test-id-token',
+          'X-Supabase-Authorization': 'Bearer test-token',
+        }),
         body: JSON.stringify(validBody),
       })
     );

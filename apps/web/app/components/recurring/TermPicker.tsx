@@ -71,7 +71,7 @@ const ShortcutButton = ({ months, selected, onSelect }: ShortcutButtonProps) => 
       onClick={() => onSelect(monthsAhead(months))}
       aria-pressed={selected}
       className={cn(
-        'h-10 flex-1 rounded-mq-sm border text-[13px] font-medium',
+        'h-10 flex-1 rounded-mq-sm border text-mq-sm font-medium',
         selected ? 'border-text-3 bg-hover text-text' : 'border-border text-text-2'
       )}
     >
@@ -99,7 +99,7 @@ const MonthPill = ({ label, year, selected, disabled, onSelect }: MonthPillProps
       aria-pressed={selected}
       aria-label={t('addRecurring.selectMonth', { month: label, year })}
       className={cn(
-        'h-11 flex-1 basis-[28%] rounded-mq-sm border text-[13.5px]',
+        'h-11 flex-1 basis-[28%] rounded-mq-sm border text-mq-sm',
         selected ? 'border-text-3 bg-hover text-text' : 'border-border text-text-2',
         disabled && 'pointer-events-none opacity-35'
       )}
@@ -143,7 +143,7 @@ const TermPicker = ({ value, onChange }: TermPickerProps) => {
         >
           <ChevronIcon direction="left" />
         </button>
-        <span className="text-[14px] font-medium text-text">{year}</span>
+        <span className="text-[0.875rem] font-medium text-text">{year}</span>
         <button
           type="button"
           onClick={() => onChange(toYearMonth(addYears(selectedDate, 1)))}
