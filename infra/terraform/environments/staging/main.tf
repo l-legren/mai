@@ -22,6 +22,7 @@ module "agent" {
   # Irrelevant post-import: Cloud Run's image attribute is in lifecycle.ignore_changes,
   # so this value is never applied against the live service.
   initial_image = "europe-west3-docker.pkg.dev/mai-agent-512512/mai-agent/agent:latest"
+  max_instances = 2
 }
 
 output "web_invoker_email" {
