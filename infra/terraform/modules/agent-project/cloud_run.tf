@@ -7,6 +7,7 @@ resource "google_cloud_run_service" "agent" {
     metadata {
       annotations = {
         "run.googleapis.com/startup-cpu-boost" = "true"
+        "autoscaling.knative.dev/maxScale"     = tostring(var.max_instances)
       }
     }
 

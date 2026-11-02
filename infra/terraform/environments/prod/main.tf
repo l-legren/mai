@@ -11,6 +11,7 @@ module "agent" {
   # pullable image before this project's own Artifact Registry repo has anything pushed to it.
   # CI's first `gcloud run deploy` on a push to main takes over (image is in lifecycle.ignore_changes).
   initial_image = "us-docker.pkg.dev/cloudrun/container/hello"
+  max_instances = 3
 }
 
 output "web_invoker_email" {

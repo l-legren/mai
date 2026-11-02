@@ -81,3 +81,7 @@ variable "initial_image" {
   type        = string
   description = "Image the Cloud Run service starts with. CI owns image rollouts afterward (see lifecycle.ignore_changes on the container image)."
 }
+
+variable "max_instances" {
+  type = number
+}
