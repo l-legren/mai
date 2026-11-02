@@ -66,3 +66,12 @@ resource "google_project_iam_member" "compute_sa_secret_accessor" {
   role    = "roles/secretmanager.secretAccessor"
   member  = "serviceAccount:${data.google_project.this.number}-compute@developer.gserviceaccount.com"
 }
+
+# `gcloud run deploy` runs the revision as the default compute SA (no --service-account is
+# passed), so agent-deployer needs actAs on it — newer GCP projects no longer auto-grant this
+# via a default Editor binding the way older ones do, so it can't be left implicit.
+resource "google_service_account_iam_member" "deployer_act_as_compute_default" {
+  service_account_id = "projects/${var.project_id}/serviceAccounts/${data.google_project.this.number}-compute@developer.gserviceaccount.com"
+  role                = "roles/iam.serviceAccountUser"
+  member              = "serviceAccount:${google_service_account.agent_deployer.email}"
+}
