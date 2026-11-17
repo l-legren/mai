@@ -6,8 +6,7 @@ const RECENT_SPENDING_TOOL_DESCRIPTION =
 const SAVINGS_TARGETS_TOOL_DESCRIPTION =
   "Get the user's active savings targets with progress (saved vs goal amount, target date).";
 
-// Mirrors the real registerRecurrence description (agent/src/tools/index.ts). multiTurnExecutor
-// injects no system prompt, so the "don't guess a missing amount" rule has to live here too.
+// Mirrors the real registerRecurrence description; multiTurnExecutor injects no system prompt.
 const REGISTER_RECURRENCE_TOOL_DESCRIPTION =
   'Register a recurring money item — a fixed monthly/yearly income or expense (e.g. "set up a ' +
   'monthly gym expense of 50"). Infer type (income vs expense) and cadence from the request, and ' +

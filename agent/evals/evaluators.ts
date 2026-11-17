@@ -93,13 +93,7 @@ export function evaluateToolUsage(result: MultiTurnResult, target: MultiTurnTarg
   return { pass: reasons.length === 0, reasons };
 }
 
-/**
- * Deterministic grading of a single tool call's args: did the model extract the right structured
- * fields from natural language? Tool *selection* (evaluateToolUsage) can pass while extraction is
- * wrong — "register a monthly 50 gym expense" calling registerRecurrence but with amount 500 or
- * the wrong category. `amount` compares numerically; `name` is a substring match (the model may
- * phrase it "Gym membership"); everything else is an exact, case-insensitive match.
- */
+/** Grades a tool call's args against expected structured fields — catches bad NL→args extraction that tool-selection checks miss. */
 export function evaluateToolArgs(result: MultiTurnResult, target: MultiTurnTarget): EvalOutcome {
   const reasons: string[] = [];
   const expected = target.expectedToolArgs;

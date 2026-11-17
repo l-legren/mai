@@ -70,9 +70,5 @@ export type RegisterRecurrenceResult = {
   cadence: 'monthly' | 'yearly';
 };
 
-/**
- * Tools whose execute must not auto-run: the agent loop requires explicit user approval first.
- * Consumed by run.ts's `toolApproval` and asserted by the guardrail test — the single source of
- * truth for which agent actions are gated. `registerRecurrence` writes money, so it's gated.
- */
+/** Tools gated behind user approval — consumed by run.ts's `toolApproval`, asserted by the guardrail test. */
 export const ASK_TOOL_APPROVAL = { registerRecurrence: 'user-approval' } as const;
