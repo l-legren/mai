@@ -94,6 +94,48 @@ export function evaluateToolUsage(result: MultiTurnResult, target: MultiTurnTarg
 }
 
 /**
+ * Deterministic grading of a single tool call's args: did the model extract the right structured
+ * fields from natural language? Tool *selection* (evaluateToolUsage) can pass while extraction is
+ * wrong — "register a monthly 50 gym expense" calling registerRecurrence but with amount 500 or
+ * the wrong category. `amount` compares numerically; `name` is a substring match (the model may
+ * phrase it "Gym membership"); everything else is an exact, case-insensitive match.
+ */
+export function evaluateToolArgs(result: MultiTurnResult, target: MultiTurnTarget): EvalOutcome {
+  const reasons: string[] = [];
+  const expected = target.expectedToolArgs;
+  if (!expected) return { pass: true, reasons };
+
+  const call = result.steps
+    .flatMap((step) => step.toolCalls ?? [])
+    .find((toolCall) => toolCall.toolName === expected.tool);
+
+  if (!call) {
+    reasons.push(`expected a "${expected.tool}" call to grade args on, but it was never called`);
+    return { pass: false, reasons };
+  }
+
+  const args = (call.args ?? {}) as Record<string, unknown>;
+  for (const [key, want] of Object.entries(expected.args)) {
+    const got = args[key];
+    if (got === undefined) {
+      reasons.push(`arg "${key}": expected "${want}", but it was missing`);
+      continue;
+    }
+    if (key === 'amount') {
+      if (Number(got) !== Number(want))
+        reasons.push(`amount: expected ${want}, got "${String(got)}"`);
+      continue;
+    }
+    const gotStr = String(got).toLowerCase();
+    const wantStr = String(want).toLowerCase();
+    const matches = key === 'name' ? gotStr.includes(wantStr) : gotStr === wantStr;
+    if (!matches) reasons.push(`${key}: expected "${want}", got "${String(got)}"`);
+  }
+
+  return { pass: reasons.length === 0, reasons };
+}
+
+/**
  * Deterministic hallucination guard: every number in the final answer must be traceable to a
  * mocked tool result, the user's own prompt (echoing back a figure the user stated isn't
  * inventing one), or a simple difference/percentage derived from those — i.e. the model can only

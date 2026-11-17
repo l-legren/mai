@@ -3,7 +3,7 @@ import { evaluate } from '@lmnr-ai/lmnr';
 
 import { MAX_RECENT_SPENDING_DAYS, createMaiTools } from '../src/tools/index.ts';
 import { MULTI_TURN_DATASET } from './multi-turn-dataset.ts';
-import { evaluateNumbersGrounded, evaluateToolUsage } from './evaluators.ts';
+import { evaluateNumbersGrounded, evaluateToolArgs, evaluateToolUsage } from './evaluators.ts';
 import { multiTurnExecutor } from './executors.ts';
 import type { MultiTurnEvalData, MultiTurnResult, MultiTurnTarget } from './types.ts';
 
@@ -39,6 +39,10 @@ void evaluate<MultiTurnEvalData, MultiTurnTarget, MultiTurnResult>({
     numbersGrounded: (output, target, data) => {
       if (!target) return 0;
       return evaluateNumbersGrounded(output, target, data).pass ? 1 : 0;
+    },
+    correctToolArgs: (output, target) => {
+      if (!target) return 0;
+      return evaluateToolArgs(output, target).pass ? 1 : 0;
     },
   },
   groupName: 'mai-multi-turn-agent-loop',

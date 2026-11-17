@@ -85,6 +85,8 @@ export interface MultiTurnTarget {
   expectedToolOrder?: string[];
   /** Tools that must NOT be called */
   forbiddenTools?: string[];
+  /** Expected args for one tool call — grades NL→structured extraction, not just tool selection. */
+  expectedToolArgs?: { tool: string; args: Record<string, string | number> };
   /** Mock tool results for LLM judge context */
   mockToolResults: Record<string, string>;
   /** Category for grouping */
