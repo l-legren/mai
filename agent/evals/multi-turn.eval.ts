@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import assert from 'node:assert';
 import { evaluate } from '@lmnr-ai/lmnr';
 
