@@ -5,7 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport, type ChatStatus, type UIMessage } from 'ai';
 import { ChatHeader, ChatInputBar, EmptyState, ThinkingRow } from '@/app/components/ask';
-import { ChatBubble, FormError } from '@/app/components/ui';
+import { AgentNote, ChatBubble, FormError } from '@/app/components/ui';
+import { formatCurrency } from '@/lib/utils/format-expense';
 import { localDateIso } from '@/lib/utils/local-date';
 import { cn } from '@/lib/utils';
 
@@ -41,6 +42,36 @@ function isQuotaExceededPart(part: UIMessagePart): boolean {
   return part.type === 'data-quotaExceeded';
 }
 
+// Hand-declared for the same reason as RememberFactPart (untyped useChat widens tool part types).
+// registerRecurrence is approval-gated (agent run.ts `toolApproval`), so it moves through extra
+// states: `approval-requested` renders the confirm card, the rest reflect the resolved outcome.
+type RegisterRecurrenceInput = {
+  type: 'income' | 'expense';
+  name: string;
+  amount: number;
+  cadence: 'monthly' | 'yearly';
+};
+
+type RegisterRecurrencePart = {
+  type: 'tool-registerRecurrence';
+  toolCallId: string;
+  state:
+    | 'input-streaming'
+    | 'input-available'
+    | 'approval-requested'
+    | 'approval-responded'
+    | 'output-available'
+    | 'output-denied'
+    | 'output-error';
+  input?: RegisterRecurrenceInput;
+  approval?: { id: string; approved?: boolean };
+  errorText?: string;
+};
+
+function isRegisterRecurrencePart(part: UIMessagePart): boolean {
+  return part.type === 'tool-registerRecurrence';
+}
+
 function textOf(message: UIMessage): string {
   return message.parts
     .filter((part) => part.type === 'text')
@@ -48,10 +79,14 @@ function textOf(message: UIMessage): string {
     .join('');
 }
 
-/** Every tool part on this message except `rememberFact`, which gets its own confirm-gate UI. */
+const SELF_RENDERED_TOOL_PARTS = ['tool-rememberFact', 'tool-registerRecurrence'];
+
+/** Every tool part on this message except those that render their own note/confirm-gate UI. */
 function toolNamesOf(message: UIMessage): string[] {
   return message.parts
-    .filter((part) => part.type.startsWith('tool-') && part.type !== 'tool-rememberFact')
+    .filter(
+      (part) => part.type.startsWith('tool-') && !SELF_RENDERED_TOOL_PARTS.includes(part.type)
+    )
     .map((part) => part.type.slice('tool-'.length));
 }
 
@@ -60,16 +95,21 @@ function statusLineFor(toolNames: string[], t: (key: string) => string): string 
   return key ? t(key) : undefined;
 }
 
+type ApprovalResponseHandler = (approvalId: string, approved: boolean) => void;
+
 type AskTurnProps = {
   message: UIMessage;
   isFinished: boolean;
+  onApprovalResponse: ApprovalResponseHandler;
 };
 
 /**
  * One message's worth of UI. `rememberFact` (agent/src/tools/index.ts) saves immediately
  * server-side — `RememberFactNote` just reflects the tool part's resolved state, not a gate.
+ * `registerRecurrence` is the opposite: `RegisterRecurrenceNote` renders a confirm gate and only
+ * writes once the user approves.
  */
-const AskTurn = ({ message, isFinished }: AskTurnProps) => {
+const AskTurn = ({ message, isFinished, onApprovalResponse }: AskTurnProps) => {
   const { t } = useTranslation();
 
   if (message.role === 'user') {
@@ -85,6 +125,8 @@ const AskTurn = ({ message, isFinished }: AskTurnProps) => {
 
   const text = textOf(message);
   const rememberPart = message.parts.find(isRememberFactPart) as RememberFactPart | undefined;
+  const registerPart = message.parts.find(isRegisterRecurrencePart) as
+    RegisterRecurrencePart | undefined;
   const quotaExceeded = message.parts.some(isQuotaExceededPart);
   const statusLine = isFinished ? statusLineFor(toolNamesOf(message), t) : undefined;
 
@@ -97,6 +139,9 @@ const AskTurn = ({ message, isFinished }: AskTurnProps) => {
         </ChatBubble>
       )}
       {rememberPart && <RememberFactNote part={rememberPart} />}
+      {registerPart && (
+        <RegisterRecurrenceNote part={registerPart} onApprovalResponse={onApprovalResponse} />
+      )}
     </>
   );
 };
@@ -118,6 +163,63 @@ const RememberFactNote = ({ part }: RememberFactNoteProps) => {
   }
 
   return null;
+};
+
+type RegisterRecurrenceNoteProps = {
+  part: RegisterRecurrencePart;
+  onApprovalResponse: ApprovalResponseHandler;
+};
+
+/** The agent's money-write confirm gate: propose → user approves/declines → server writes. */
+const RegisterRecurrenceNote = ({ part, onApprovalResponse }: RegisterRecurrenceNoteProps) => {
+  const { t } = useTranslation();
+  const input = part.input;
+
+  if (part.state === 'output-error') {
+    return <FormError message={t('ask.error')} />;
+  }
+
+  if (part.state === 'output-denied') {
+    return <ChatBubble from="agent">{t('ask.registerRecurrence.declined')}</ChatBubble>;
+  }
+
+  if (part.state === 'output-available') {
+    return (
+      <ChatBubble from="agent">
+        {t('ask.registerRecurrence.added', { name: input?.name ?? '' })}
+      </ChatBubble>
+    );
+  }
+
+  if (part.state !== 'approval-requested' || !input || !part.approval) {
+    return null;
+  }
+
+  const approvalId = part.approval.id;
+  const kindKey =
+    input.type === 'income'
+      ? 'ask.registerRecurrence.kindIncome'
+      : 'ask.registerRecurrence.kindExpense';
+  const cadenceKey =
+    input.cadence === 'yearly'
+      ? 'ask.registerRecurrence.cadenceYearly'
+      : 'ask.registerRecurrence.cadenceMonthly';
+
+  return (
+    <AgentNote
+      bylineLabel={t('ask.registerRecurrence.byline')}
+      message={t('ask.registerRecurrence.proposal', {
+        name: input.name,
+        amount: formatCurrency(input.amount),
+        kind: t(kindKey),
+        cadence: t(cadenceKey),
+      })}
+      primaryLabel={t('ask.registerRecurrence.confirm')}
+      secondaryLabel={t('ask.registerRecurrence.cancel')}
+      onPrimaryAction={() => onApprovalResponse(approvalId, true)}
+      onSecondaryAction={() => onApprovalResponse(approvalId, false)}
+    />
+  );
 };
 
 function isAwaitingReply(status: ChatStatus, lastMessage: UIMessage | undefined): boolean {
@@ -148,9 +250,16 @@ const AskChatView = () => {
         }),
       })
   );
-  const { messages, status, error, sendMessage, stop, setMessages, clearError } = useChat({
-    transport,
-  });
+  const {
+    messages,
+    status,
+    error,
+    sendMessage,
+    stop,
+    setMessages,
+    clearError,
+    addToolApprovalResponse,
+  } = useChat({ transport });
 
   const lastMessage = messages[messages.length - 1];
   const awaitingReply = isAwaitingReply(status, lastMessage);
@@ -170,6 +279,10 @@ const AskChatView = () => {
   const handleEndChat = () => {
     stop();
     setMessages([]);
+  };
+
+  const handleApprovalResponse: ApprovalResponseHandler = (approvalId, approved) => {
+    void addToolApprovalResponse({ id: approvalId, approved });
   };
 
   return (
@@ -192,6 +305,7 @@ const AskChatView = () => {
                   key={message.id}
                   message={message}
                   isFinished={message.id !== lastMessage?.id || !isBusy}
+                  onApprovalResponse={handleApprovalResponse}
                 />
               ))}
               {awaitingReply && <ThinkingRow onStop={stop} />}
