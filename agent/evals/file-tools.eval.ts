@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { evaluate } from '@lmnr-ai/lmnr';
 
 import { SINGLE_TURN_DATASET } from './dataset.ts';

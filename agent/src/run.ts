@@ -14,7 +14,7 @@ import {
 } from './context/usage.ts';
 import { searchUserMemories } from './memory/store.ts';
 import { DEFAULT_CURRENCY, buildAskMaiSystemPrompt } from './prompts.ts';
-import { createMaiTools } from './tools/index.ts';
+import { ASK_TOOL_APPROVAL, createMaiTools } from './tools/index.ts';
 import { latestUserMessageText } from './utils/latestUserMessageText.ts';
 
 const anthropicWorkspaceId = process.env.ANTHROPIC_WORKSPACE_ID;
@@ -73,6 +73,7 @@ export async function runAskMai(
     system: buildAskMaiSystemPrompt(currency, memories),
     messages: modelMessages,
     tools: createMaiTools(userId, today),
+    toolApproval: ASK_TOOL_APPROVAL,
     stopWhen: stepCountIs(ASK_MAX_STEPS),
     // Haiku 4.5 errors if `effort` is sent.
     providerOptions: tier === 'sonnet' ? { anthropic: { effort: 'low' } } : undefined,

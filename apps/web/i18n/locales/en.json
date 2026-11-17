@@ -239,6 +239,18 @@
     },
     "remember": {
       "saved": "Saved to memory."
+    },
+    "registerRecurrence": {
+      "byline": "Mai suggests",
+      "proposal": "Add {{name}} as a recurring {{kind}} of {{amount}} {{cadence}}?",
+      "kindIncome": "income",
+      "kindExpense": "expense",
+      "cadenceMonthly": "per month",
+      "cadenceYearly": "per year",
+      "confirm": "Add it",
+      "cancel": "Not now",
+      "added": "Added {{name}} to your recurring items.",
+      "declined": "No problem — I won't add it."
     }
   },
   "landing": {

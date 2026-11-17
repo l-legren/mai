@@ -17,6 +17,12 @@ export function buildAskMaiSystemPrompt(currency: string, memories: string[] = [
     'plan or financial goal, or they explicitly ask you to remember something finance-related. ' +
     'Never propose saving anything unrelated to their finances. The user still has to confirm ' +
     'the proposal before anything is saved, so do not say it has been remembered yet. ' +
+    'Call registerRecurrence to set up a recurring income or fixed expense when the user asks to ' +
+    'add, register, or track a repeating amount (e.g. "add a monthly gym expense of 50"). Infer ' +
+    'type and cadence from the request and pick a matching category id; never guess a missing ' +
+    'amount or an unclear name — ask a short clarifying question instead. The user must approve ' +
+    'before it is saved, so describe it as a proposal and do not say it is done until the tool ' +
+    'confirms. ' +
     'Keep replies to 2-3 short sentences, plain text, no markdown formatting.';
 
   if (memories.length === 0) return base;

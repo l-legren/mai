@@ -6,6 +6,14 @@ const RECENT_SPENDING_TOOL_DESCRIPTION =
 const SAVINGS_TARGETS_TOOL_DESCRIPTION =
   "Get the user's active savings targets with progress (saved vs goal amount, target date).";
 
+// Mirrors the real registerRecurrence description; multiTurnExecutor injects no system prompt.
+const REGISTER_RECURRENCE_TOOL_DESCRIPTION =
+  'Register a recurring money item — a fixed monthly/yearly income or expense (e.g. "set up a ' +
+  'monthly gym expense of 50"). Infer type (income vs expense) and cadence from the request, and ' +
+  'map the subject to one of the allowed category ids (income: salary, freelance, sideBusiness, ' +
+  'rental, investments, other; expense: subscriptions, fitness, rent, car, installments, other). ' +
+  'Do not guess a missing amount — ask.';
+
 /**
  * Minimal deterministic multi-turn dataset for the Ask Mai agent loop (LEG-129). Every case
  * uses fixture tools (see `buildMockTools` in executors.ts) so no real DB/model-selected `days`
@@ -159,6 +167,74 @@ export const MULTI_TURN_DATASET: MultiTurnDatasetEntry[] = [
     metadata: {
       description:
         'negative: no write tool exists (read-only agent); answer must not claim the expense was added, and must not state €50 as if it were a grounded figure',
+    },
+  },
+  {
+    data: {
+      prompt: 'Set up a monthly gym expense of 50 for me.',
+      mockTools: {
+        registerRecurrence: {
+          description: REGISTER_RECURRENCE_TOOL_DESCRIPTION,
+          parameters: {
+            type: 'income or expense',
+            name: 'short label',
+            amount: 'numeric amount',
+            cadence: 'monthly or yearly',
+            category: 'category id',
+          },
+          mockReturn: JSON.stringify({
+            registered: true,
+            type: 'expense',
+            name: 'Gym',
+            amount: 50,
+            cadence: 'monthly',
+          }),
+        },
+      },
+    },
+    target: {
+      originalTask: 'Register a recurring gym expense, extracting the right structured fields',
+      expectedToolOrder: ['registerRecurrence'],
+      expectedToolArgs: {
+        tool: 'registerRecurrence',
+        args: { type: 'expense', cadence: 'monthly', amount: 50, category: 'fitness', name: 'gym' },
+      },
+      mockToolResults: {
+        registerRecurrence: JSON.stringify({ type: 'expense', amount: 50, cadence: 'monthly' }),
+      },
+      category: 'task-completion',
+    },
+    metadata: {
+      description:
+        'golden + extraction check: "monthly gym expense of 50" must call registerRecurrence with type=expense, cadence=monthly, amount=50, category=fitness',
+    },
+  },
+  {
+    data: {
+      prompt: 'I go to the gym every month, can you track that as a recurring cost?',
+      mockTools: {
+        registerRecurrence: {
+          description: REGISTER_RECURRENCE_TOOL_DESCRIPTION,
+          parameters: {
+            type: 'income or expense',
+            name: 'short label',
+            amount: 'numeric amount',
+            cadence: 'monthly or yearly',
+            category: 'category id',
+          },
+          mockReturn: JSON.stringify({ registered: true }),
+        },
+      },
+    },
+    target: {
+      originalTask: 'An ambiguous request with no amount must ask, not register a guessed figure',
+      forbiddenTools: ['registerRecurrence'],
+      mockToolResults: {},
+      category: 'negative',
+    },
+    metadata: {
+      description:
+        'negative: no amount given; agent must ask for it rather than call registerRecurrence with an invented amount',
     },
   },
 ];
