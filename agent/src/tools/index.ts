@@ -3,9 +3,21 @@ import { z } from 'zod';
 import { Annotation, StateGraph, START, END } from '@langchain/langgraph';
 import { PostgresSaver } from '@langchain/langgraph-checkpoint-postgres';
 
-import { withScopedRead } from '../db.ts';
+import { withScopedRead, withScopedWrite } from '../db.ts';
 import { indexUserMemory } from '../memory/store.ts';
 import { withTimeout } from '../utils/withTimeout.ts';
+import {
+  RECURRING_EXPENSE_CATEGORIES,
+  RECURRING_INCOME_CATEGORIES,
+  registerRecurrenceSchema,
+  type RegisterRecurrenceResult,
+} from './register-recurrence.schema.ts';
+
+export {
+  ASK_TOOL_APPROVAL,
+  MAX_RECURRING_NAME_LENGTH,
+  registerRecurrenceSchema,
+} from './register-recurrence.schema.ts';
 
 /** Hard ceiling on how far back `getRecentSpending` can look — enforced before any DB call. */
 export const MAX_RECENT_SPENDING_DAYS = 30;
@@ -112,6 +124,43 @@ export function createMaiTools(userId: string, today: string): ToolSet {
         await saveUserMemory(userId, content); // writes to the checkpointer
         await indexUserMemory(userId, content); // embeds content, best effort
         return { saved: true };
+      },
+    }),
+
+    registerRecurrence: tool({
+      description:
+        'Register a recurring money item — a fixed monthly/yearly income or expense (e.g. "set ' +
+        'up a monthly gym expense of 50", "add my 2000 monthly salary"). Infer `type` (income vs ' +
+        'expense) and `cadence` from the request, and map the subject to one of the allowed ' +
+        `category ids (income: ${RECURRING_INCOME_CATEGORIES.join(', ')}; expense: ` +
+        `${RECURRING_EXPENSE_CATEGORIES.join(', ')}). Do not guess a missing amount — ask. This ` +
+        'asks the user to confirm before saving, so phrase your reply as a proposal, not a done deal.',
+      inputSchema: registerRecurrenceSchema,
+      execute: async ({
+        type,
+        name,
+        amount,
+        cadence,
+        termKind,
+        endDate,
+        category,
+      }): Promise<RegisterRecurrenceResult> => {
+        const trimmedName = name.trim();
+        const endDateValue = termKind === 'term' && endDate ? `${endDate}-01` : null;
+        try {
+          await withScopedWrite(userId, async (tx) => {
+            await tx`
+              insert into public.recurring
+                (user_id, type, name, amount, cadence, term_kind, end_date, category)
+              values
+                (${userId}, ${type}, ${trimmedName}, ${amount}, ${cadence}, ${termKind}, ${endDateValue}, ${category ?? null})
+            `;
+          });
+        } catch (error) {
+          console.error('registerRecurrence: insert failed', error);
+          throw error;
+        }
+        return { registered: true, type, name: trimmedName, amount, cadence };
       },
     }),
   };
