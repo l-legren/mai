@@ -3,7 +3,12 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useChat } from '@ai-sdk/react';
-import { DefaultChatTransport, type ChatStatus, type UIMessage } from 'ai';
+import {
+  DefaultChatTransport,
+  lastAssistantMessageIsCompleteWithApprovalResponses,
+  type ChatStatus,
+  type UIMessage,
+} from 'ai';
 import { ChatHeader, ChatInputBar, EmptyState, ThinkingRow } from '@/app/components/ask';
 import { AgentNote, ChatBubble, FormError } from '@/app/components/ui';
 import { formatCurrency } from '@/lib/utils/format-expense';
@@ -42,9 +47,7 @@ function isQuotaExceededPart(part: UIMessagePart): boolean {
   return part.type === 'data-quotaExceeded';
 }
 
-// Hand-declared for the same reason as RememberFactPart (untyped useChat widens tool part types).
-// registerRecurrence is approval-gated (agent run.ts `toolApproval`), so it moves through extra
-// states: `approval-requested` renders the confirm card, the rest reflect the resolved outcome.
+// Hand-declared like RememberFactPart; approval-gated, so it moves through extra states.
 type RegisterRecurrenceInput = {
   type: 'income' | 'expense';
   name: string;
@@ -106,8 +109,6 @@ type AskTurnProps = {
 /**
  * One message's worth of UI. `rememberFact` (agent/src/tools/index.ts) saves immediately
  * server-side — `RememberFactNote` just reflects the tool part's resolved state, not a gate.
- * `registerRecurrence` is the opposite: `RegisterRecurrenceNote` renders a confirm gate and only
- * writes once the user approves.
  */
 const AskTurn = ({ message, isFinished, onApprovalResponse }: AskTurnProps) => {
   const { t } = useTranslation();
@@ -259,7 +260,10 @@ const AskChatView = () => {
     setMessages,
     clearError,
     addToolApprovalResponse,
-  } = useChat({ transport });
+  } = useChat({
+    transport,
+    sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithApprovalResponses,
+  });
 
   const lastMessage = messages[messages.length - 1];
   const awaitingReply = isAwaitingReply(status, lastMessage);
